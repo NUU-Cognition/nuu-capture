@@ -1,0 +1,10 @@
+# Mistral AI API Configuration
+MISTRAL_API_KEY=your_mistral_api_key_here
+
+# Directory Configuration
+UPLOAD_DIR=temp_uploads
+EXTRACTED_IMAGES_DIR=extracted_images
+
+# API Configuration
+HOST=0.0.0.0
+PORT=8000 

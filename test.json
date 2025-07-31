@@ -1,0 +1,2123 @@
+[
+  {
+    "types": "Paragraph",
+    "content": "The research paper introduces MARPLE, a novel and challenging benchmark designed to evaluate the long-horizon, multimodal inference capabilities of AI systems, a critical aspect of human-like reasoning that existing benchmarks neglect. Inspired by classic \"whodunit\" mysteries, MARPLE tasks AI models with identifying which of two agents in a simulated household environment is responsible for a specific change by analyzing a stream of visual, auditory, and language evidence over time. The study benchmarks both traditional simulation-based methods (Monte Carlo Tree Search) and modern Large Language Models (like GPT-4) against human performance, revealing that current AI models fall significantly short. While simulation methods outperform LLMs by explicitly modeling agent behavior, they struggle to generalize to new environments. In contrast, humans consistently demonstrate superior robustness and efficiency, making correct inferences with far less evidence. The paper concludes that MARPLE successfully highlights key deficiencies in modern AI's ability to perform complex, real-world reasoning and serves as a crucial tool to guide future research toward bridging the gap between machine and human cognitive abilities.",
+    "id": "L4_P_0",
+    "level": 4,
+    "link": ["L3_H_0", "L3_P_0", "L3_H_1", "L3_P_1", "L3_H_2", "L3_P_2", "L3_H_3", "L3_P_3", "L3_H_4", "L3_P_4", "L3_H_5", "L3_P_5", "L3_H_6", "L3_P_6", "L3_H_7", "L3_P_7"]
+  },
+  {
+    "types": "Heading",
+    "content": "Abstract",
+    "id": "L3_H_0",
+    "level": 3,
+    "link": ["L2_H_0"]
+  },
+  {
+    "types": "Paragraph",
+    "content": "This paper introduces MARPLE, a new benchmark designed to evaluate an AI's ability to perform long-horizon reasoning in \"whodunit\" scenarios using multimodal evidence. Findings from the benchmark show that current AI approaches, including Monte Carlo simulations and GPT-4, are significantly outperformed by humans. These AI models demonstrate struggles with robustness and understanding key environmental changes, proving that the tasks within MARPLE pose a substantial challenge to state-of-the-art systems.",
+    "id": "L3_P_0",
+    "level": 3,
+    "link": ["L2_P_0"]
+  },
+  {
+    "types": "Heading",
+    "content": "1 Introduction",
+    "id": "L3_H_1",
+    "level": 3,
+    "link": ["L2_H_1"]
+  },
+  {
+    "types": "Paragraph",
+    "content": "Human \"whodunit\" reasoning, a vital skill for navigating daily life, involves integrating multimodal sensory information with an intuitive grasp of the world—a complex capability that existing AI benchmarks fail to address due to their narrow focus on short-term, single-modality problems. To bridge this gap, this paper presents MARPLE, a new benchmark leveraging the Mini-BEHAVIOR simulator to assess AI models on long-horizon inference tasks. By generating rich, multimodal evidence from procedurally generated household scenarios, MARPLE provides the necessary datasets and tasks to formally compare machine learning methods against human experts, ultimately revealing that current AI systems are deficient in these human-like reasoning skills.",
+    "id": "L3_P_1",
+    "level": 3,
+    "link": ["L2_P_1"]
+  },
+  {
+    "types": "Heading",
+    "content": "2 Related Work: Cognition-Inspired AI Inference Benchmarks",
+    "id": "L3_H_2",
+    "level": 3,
+    "link": ["L2_H_2"]
+  },
+  {
+    "types": "Paragraph",
+    "content": "Drawing inspiration from cognitive science theories of human causal reasoning, many AI benchmarks have been developed to test models on agent-environment interactions, though they are often limited in their use of multiple data types. MARPLE advances this area by requiring models to learn both world dynamics and agent behaviors to solve complex inference problems, for which this paper evaluates both traditional AI and modern LLMs. By offering a comprehensive framework for long-horizon, multimodal reasoning, MARPLE directly confronts the limitations of previous benchmarks and aims to accelerate the development of more sophisticated, human-like AI.",
+    "id": "L3_P_2",
+    "level": 3,
+    "link": ["L2_P_2"]
+  },
+  {
+    "types": "Heading",
+    "content": "3 MARPLE Benchmark",
+    "id": "L3_H_3",
+    "level": 3,
+    "link": ["L2_H_3"]
+  },
+  {
+    "types": "Paragraph",
+    "content": "MARPLE presents a set of configurable, long-horizon \"whodunit\" challenges where a model must deduce which of two agents caused a specific environmental change. This task is formally defined as a Partially Observable Markov Decision Process (POMDP), where the objective is to correctly identify the responsible agent by analyzing a stream of visual, auditory, and language observations collected over a complex series of actions. A model's performance is primarily measured by its ability to make a correct inference as early as possible with minimal evidence, with task difficulty influenced by the length of the inference horizon and the similarity of agent behaviors.",
+    "id": "L3_P_3",
+    "level": 3,
+    "link": ["L2_H_4", "L2_P_3", "L2_H_5", "L2_P_4", "L2_H_6", "L2_P_5"]
+  },
+  {
+    "types": "Heading",
+    "content": "4 MARPLE Household Simulator",
+    "id": "L3_H_4",
+    "level": 3,
+    "link": ["L2_H_7"]
+  },
+  {
+    "types": "Paragraph",
+    "content": "The foundation of the benchmark is the MARPLE Household Simulator, a system designed to efficiently generate the complex, multimodal data required for evaluating long-horizon inference. It features a multimodal environment that produces language and audio cues to supplement visual data, helping to resolve ambiguity about agent intentions and actions. A hierarchical planner creates diverse and realistic agent trajectories, while a custom user interface enables the collection of human performance data for baselines. The simulator generates comprehensive datasets for ten missions across five distinct inference scenarios, with specific training and testing sets designed to rigorously evaluate model generalization to new environments.",
+    "id": "L3_P_4",
+    "level": 3,
+    "link": ["L2_P_6", "L2_H_8", "L2_P_7", "L2_H_9", "L2_P_8", "L2_H_10", "L2_P_9", "L2_H_11", "L2_P_10"]
+  },
+  {
+    "types": "Heading",
+    "content": "5 Inference Methods and Baselines",
+    "id": "L3_H_5",
+    "level": 3,
+    "link": ["L2_H_12"]
+  },
+  {
+    "types": "Paragraph",
+    "content": "The paper evaluates several inference methods, with the primary AI baseline being a simulation-based approach using Monte Carlo Tree Search (MCTS) and learned agent policies, tested in four variants with progressively more multimodal data (vision-only, audio-augmented, language-conditioned, and all three combined). For comparison, two additional baselines are used: one employing state-of-the-art Large Language Models (LLMs) like GPT-4 to reason over visual changes, and another establishing an upper bound on performance based on experiments with expert human participants.",
+    "id": "L3_P_5",
+    "level": 3,
+    "link": ["L2_H_13", "L2_P_11", "L2_H_14", "L2_P_12"]
+  },
+  {
+    "types": "Heading",
+    "content": "6 Experiments and Results",
+    "id": "L3_H_6",
+    "level": 3,
+    "link": ["L2_H_15"]
+  },
+  {
+    "types": "Paragraph",
+    "content": "A series of experiments benchmarked model performance across five long-horizon inference scenarios, consistently revealing that human participants outperform all AI baselines, thus establishing MARPLE as a challenging benchmark. Simulation-based models performed better than GPT-4 by explicitly modeling agent behavior, though they struggled to generalize to unseen environments, a task at which humans excelled. Further analysis confirmed that incorporating more modalities, particularly language, significantly improves model performance. Finally, experiments with more similar agent behaviors demonstrated that task difficulty increases as agents become less distinguishable, causing model performance to degrade.",
+    "id": "L3_P_6",
+    "level": 3,
+    "link": ["L2_H_16", "L2_P_13", "L2_H_17", "L2_P_14", "L2_H_18", "L2_P_15", "L2_H_19", "L2_P_16"]
+  },
+  {
+    "types": "Heading",
+    "content": "7 Limitations and Conclusion",
+    "id": "L3_H_7",
+    "level": 3,
+    "link": ["L2_H_20"]
+  },
+  {
+    "types": "Paragraph",
+    "content": "The MARPLE benchmark has several limitations, including its reliance on a non-realistic GridWorld environment, template-based stimuli, and simplified single-cause scenarios; future work aims to enhance realism and complexity. In conclusion, the paper introduces MARPLE as a novel benchmark for evaluating long-horizon, multimodal inference, showing that current AI models lag significantly behind human performance in these tasks. The authors hope MARPLE will stimulate further research in AI and cognitive science to bridge the gap between machine and human reasoning. This work was supported by funding from the Stanford HAI, NSF, and ONR.",
+    "id": "L3_P_7",
+    "level": 3,
+    "link": ["L2_H_21", "L2_P_17", "L2_H_22", "L2_P_18", "L2_H_23", "L2_P_19"]
+  },
+  {
+    "types": "Heading",
+    "content": "Abstract",
+    "id": "L2_H_0",
+    "level": 2,
+    "link": ["L1_H_0"]
+  },
+  {
+    "types": "Paragraph",
+    "content": "This paper introduces MARPLE, a new benchmark for evaluating an AI's ability to perform long-horizon inference in \"whodunit\" style scenarios using multimodal evidence. Experiments show that current AI approaches, including Monte Carlo simulations and GPT-4, are outperformed by humans. The findings reveal that these AI models struggle with robustness and comprehending environmental changes, establishing that MARPLE's tasks present a significant challenge to the state of the art.",
+    "id": "L2_P_0",
+    "level": 2,
+    "link": ["L1_P_0", "L1_P_1"]
+  },
+  {
+    "types": "Heading",
+    "content": "1 Introduction",
+    "id": "L2_H_1",
+    "level": 2,
+    "link": ["L1_H_1"]
+  },
+  {
+    "types": "Paragraph",
+    "content": "Long-horizon \"whodunit\" reasoning is a key human skill that relies on integrating multimodal sensory data with an intuitive understanding of the world, an area where existing AI benchmarks are lacking as they focus on short-term, single-modality problems. This paper introduces MARPLE, a benchmark built on the Mini-BEHAVIOR simulator, to evaluate AI models on their ability to solve these complex inference tasks by identifying a culprit from multimodal evidence in procedurally generated household environments. The paper's main contributions are the simulator for generating multimodal data, a comprehensive set of long-horizon inference tasks and datasets, and a formal benchmark comparing machine learning methods against human experts, revealing that current AI models fall short.",
+    "id": "L2_P_1",
+    "level": 2,
+    "link": ["L1_P_2", "L1_P_3", "L1_P_4"]
+  },
+  {
+    "types": "Heading",
+    "content": "2 Related Work: Cognition-Inspired AI Inference Benchmarks",
+    "id": "L2_H_2",
+    "level": 2,
+    "link": ["L1_H_2"]
+  },
+  {
+    "types": "Paragraph",
+    "content": "Inspired by cognitive science frameworks that model human causal reasoning, many machine learning benchmarks evaluate an AI's ability to understand agent-environment interactions, though most are limited in modality. To solve MARPLE's inference problems, which require understanding both world dynamics and agent behavior, this work evaluates both traditional search-based AI and modern LLMs. By providing a comprehensive framework for long-horizon, multimodal inference, MARPLE directly addresses the shortcomings of prior benchmarks and aims to foster the creation of more sophisticated, human-like AI.",
+    "id": "L2_P_2",
+    "level": 2,
+    "link": ["L1_P_5", "L1_P_6", "L1_P_7"]
+  },
+  {
+    "types": "Heading",
+    "content": "3 MARPLE Benchmark",
+    "id": "L2_H_3",
+    "level": 2,
+    "link": ["L1_H_3"]
+  },
+  {
+    "types": "Subheading",
+    "content": "Overview",
+    "id": "L2_H_4",
+    "level": 2,
+    "link": ["L1_H_4"]
+  },
+  {
+    "types": "Paragraph",
+    "content": "MARPLE introduces configurable, long-horizon inference challenges presented as \"whodunit\" scenarios, where a model must use multimodal data to deduce which of two agents is responsible for a unique change in the environment.",
+    "id": "L2_P_3",
+    "level": 2,
+    "link": ["L1_P_8"]
+  },
+  {
+    "types": "Subheading",
+    "content": "Problem Formulation",
+    "id": "L2_H_5",
+    "level": 2,
+    "link": ["L1_H_5"]
+  },
+  {
+    "types": "Paragraph",
+    "content": "The inference task is formalized as a Partially Observable Markov Decision Process (POMDP), where the goal is to predict which agent caused a specific query state by analyzing multimodal observations (visual, auditory, language) gathered over a long and complex sequence of actions. Success requires models to learn the world dynamics and agent policies from training data, with the task's difficulty increasing as the inference horizon grows.",
+    "id": "L2_P_4",
+    "level": 2,
+    "link": ["L1_P_9", "L1_P_10"]
+  },
+  {
+    "types": "Subheading",
+    "content": "Evaluation",
+    "id": "L2_H_6",
+    "level": 2,
+    "link": ["L1_H_6"]
+  },
+  {
+    "types": "Paragraph",
+    "content": "Inference ability is measured by the probability of correctly identifying the responsible agent, with an emphasis on how quickly a model can make a correct prediction using minimal evidence.",
+    "id": "L2_P_5",
+    "level": 2,
+    "link": ["L1_P_11"]
+  },
+  {
+    "types": "Heading",
+    "content": "4 MARPLE Household Simulator",
+    "id": "L2_H_7",
+    "level": 2,
+    "link": ["L1_H_7"]
+  },
+  {
+    "types": "Paragraph",
+    "content": "The MARPLE Household Simulator provides the foundation for the benchmark, leveraging a multimodal environment simulator and a hierarchical agent planner to efficiently generate the data needed to evaluate high-level, long-horizon inference.",
+    "id": "L2_P_6",
+    "level": 2,
+    "link": ["L1_P_12"]
+  },
+  {
+    "types": "Subheading",
+    "content": "Multimodal Environment Simulator",
+    "id": "L2_H_8",
+    "level": 2,
+    "link": ["L1_H_8"]
+  },
+  {
+    "types": "Paragraph",
+    "content": "The simulator generates language and audio stimuli to supplement visual data. Language cues describe an agent's future intentions, while audio cues provide partial information about recent low-level actions, with both modalities helping to resolve ambiguity and provide clues about which agent was responsible for an outcome.",
+    "id": "L2_P_7",
+    "level": 2,
+    "link": ["L1_P_13", "L1_P_14"]
+  },
+  {
+    "types": "Subheading",
+    "content": "Procedural Generation of Agent Behaviors",
+    "id": "L2_H_9",
+    "level": 2,
+    "link": ["L1_H_9"]
+  },
+  {
+    "types": "Paragraph",
+    "content": "A hierarchical planner generates diverse and realistic agent trajectories by first selecting a high-level mission, then breaking it into mid-level subgoals, and finally using a low-level planner with the A-star algorithm to execute the specific sequence of actions required to complete the mission.",
+    "id": "L2_P_8",
+    "level": 2,
+    "link": ["L1_P_15"]
+  },
+  {
+    "types": "Subheading",
+    "content": "Human Experiment User Interface",
+    "id": "L2_H_10",
+    "level": 2,
+    "link": ["L1_H_10"]
+  },
+  {
+    "types": "Paragraph",
+    "content": "To establish performance baselines, a more intuitive and aesthetically pleasing user interface was created to facilitate human studies, as the default simulator was designed for machine learning research rather than human interaction.",
+    "id": "L2_P_9",
+    "level": 2,
+    "link": ["L1_P_16"]
+  },
+  {
+    "types": "Subheading",
+    "content": "Inference Scenarios and Dataset",
+    "id": "L2_H_11",
+    "level": 2,
+    "link": ["L1_H_11"]
+  },
+  {
+    "types": "Paragraph",
+    "content": "The benchmark consists of five distinct inference scenarios created by pairing ten different household missions. It includes a test set with 500 trajectories and two large training sets, one using the same environments as the test set and another using thousands of procedurally generated environments to properly evaluate model generalization.",
+    "id": "L2_P_10",
+    "level": 2,
+    "link": ["L1_P_17", "L1_P_18"]
+  },
+  {
+    "types": "Heading",
+    "content": "5 Inference Methods and Baselines",
+    "id": "L2_H_12",
+    "level": 2,
+    "link": ["L1_H_12"]
+  },
+  {
+    "types": "Subheading",
+    "content": "5.1 Simulation with Learned Agent Models",
+    "id": "L2_H_13",
+    "level": 2,
+    "link": ["L1_H_13"]
+  },
+  {
+    "types": "Paragraph",
+    "content": "The primary baseline is a simulation-based method using Monte Carlo Tree Search (MCTS) with learned agent policies to predict which agent is more likely to cause the query state. This method has four variants that progressively incorporate more data: a vision-only model, an audio-augmented model, a language-conditioned model, and a final version that uses all three modalities (vision, audio, and language) for the most informed prediction.",
+    "id": "L2_P_11",
+    "level": 2,
+    "link": ["L1_P_19", "L1_H_14", "L1_P_20", "L1_H_15", "L1_P_21", "L1_H_16", "L1_P_22", "L1_H_17", "L1_P_23"]
+  },
+  {
+    "types": "Subheading",
+    "content": "5.2 Additional Baselines",
+    "id": "L2_H_14",
+    "level": 2,
+    "link": ["L1_H_18"]
+  },
+  {
+    "types": "Paragraph",
+    "content": "Two additional baselines were established for comparison. The first uses state-of-the-art Large Language Models (LLMs) like GPT-4 to reason about the responsible agent based on changes in visual scene graphs. The second is a human baseline derived from experiments with two expert participants who made judgments while observing the agent trajectories.",
+    "id": "L2_P_12",
+    "level": 2,
+    "link": ["L1_H_19", "L1_P_24", "L1_H_20", "L1_P_25"]
+  },
+  {
+    "types": "Heading",
+    "content": "6 Experiments and Results",
+    "id": "L2_H_15",
+    "level": 2,
+    "link": ["L1_H_21"]
+  },
+  {
+    "types": "Subheading",
+    "content": "6.1 Benchmarking Model Performance in Long-Horizon Inference Scenarios",
+    "id": "L2_H_16",
+    "level": 2,
+    "link": ["L1_H_22"]
+  },
+  {
+    "types": "Paragraph",
+    "content": "Experiments were conducted across five inference scenarios to evaluate how early models could make correct predictions. The main results showed that humans robustly outperform all AI models, establishing MARPLE as a difficult benchmark. Simulation-based methods were more accurate than GPT-4 because they explicitly model agent behavior, whereas GPT-4 failed to converge on certain tasks, revealing a reasoning bias toward agent state changes over environmental ones.",
+    "id": "L2_P_13",
+    "level": 2,
+    "link": ["L1_P_26", "L1_H_23", "L1_P_27", "L1_H_24", "L1_P_28", "L1_H_25", "L1_P_29", "L1_H_26", "L1_P_30"]
+  },
+  {
+    "types": "Subheading",
+    "content": "6.2 Benchmarking Generalization Capabilities of Simulation Models",
+    "id": "L2_H_17",
+    "level": 2,
+    "link": ["L1_H_27"]
+  },
+  {
+    "types": "Paragraph",
+    "content": "When tested for generalization on unseen environments, the simulation models exhibited a significant drop in performance, as their learned policies failed to adapt. This contrasts sharply with humans, who maintained strong performance without any specific prior training on the test environments, highlighting a key area for model improvement.",
+    "id": "L2_P_14",
+    "level": 2,
+    "link": ["L1_P_31"]
+  },
+  {
+    "types": "Subheading",
+    "content": "6.3 Benchmarking in Multimodal Settings",
+    "id": "L2_H_18",
+    "level": 2,
+    "link": ["L1_H_28"]
+  },
+  {
+    "types": "Paragraph",
+    "content": "Experiments with the four simulation variants confirmed that performance improves as more modalities are incorporated. Both audio and language provide useful, distinct signals, with the model using all three modalities consistently performing best. Language cues were found to be particularly beneficial, significantly improving the accuracy of long-horizon predictions by revealing an agent's subgoals.",
+    "id": "L2_P_15",
+    "level": 2,
+    "link": ["L1_P_32", "L1_H_29", "L1_P_33", "L1_H_30", "L1_P_34"]
+  },
+  {
+    "types": "Subheading",
+    "content": "6.4 Additional Benchmarking Experiments",
+    "id": "L2_H_19",
+    "level": 2,
+    "link": ["L1_H_31"]
+  },
+  {
+    "types": "Paragraph",
+    "content": "Further experiments explored scenarios where agents had overlapping mission preferences, making their behaviors more similar and the inference task more difficult. As expected, when agent behaviors converged, the performance of the AI models degraded, requiring significantly more evidence to achieve the same level of accuracy.",
+    "id": "L2_P_16",
+    "level": 2,
+    "link": ["L1_P_35", "L1_H_32", "L1_P_36"]
+  },
+  {
+    "types": "Heading",
+    "content": "7 Limitations and Conclusion",
+    "id": "L2_H_20",
+    "level": 2,
+    "link": ["L1_H_33"]
+  },
+  {
+    "types": "Subheading",
+    "content": "Limitations",
+    "id": "L2_H_21",
+    "level": 2,
+    "link": ["L1_H_34"]
+  },
+  {
+    "types": "Paragraph",
+    "content": "The benchmark is limited by its use of a GridWorld environment, which lacks physical realism; its reliance on template-based language and audio; and its focus on simplified \"whodunit\" scenarios with a single, unique cause. Future work will aim to enhance the simulator with more realistic stimuli and introduce more complex scenarios involving agent interactions.",
+    "id": "L2_P_17",
+    "level": 2,
+    "link": ["L1_P_37"]
+  },
+  {
+    "types": "Subheading",
+    "content": "Conclusion",
+    "id": "L2_H_22",
+    "level": 2,
+    "link": ["L1_H_35"]
+  },
+  {
+    "types": "Paragraph",
+    "content": "The paper introduced MARPLE, a novel benchmark for evaluating long-horizon, multimodal inference, which demonstrates that current AI models significantly lag behind human capabilities in these complex reasoning tasks. The authors hope MARPLE will serve as a catalyst for future research in both AI and cognitive science, helping to close the gap between machine and human inference.",
+    "id": "L2_P_18",
+    "level": 2,
+    "link": ["L1_P_38"]
+  },
+  {
+    "types": "Subheading",
+    "content": "Acknowledgments and Disclosure of Funding",
+    "id": "L2_H_23",
+    "level": 2,
+    "link": ["L1_H_36"]
+  },
+  {
+    "types": "Paragraph",
+    "content": "This research was supported by funding from the Stanford Institute for Human-Centered Artificial Intelligence (HAI), the National Science Foundation (NSF), and the Office of Naval Research (ONR).",
+    "id": "L2_P_19",
+    "level": 2,
+    "link": ["L1_P_39"]
+  },
+  {
+    "types": "Heading",
+    "content": "Abstract",
+    "id": "L1_H_0",
+    "level": 1,
+    "link": ["L0_H_1"]
+  },
+  {
+    "types": "Paragraph",
+    "content": "Reconstructing past events involves reasoning over long time horizons using various evidence types.",
+    "id": "L1_P_0",
+    "level": 1,
+    "link": ["L0_P_0", "L0_P_1"]
+  },
+  {
+    "types": "Paragraph",
+    "content": "This paper introduces MARPLE, a benchmark inspired by \"whodunit\" stories, to evaluate an AI's ability to infer the agent responsible for a specific environmental change using multimodal evidence. The study finds that human participants are superior to both Monte Carlo simulation methods and a GPT-4 baseline. While traditional models lack robustness, GPT-4 has difficulty understanding environmental changes, and the multimodal inference tasks in MARPLE prove challenging for current AI models.",
+    "id": "L1_P_1",
+    "level": 1,
+    "link": ["L0_P_2", "L0_P_3", "L0_P_4", "L0_P_5"]
+  },
+  {
+    "types": "Heading",
+    "content": "1 Introduction",
+    "id": "L1_H_1",
+    "level": 1,
+    "link": ["L0_H_2"]
+  },
+  {
+    "types": "Paragraph",
+    "content": "Long-horizon \"whodunit\" inferences are a critical part of everyday problem-solving, where humans combine an intuitive understanding of the world with multimodal sensory evidence to determine what happened and who was responsible.",
+    "id": "L1_P_2",
+    "level": 1,
+    "link": ["L0_P_6", "L0_P_7", "L0_P_8"]
+  },
+  {
+    "types": "Paragraph",
+    "content": "Developing AI with similar long-horizon, multimodal reasoning is crucial, as existing benchmarks are insufficient, typically focusing on short-term events and single modalities, which fails to capture the complexity of real-world inference.",
+    "id": "L1_P_3",
+    "level": 1,
+    "link": ["L0_P_9", "L0_P_10", "L0_P_11", "L0_P_12", "L0_P_13", "L0_P_14"]
+  },
+  {
+    "types": "Paragraph",
+    "content": "The paper proposes MARPLE, a benchmark designed to evaluate a model's capacity to solve \"whodunit\" style problems in household scenarios by leveraging multimodal evidence to correctly identify the responsible agent from two suspects. To systematically generate diverse data, MARPLE is built upon and extends the Mini-BEHAVIOR simulator, enabling the creation of multimodal evidence (vision, language, audio) from autonomous agents interacting in procedurally generated household environments. Using MARPLE, the paper benchmarks a Monte Carlo tree search model and GPT-4 against human performance, finding that both AI methods fall short, struggling with generalization and reasoning about environmental changes, respectively.",
+    "id": "L1_P_4",
+    "level": 1,
+    "link": ["L0_P_15", "L0_P_16", "L0_P_17", "L0_P_18", "L0_P_19", "L0_P_20", "L0_P_21"]
+  },
+  {
+    "types": "Heading",
+    "content": "2 Related Work: Cognition-Inspired AI Inference Benchmarks",
+    "id": "L1_H_2",
+    "level": 1,
+    "link": ["L0_H_3"]
+  },
+  {
+    "types": "Paragraph",
+    "content": "Understanding human causal reasoning is a major focus in cognitive science, which has produced various theoretical frameworks like force dynamics, mental models, and counterfactual simulation models to explain these cognitive abilities.",
+    "id": "L1_P_5",
+    "level": 1,
+    "link": ["L0_P_25", "L0_P_26", "L0_P_27"]
+  },
+  {
+    "types": "Paragraph",
+    "content": "Many machine learning benchmarks, inspired by human cognition, focus on reasoning about agent interactions with their environment, covering physical events and social behaviors; while most rely on visual data, some recent ones incorporate multimodal stimuli and human performance baselines.",
+    "id": "L1_P_6",
+    "level": 1,
+    "link": ["L0_P_28", "L0_P_29", "L0_P_30", "L0_P_31"]
+  },
+  {
+    "types": "Paragraph",
+    "content": "To solve inference problems in MARPLE, models need knowledge of both the world's dynamics and the agents' behavior, which can be learned from data; this work evaluates both a traditional search-based approach and a method using advanced Large Language Models (LLMs). MARPLE addresses the limitations of existing benchmarks—their focus on short-term and single-modality stimuli—by offering a comprehensive framework to evaluate long-horizon, multimodal inference, thereby promoting the development of more robust and human-like AI.",
+    "id": "L1_P_7",
+    "level": 1,
+    "link": ["L0_P_32", "L0_P_33", "L0_P_34", "L0_P_35", "L0_P_36", "L0_P_37", "L0_P_38"]
+  },
+  {
+    "types": "Heading",
+    "content": "3 MARPLE Benchmark",
+    "id": "L1_H_3",
+    "level": 1,
+    "link": ["L0_H_4"]
+  },
+  {
+    "types": "Subheading",
+    "content": "Overview",
+    "id": "L1_H_4",
+    "level": 1,
+    "link": ["L0_H_5"]
+  },
+  {
+    "types": "Paragraph",
+    "content": "MARPLE provides configurable, long-horizon inference problems with multimodal support, focusing on \"whodunit\" scenarios where a model must determine which of two agents performing household missions caused a unique environmental change.",
+    "id": "L1_P_8",
+    "level": 1,
+    "link": ["L0_P_39", "L0_P_40", "L0_P_41", "L0_P_42"]
+  },
+  {
+    "types": "Subheading",
+    "content": "Problem Formulation",
+    "id": "L1_H_5",
+    "level": 1,
+    "link": ["L0_H_6"]
+  },
+  {
+    "types": "Paragraph",
+    "content": "The inference problem is formally defined as a Partially Observable Markov Decision Process (POMDP), where an agent's mission is broken down into a sequence of subgoals and low-level actions, creating complex dependencies over time that are observed through visual, auditory, and language data.",
+    "id": "L1_P_9",
+    "level": 1,
+    "link": ["L0_P_43", "L0_P_44", "L0_P_45", "L0_P_46", "L0_P_47", "L0_P_48"]
+  },
+  {
+    "types": "Paragraph",
+    "content": "The objective is to predict, at any given time, which agent is more likely to have caused a specific query state, based on the multimodal observations collected up to that point, with the task difficulty increasing with the length of the inference horizon. Success requires models to learn the world model, observation model, and agent policies from training data, which must be learned from a training dataset of past agent behaviors; the simulation also models agent preferences for certain missions as a prior distribution.",
+    "id": "L1_P_10",
+    "level": 1,
+    "link": ["L0_P_49", "L0_P_50", "L0_P_51", "L0_P_52", "L0_P_53", "L0_P_54", "L0_P_55"]
+  },
+  {
+    "types": "Subheading",
+    "content": "Evaluation",
+    "id": "L1_H_6",
+    "level": 1,
+    "link": ["L0_H_7"]
+  },
+  {
+    "types": "Paragraph",
+    "content": "The primary evaluation metric is the probability of correctly choosing the responsible agent, with a particular focus on how early a model can make the correct inference; performance is also affected by scenario difficulty, environmental complexity, and agent similarity.",
+    "id": "L1_P_11",
+    "level": 1,
+    "link": ["L0_P_56", "L0_P_57", "L0_P_58"]
+  },
+  {
+    "types": "Heading",
+    "content": "4 MARPLE Household Simulator",
+    "id": "L1_H_7",
+    "level": 1,
+    "link": ["L0_H_8"]
+  },
+  {
+    "types": "Paragraph",
+    "content": "The paper introduces the MARPLE Household Simulator, which consists of a multimodal environment simulator and a hierarchical agent planner, built upon Mini-BEHAVIOR to efficiently evaluate high-level, long-horizon inference models.",
+    "id": "L1_P_12",
+    "level": 1,
+    "link": ["L0_P_59", "L0_P_60", "L0_P_61", "L0_P_62"]
+  },
+  {
+    "types": "Subheading",
+    "content": "Multimodal Environment Simulator",
+    "id": "L1_H_8",
+    "level": 1,
+    "link": ["L0_H_9"]
+  },
+  {
+    "types": "Paragraph",
+    "content": "The language modality provides descriptions of an agent's next intended subgoal, offering clues about future actions; its usefulness varies, as it can either clearly distinguish between agents' intentions early on or only provide differentiating information near the end of the task.",
+    "id": "L1_P_13",
+    "level": 1,
+    "link": ["L0_P_63", "L0_P_64", "L0_P_65", "L0_P_66", "L0_P_67", "L0_P_68"]
+  },
+  {
+    "types": "Paragraph",
+    "content": "The audio modality maps agent actions to corresponding sounds, which can reveal partial information about low-level actions to resolve ambiguity; for instance, hearing a long sequence of steps might suggest a distant agent was responsible, even if visual evidence implies proximity.",
+    "id": "L1_P_14",
+    "level": 1,
+    "link": ["L0_P_69", "L0_P_70", "L0_P_71", "L0_P_72", "L0_P_73", "L0_P_74"]
+  },
+  {
+    "types": "Subheading",
+    "content": "Procedural Generation of Agent Behaviors",
+    "id": "L1_H_9",
+    "level": 1,
+    "link": ["L0_H_10"]
+  },
+  {
+    "types": "Paragraph",
+    "content": "Agent behaviors are generated by a three-tiered hierarchical planner: a high-level component selects a mission, a mid-level component sequences subgoals, and a low-level component uses the A-star algorithm to determine the atomic actions needed to complete each subgoal.",
+    "id": "L1_P_15",
+    "level": 1,
+    "link": ["L0_P_75", "L0_P_76", "L0_P_77", "L0_P_78", "L0_P_79"]
+  },
+  {
+    "types": "Subheading",
+    "content": "Human Experiment User Interface",
+    "id": "L1_H_10",
+    "level": 1,
+    "link": ["L0_H_11"]
+  },
+  {
+    "types": "Paragraph",
+    "content": "A new intuitive and aesthetically pleasing user interface was developed, as the default simulator's visualization was unsuitable for human studies, enabling the collection of human performance data for baselines.",
+    "id": "L1_P_16",
+    "level": 1,
+    "link": ["L0_P_80", "L0_P_81"]
+  },
+  {
+    "types": "Subheading",
+    "content": "Inference Scenarios and Dataset",
+    "id": "L1_H_11",
+    "level": 1,
+    "link": ["L0_H_12"]
+  },
+  {
+    "types": "Paragraph",
+    "content": "The MARPLE Benchmark is defined by ten diverse, long-horizon missions, which are paired to create five distinct inference scenarios that offer a manageable but representative sample of the potential complexity.",
+    "id": "L1_P_17",
+    "level": 1,
+    "link": ["L0_P_82", "L0_P_83", "L0_P_84", "L0_P_85"]
+  },
+  {
+    "types": "Paragraph",
+    "content": "For each mission, the benchmark provides a test dataset of 500 trajectories and two training datasets: one in the same environments as the test set, and another in 5000 unique procedurally generated environments to evaluate model generalization.",
+    "id": "L1_P_18",
+    "level": 1,
+    "link": ["L0_P_86", "L0_P_87", "L0_P_88"]
+  },
+  {
+    "types": "Heading",
+    "content": "5 Inference Methods and Baselines",
+    "id": "L1_H_12",
+    "level": 1,
+    "link": ["L0_H_13"]
+  },
+  {
+    "types": "Subheading",
+    "content": "5.1 Simulation with Learned Agent Models",
+    "id": "L1_H_13",
+    "level": 1,
+    "link": ["L0_H_14"]
+  },
+  {
+    "types": "Paragraph",
+    "content": "The first inference method uses Monte Carlo Tree Search (MCTS) with learned agent policies to perform rollouts from an intermediate time step and determine which agent is more likely to reach the query state.",
+    "id": "L1_P_19",
+    "level": 1,
+    "link": ["L0_P_89", "L0_P_90", "L0_P_91", "L0_P_92"]
+  },
+  {
+    "types": "Subheading2",
+    "content": "Vision-Only Model",
+    "id": "L1_H_14",
+    "level": 1,
+    "link": ["L0_H_15"]
+  },
+  {
+    "types": "Paragraph",
+    "content": "This variant uses a vision transformer to predict the agent's next action based only on the current visual observation.",
+    "id": "L1_P_20",
+    "level": 1,
+    "link": ["L0_P_93", "L0_P_94"]
+  },
+  {
+    "types": "Subheading2",
+    "content": "Audio-Augmented Model",
+    "id": "L1_H_15",
+    "level": 1,
+    "link": ["L0_H_16"]
+  },
+  {
+    "types": "Paragraph",
+    "content": "This variant refines the predictions of the vision-only model by incorporating audio evidence, which reveals partial information about the agent's most recent action.",
+    "id": "L1_P_21",
+    "level": 1,
+    "link": ["L0_P_95", "L0_P_96", "L0_P_97"]
+  },
+  {
+    "types": "Subheading2",
+    "content": "Language-Conditioned Model",
+    "id": "L1_H_16",
+    "level": 1,
+    "link": ["L0_H_17"]
+  },
+  {
+    "types": "Paragraph",
+    "content": "This variant improves action prediction by conditioning on language observations, which explicitly state the agent's intended subgoal.",
+    "id": "L1_P_22",
+    "level": 1,
+    "link": ["L0_P_98", "L0_P_99"]
+  },
+  {
+    "types": "Subheading2",
+    "content": "Audio-Augmented Language-Conditioned Model",
+    "id": "L1_H_17",
+    "level": 1,
+    "link": ["L0_H_18"]
+  },
+  {
+    "types": "Paragraph",
+    "content": "The final and most comprehensive variant combines vision, language, and audio evidence to predict the agent's next action.",
+    "id": "L1_P_23",
+    "level": 1,
+    "link": ["L0_P_100", "L0_P_101"]
+  },
+  {
+    "types": "Subheading",
+    "content": "5.2 Additional Baselines",
+    "id": "L1_H_18",
+    "level": 1,
+    "link": ["L0_H_19"]
+  },
+  {
+    "types": "Subheading2",
+    "content": "LLM",
+    "id": "L1_H_19",
+    "level": 1,
+    "link": ["L0_H_20"]
+  },
+  {
+    "types": "Paragraph",
+    "content": "The second baseline uses state-of-the-art Large Language Models (LLMs) like GPT-4 to infer the responsible agent by reasoning about changes between consecutive visual states represented as scene graphs.",
+    "id": "L1_P_24",
+    "level": 1,
+    "link": ["L0_P_102", "L0_P_103", "L0_P_104"]
+  },
+  {
+    "types": "Subheading2",
+    "content": "Human Baseline",
+    "id": "L1_H_20",
+    "level": 1,
+    "link": ["L0_H_21"]
+  },
+  {
+    "types": "Paragraph",
+    "content": "A human baseline was established by having two expert participants perform the inference task after a familiarization period, providing an incremental judgment as they viewed the action sequences.",
+    "id": "L1_P_25",
+    "level": 1,
+    "link": ["L0_P_105", "L0_P_106"]
+  },
+  {
+    "types": "Heading",
+    "content": "6 Experiments and Results",
+    "id": "L1_H_21",
+    "level": 1,
+    "link": ["L0_H_22"]
+  },
+  {
+    "types": "Subheading",
+    "content": "6.1 Benchmarking Model Performance in Long-Horizon Inference Scenarios",
+    "id": "L1_H_22",
+    "level": 1,
+    "link": ["L0_H_23"]
+  },
+  {
+    "types": "Paragraph",
+    "content": "Experiments were run on five inference scenarios across 10 randomly generated environments, with model accuracy evaluated at multiple points throughout each trajectory to see how early a correct inference could be made.",
+    "id": "L1_P_26",
+    "level": 1,
+    "link": ["L0_P_107", "L0_P_108"]
+  },
+  {
+    "types": "Subheading2",
+    "content": "Main Results",
+    "id": "L1_H_23",
+    "level": 1,
+    "link": ["L0_H_24"]
+  },
+  {
+    "types": "Paragraph",
+    "content": "Across all scenarios, human participants consistently outperformed all AI baselines, making correct inferences earlier and more robustly, highlighting that MARPLE is a challenging benchmark for current models.",
+    "id": "L1_P_27",
+    "level": 1,
+    "link": ["L0_P_109", "L0_P_110", "L0_P_111"]
+  },
+  {
+    "types": "Subheading2",
+    "content": "Analysis of Simulation Methods",
+    "id": "L1_H_24",
+    "level": 1,
+    "link": ["L0_H_25"]
+  },
+  {
+    "types": "Paragraph",
+    "content": "Simulation-based models generally performed better than GPT-4, achieving higher accuracy and always converging to the correct answer, which demonstrates the benefit of explicitly modeling agent behavior and simulating future states.",
+    "id": "L1_P_28",
+    "level": 1,
+    "link": ["L0_P_112", "L0_P_113"]
+  },
+  {
+    "types": "Subheading2",
+    "content": "Analysis of LLM Performance",
+    "id": "L1_H_25",
+    "level": 1,
+    "link": ["L0_H_26"]
+  },
+  {
+    "types": "Paragraph",
+    "content": "While competitive in some scenarios, GPT-4 failed to converge on two tasks, showing a bias towards agent state changes (like position) over environmental state changes; even with in-context learning, performance improved but still fell short of convergence.",
+    "id": "L1_P_29",
+    "level": 1,
+    "link": ["L0_P_114", "L0_P_115"]
+  },
+  {
+    "types": "Subheading2",
+    "content": "Analysis of Human Performance",
+    "id": "L1_H_26",
+    "level": 1,
+    "link": ["L0_H_27"]
+  },
+  {
+    "types": "Paragraph",
+    "content": "Humans demonstrated superior performance, reaching 80% accuracy with significantly less evidence compared to the best AI models.",
+    "id": "L1_P_30",
+    "level": 1,
+    "link": ["L0_P_116", "L0_P_117"]
+  },
+  {
+    "types": "Subheading",
+    "content": "6.2 Benchmarking Generalization Capabilities of Simulation Models",
+    "id": "L1_H_27",
+    "level": 1,
+    "link": ["L0_H_28"]
+  },
+  {
+    "types": "Paragraph",
+    "content": "To test generalization, simulation models were trained on procedurally generated environments and then tested on unseen environments, where they showed a significant drop in performance, unlike humans who performed strongly without prior training.",
+    "id": "L1_P_31",
+    "level": 1,
+    "link": ["L0_P_118", "L0_P_119"]
+  },
+  {
+    "types": "Subheading",
+    "content": "6.3 Benchmarking in Multimodal Settings",
+    "id": "L1_H_28",
+    "level": 1,
+    "link": ["L0_H_29"]
+  },
+  {
+    "types": "Paragraph",
+    "content": "Experiments on the four variants of the simulation model show that incorporating additional modalities consistently improves performance, with the baseline using all three modalities (vision, audio, language) performing the best.",
+    "id": "L1_P_32",
+    "level": 1,
+    "link": ["L0_P_120", "L0_P_121"]
+  },
+  {
+    "types": "Subheading2",
+    "content": "Effect of Audio Evidence",
+    "id": "L1_H_29",
+    "level": 1,
+    "link": ["L0_H_30"]
+  },
+  {
+    "types": "Paragraph",
+    "content": "Adding audio evidence provides a slight performance boost over the vision-only model by helping to more accurately predict the agent's current action.",
+    "id": "L1_P_33",
+    "level": 1,
+    "link": ["L0_P_122", "L0_P_123"]
+  },
+  {
+    "types": "Subheading2",
+    "content": "Effect of Language Evidence",
+    "id": "L1_H_30",
+    "level": 1,
+    "link": ["L0_H_31"]
+  },
+  {
+    "types": "Paragraph",
+    "content": "Language evidence provides a significant performance improvement, as knowing the agent's subgoal leads to much more accurate action predictions over the long-horizon rollouts.",
+    "id": "L1_P_34",
+    "level": 1,
+    "link": ["L0_P_124", "L0_P_125"]
+  },
+  {
+    "types": "Subheading",
+    "content": "6.4 Additional Benchmarking Experiments",
+    "id": "L1_H_31",
+    "level": 1,
+    "link": ["L0_H_32"]
+  },
+  {
+    "types": "Paragraph",
+    "content": "Further experiments were conducted where agents had a preference for one mission but could also perform the other, increasing task difficulty as agent behaviors became less distinct.",
+    "id": "L1_P_35",
+    "level": 1,
+    "link": ["L0_P_126", "L0_P_127"]
+  },
+  {
+    "types": "Subheading2",
+    "content": "Effect of Agent Preferences",
+    "id": "L1_H_32",
+    "level": 1,
+    "link": ["L0_H_33"]
+  },
+  {
+    "types": "Paragraph",
+    "content": "As agent preferences converged (e.g., a 60/40 split instead of 100/0), making their behaviors more similar, the performance of the vision-only and audio-augmented models degraded, requiring more evidence to reach the same level of accuracy.",
+    "id": "L1_P_36",
+    "level": 1,
+    "link": ["L0_P_128", "L0_P_129"]
+  },
+  {
+    "types": "Heading",
+    "content": "7 Limitations and Conclusion",
+    "id": "L1_H_33",
+    "level": 1,
+    "link": ["L0_H_34"]
+  },
+  {
+    "types": "Subheading",
+    "content": "Limitations",
+    "id": "L1_H_34",
+    "level": 1,
+    "link": ["L0_H_35"]
+  },
+  {
+    "types": "Paragraph",
+    "content": "The benchmark has several limitations: its GridWorld environment lacks physical realism, the language and audio are template-based, and the \"whodunit\" scenarios are simplified to have a single unique cause. Future work aims to address these by incorporating more realistic stimuli and more complex scenarios with multiple agents and interactions.",
+    "id": "L1_P_37",
+    "level": 1,
+    "link": ["L0_P_130", "L0_P_131", "L0_P_132"]
+  },
+  {
+    "types": "Subheading",
+    "content": "Conclusion",
+    "id": "L1_H_35",
+    "level": 1,
+    "link": ["L0_H_36"]
+  },
+  {
+    "types": "Paragraph",
+    "content": "The paper introduced MARPLE, a novel benchmark for evaluating long-horizon, multimodal inference, and demonstrated that current AI models fall short of human performance. The authors hope MARPLE will spur further research in AI and cognitive science to bridge the gap between human and machine reasoning abilities in complex, real-world scenarios.",
+    "id": "L1_P_38",
+    "level": 1,
+    "link": ["L0_P_133", "L0_P_134", "L0_P_135"]
+  },
+  {
+    "types": "Subheading",
+    "content": "Acknowledgments and Disclosure of Funding",
+    "id": "L1_H_36",
+    "level": 1,
+    "link": ["L0_H_37"]
+  },
+  {
+    "types": "Paragraph",
+    "content": "The work received support from several institutions, including the Stanford Institute for Human-Centered Artificial Intelligence (HAI), the NSF, and the ONR.",
+    "id": "L1_P_39",
+    "level": 1,
+    "link": ["L0_P_136"]
+  },
+  {
+    "types": "Heading",
+    "content": "Abstract",
+    "id": "L0_H_1",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "Reconstructing past events requires reasoning across long time horizons.",
+    "id": "L0_P_0",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "To figure out what happened, humans draw on prior knowledge about the world and human behavior and integrate insights from various sources of evidence including visual, language, and auditory cues.",
+    "id": "L0_P_1",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "We introduce MARPLE, a benchmark for evaluating long-horizon inference capabilities using multi-modal evidence.",
+    "id": "L0_P_2",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "Our benchmark features agents interacting with simulated households, supporting vision, language, and auditory stimuli, as well as procedurally generated environments and agent behaviors.",
+    "id": "L0_P_3",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "Inspired by classic \"whodunit” stories, we ask AI models and human participants to infer which agent caused a change in the environment based on a step-by-step replay of what actually happened.",
+    "id": "L0_P_4",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "The goal is to correctly identify the culprit as early as possible. Our findings show that human participants outperform both traditional Monte Carlo simulation methods and an LLM baseline (GPT-4) on this task. Compared to humans, traditional inference models are less robust and performant, while GPT-4 has difficulty comprehending environmental changes. We analyze factors influencing inference performance and ablate different modes of evidence, finding that all modes are valuable for performance. Overall, our experiments demonstrate that the long-horizon, multimodal inference tasks in our benchmark present a challenge to current models.",
+    "id": "L0_P_5",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Heading",
+    "content": "1 Introduction",
+    "id": "L0_H_2",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "Long-horizon inferences are critical for solving \"whodunit\" problems in our every day lives.",
+    "id": "L0_P_6",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "For example, we may wonder, \"Who left the fridge open?\", \"Who spilled the food?\", or \"Who turned on the light?\"",
+    "id": "L0_P_7",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "To find out what happened and who did it, humans rely on an intuitive understanding of the physical world and how people interact with their environment to pursue their goals. Importantly, humans readily combine evidence across sensory modalities to figure out what happened.",
+    "id": "L0_P_8",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "Developing AI models capable of performing such long-horizon reasoning and event reconstruction from multimodal information is critical for bridging the gap between human and machine intelligence.",
+    "id": "L0_P_9",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "While the field of AI has developed increasingly powerful, general-purpose inference models, the ability of these models to solve long-horizon inference problems, such as reasoning about \"whodunit\" scenarios, remains unclear.",
+    "id": "L0_P_10",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "Existing benchmarks for evaluating inference capabilities focus on problems that require reasoning over short time horizons about physical events and over agent behaviors.",
+    "id": "L0_P_11",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "In addition, they focus on visual stimuli, with only recent ones supporting language and audio.",
+    "id": "L0_P_12",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "However, these benchmarks lack coverage of long-horizon, multimodal inference in complex, everyday scenarios, a setting that is crucial for evaluating human-like reasoning abilities.",
+    "id": "L0_P_13",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "The paper proposes MARPLE, a benchmark designed to evaluate a model's capacity to solve \"whodunit\" style problems in household scenarios by leveraging multimodal evidence to correctly identify the responsible agent from two suspects.",
+    "id": "L0_P_14",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "In addition, we provide diverse training and inference data, along with well-defined evaluation metrics for our inference tasks.",
+    "id": "L0_P_15",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "To systematically generate data, MARPLE builds upon the Mini-BEHAVIOR simulator, which simulates semantically rich daily activities in procedurally generated household Gridworld environments.",
+    "id": "L0_P_16",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "We extend Mini-BEHAVIOR to support autonomous agents using hierarchical planners, enabling them to interact with the environment and generate multimodal evidence (vision, language, and audio).",
+    "id": "L0_P_17",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "As a Gridworld, MARPLE facilitates the development of models focused on understanding high-level agent behavior, with the benefits of fast prototyping and training.",
+    "id": "L0_P_18",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "Using MARPLE, we benchmark two baselines against human performance.",
+    "id": "L0_P_19",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "The first baseline uses traditional Monte Carlo tree search with learned agent models, while the second baseline uses a language model (GPT-4).",
+    "id": "L0_P_20",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "To provide a comparison standard, we also conduct a behavioral study with human participants. Our findings reveal that both baselines fall short in long-horizon, multimodal inference tasks compared to humans. The first baseline struggles to accurately predict future states and generalize to new environments, while the second one has difficulty reasoning about changes in the environment. Overall, we make the following key contributions: 1) We introduce a Gridworld simulator to procedurally generate household environments and diverse agent behaviors that yield multimodal evidence (visual, auditory, and language); 2) Using our simulator, we propose a set of long-horizon inference tasks for a) machine learning research on event reconstruction and multimodal reasoning and b) cognitive science research on the processes underlying human inference in complex scenarios. We also provide pre-collected datasets and evaluation metrics; 3) Lastly, we benchmark the performance of machine learning methods (Monte Carlo simulation and LLM) and human experts on the inference tasks.",
+    "id": "L0_P_21",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Heading",
+    "content": "2 Related Work: Cognition-Inspired AI Inference Benchmarks",
+    "id": "L0_H_3",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "Understanding how humans reason about causal relationships remains an active research area in cognitive science.",
+    "id": "L0_P_25",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "To model this process, prior works have developed various frameworks, including the force dynamics model, mental models, causal models, and counterfactual simulation models.",
+    "id": "L0_P_26",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "These frameworks provide insights into the cognitive mechanisms that underlie human inference abilities.",
+    "id": "L0_P_27",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "Inspired by human cognition, many machine learning benchmarks focus on problems that require the ability to reason about agents' interactions with their environment.",
+    "id": "L0_P_28",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "These benchmarks emphasize different types of inference problems, such as reasoning about physical events, agent behaviors, and multi-agent social behaviors.",
+    "id": "L0_P_29",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "While most of these benchmarks rely on visual stimuli, some recent ones support multimodal stimuli, integrating both audio and vision.",
+    "id": "L0_P_30",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "Furthermore, several of these benchmarks provide human-annotated judgments and performance baselines, which are helpful for assessing the performance gap between humans and machines.",
+    "id": "L0_P_31",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "To address the inference problems in MARPLE, inference models must leverage knowledge about both the agents and the world.",
+    "id": "L0_P_32",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "When these models are unknown, they can be learned from training data.",
+    "id": "L0_P_33",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "The agent model allows the inference model to predict agent goals or actions, which can be learned through imitation learning. Meanwhile, the world model helps predict the consequences of taking an action from a given state. Recently, significant advancements in AI inference abilities have been made by machine learning-based models, such as large language models (LLMs), especially when combined with traditional search methods. Our work presents and analyzes the performance of both a traditional search-based approach and an LLM-based method.",
+    "id": "L0_P_34",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "Despite progress in existing benchmarks, they primarily focus on short-term reasoning or single-modality stimuli, limiting their ability to evaluate models' performance in more complex, real-world scenarios.",
+    "id": "L0_P_35",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "Our benchmark, MARPLE, addresses these shortcomings by providing a comprehensive framework for evaluating whether recent inference methods can solve long-horizon, multimodal inference tasks.",
+    "id": "L0_P_36",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "In doing so, MARPLE aims to support the development of more robust and human-like AI reasoning capabilities.",
+    "id": "L0_P_37",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Heading",
+    "content": "3 MARPLE Benchmark",
+    "id": "L0_H_4",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Subheading",
+    "content": "Overview",
+    "id": "L0_H_5",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "MARPLE focuses on inference problems in long-horizon settings with multimodal support.",
+    "id": "L0_P_39",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "It is highly configurable, with support for procedural generation of rich agent behaviors and diverse environment states at an abstract, semantic level.",
+    "id": "L0_P_40",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "Specifically, MARPLE provides a variety of inference scenarios for “whodunit\"-type questions, in which two agents, A and B, each perform a mission: a common household activity that humans perform in real life.",
+    "id": "L0_P_41",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "To carry out a mission, an agent interacts with the environment, causing changes in the world and leaving evidence of its activity. A \"whodunit\" question is constructed by selecting a unique state that only appears in one agent's trajectory. For example, consider an inference scenario where agents A and B have completed the missions do laundry and get snack, respectively. A state that is unique to agent A is “laundry machine is on,” so we pose the following question: “Who turned on the laundry?\" To answer \"whodunit\" questions, models must leverage evidence in the form of multimodal observations from each agent's activity history.",
+    "id": "L0_P_42",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Subheading",
+    "content": "Problem Formulation",
+    "id": "L0_H_6",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "We formalize the inference problem using a Partially Observable Markov Decision Process (POMDP), denoted by the tuple (S, A, R, T, Ω, O, γ), where S is the state space, A is the action space, R is the reward function, T is the transition function, Ω is a set of observations, O is the observation function, and y is the discount factor.",
+    "id": "L0_P_43",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "The state at time step t is st, and visual, auditory, and language observations are denoted by ot = {o_v, o_a, o_l}.",
+    "id": "L0_P_44",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "The action space A consists of low-level agent actions, and an agent's action trajectory is determined by its mission.",
+    "id": "L0_P_45",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "A mission is decomposed into a sequence of mid-level subgoals g ∈ G, which are further decomposed into low-level actions.",
+    "id": "L0_P_46",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "Each subgoal relies on the completion of past ones and is necessary for completing future ones, creating strong multi-step dependencies between the actions.",
+    "id": "L0_P_47",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "We represent agent i's behavior using a policy πi: Ω → A that maps observations Ω to a probability distribution over actions in A, while the transition function T : S × A → S determines the effects of agent actions.",
+    "id": "L0_P_48",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "In each scenario, the objective is to infer whether agent A or B is more likely to have caused a particular query state (e.g., “laundry is on”).",
+    "id": "L0_P_49",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "We formulate this as predicting the probability P(sT|πi, o0:τ) for agent i at any intermediate time step τ, where sT is the state in query, and o0:τ are observations until time step τ.",
+    "id": "L0_P_50",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "Different instantiations of o0:τ affect the horizon, and hence inference difficulty. For example, when τ = T, inference is trivial.",
+    "id": "L0_P_51",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "Solving an inference scenario requires knowledge about the world model T(s'|s, a), observation model O(o|s), and policy πi(a|o) for both agents.",
+    "id": "L0_P_52",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "The true agent policies are unknown to the inference model and need to be learned in a training stage.",
+    "id": "L0_P_53",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "A training dataset of previous agent behaviors D_i = {(τ1, τ2, ..., τn} is collected, where each trajectory τ is a sequence of agent actions {a0, a1, ..., aT} paired with observations {o0, o1, ..., oT}.",
+    "id": "L0_P_54",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "We assume that agents can perform multiple missions, with their preferences for the missions represented as a prior distribution over all possible ones. For example, an agent might prefer to get snack with probability 0.8, pickup the plant with probability 0.2, and all other missions with probability 0. When simulating the agent's trajectories, the missions are sampled according to their mission preferences.",
+    "id": "L0_P_55",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Subheading",
+    "content": "Evaluation",
+    "id": "L0_H_7",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "In our problem setting, inference ability is measured by the probability of correctly choosing the agent responsible for the query state.",
+    "id": "L0_P_56",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "We are interested in how much evidence is needed to make the correct inference: stronger models require less evidence and achieve high inference accuracy at earlier time points.",
+    "id": "L0_P_57",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "Other factors that affect performance include inference scenario difficulty, environment complexity, agent behavior similarities, and inference horizon.",
+    "id": "L0_P_58",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Heading",
+    "content": "4 MARPLE Household Simulator",
+    "id": "L0_H_8",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "To generate our benchmark, we introduce the MARPLE Household Simulator.",
+    "id": "L0_P_59",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "The simulator supports a wide variety of complex scenarios and generates diverse data.",
+    "id": "L0_P_60",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "It consists of two components: a multimodal environment simulator and a hierarchical agent planner.",
+    "id": "L0_P_61",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "Our simulation environment is built on top of Mini-BEHAVIOR, which supports 20 household activities, fast simulation, and procedural generation of room layouts. By abstracting away low-level physical details, MARPLE enables researchers to efficiently prototype and evaluate their high-level, long-horizon inference models. Additional details about the simulator and computational resources are in Appendix D. Our simulator extends Mini-BEHAVIOR to support multimodal stimuli, procedural generation of diverse agent behaviors, and a human experiment user interface (UI).",
+    "id": "L0_P_62",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Subheading",
+    "content": "Multimodal Environment Simulator",
+    "id": "L0_H_9",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "Our simulator additionally supports language and auditory stimuli.",
+    "id": "L0_P_63",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "The language modality is a natural language description of the subgoal that the agent intends to perform next.",
+    "id": "L0_P_64",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "For example, the subgoal ToggleOn(light) is described as “I am going to toggle on the light.\".",
+    "id": "L0_P_65",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "This modality offers insight into the agent's future intentions without revealing its mission until the ultimate subgoal. The challenge lies in effectively leveraging this information to understand how these intentions relate to the final state. We carefully constructed scenarios where the language modality helps to varying degrees. For example, in the scenario \"Who picked up the snack?\", language evidence reveals early on that agent A intends to “open refrigerator” while agent B intends to \"pickup towel from closet.\" From this, a strong inference model should be able to reason that agent A is more likely to pick up the snack. On the other hand, consider the scenario \"Who toggled on the laundry\", where both agents share many subgoals. Agent A performs: \"pickup clothes from bed\", \"open laundry”, “drop clothes”, “close laundry”, “toggle-on laundry”, while Agent B performs: “open closet”, “pickup clothes from closet”, “close closet”, “open laundry”, “drop clothes”, \"close laundry\". In this case, language evidence only helps distinguish between agents at the end.",
+    "id": "L0_P_68",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "The audio modality is generated by mapping each possible agent action to a corresponding sound.",
+    "id": "L0_P_69",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "This mapping is not one-to-one; for example, all navigation actions (left, right, forward) share the same step sound.",
+    "id": "L0_P_70",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "Such audio evidence reveals partial information about the agent's low-level actions, which can be useful for resolving state uncertainty in inferential settings.",
+    "id": "L0_P_71",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "For example, consider the scenario “Who turned on the laundry?\", where visual evidence reveals that Agent A is in the same room as the laundry, just 5 steps away, while Agent B is in a bedroom 20 steps away with the door closed.",
+    "id": "L0_P_72",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "Based solely on this, one might infer that Agent A was the likely culprit due to proximity.",
+    "id": "L0_P_73",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "However, if audio evidence reveals a long sequence of steps or a door closing, it might suggest that Agent B was responsible. Leveraging audio to infer what happened presents a challenging research direction. For details on language and auditory simulation generation, see Appendix B.",
+    "id": "L0_P_74",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Subheading",
+    "content": "Procedural Generation of Agent Behaviors",
+    "id": "L0_H_10",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "To generate agent behaviors, we use a hierarchical planner with high-, mid-, and low-level components.",
+    "id": "L0_P_75",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "The high-level planner first selects a mission based on the agent's mission preferences, and the mid-level planner breaks the mission down into a sequence of subgoals.",
+    "id": "L0_P_76",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "Each subgoal is defined by an action, object, and state.",
+    "id": "L0_P_77",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "The low-level planner further decomposes each subgoal into a sequence of atomic actions to perform, which includes actions for navigation (turn left, turn right, and move forward) and the action specified by the subgoal itself.",
+    "id": "L0_P_78",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "In particular, the low-level planner uses the A-star algorithm to plan the shortest path to navigate to the subgoal position, perform the subgoal action on the object, and ultimately produce the desired state. When multiple optimal paths exist, the planner randomly selects one to introduce variability. This approach avoids unnecessary actions or random walks, ensuring that every action in the trajectory directly contributes to completing the mission. Our planner is able to generate large amounts of diverse, long-horizon agent trajectories based on the specified mission, subgoals, room layouts, and initial positions.",
+    "id": "L0_P_79",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Subheading",
+    "content": "Human Experiment User Interface",
+    "id": "L0_H_11",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "Mini-BEHAVIOR's visualization is suitable for machine learning research but not human studies.",
+    "id": "L0_P_80",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "Hence, we develop a more intuitive, aesthetically pleasing interface. This extension allows us to collect human data to establish performance baselines, as well as support future cognitive science experiments using MARPLE.",
+    "id": "L0_P_81",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Subheading",
+    "content": "Inference Scenarios and Dataset",
+    "id": "L0_H_12",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "With these new features, we define the MARPLE Benchmark with ten diverse, long-horizon missions and provide both training and testing data.",
+    "id": "L0_P_82",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "We construct various inference scenarios by combining missions and assigning mission preferences to each agent.",
+    "id": "L0_P_83",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "In experiments, we demonstrate the simplest case by only having A perform one mission and B another.",
+    "id": "L0_P_84",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "We pair up all 10 missions to define 5 distinct inference scenarios with a query state selected to be a meaningful subgoal unique to one agent. These 5 scenarios offer a manageable representation of the diversity and complexity offered by pairing missions. Details on the inference scenarios and selection process are provided in Appendix A.",
+    "id": "L0_P_85",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "For each mission, we provide a test dataset with 500 diverse agent trajectories, generated in 10 environments featuring different room layouts and object placements.",
+    "id": "L0_P_86",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "We also provide two training datasets with 5000 trajectories each: one with 500 agent trajectories in each of the 10 test environments, and the other with one trajectory per 5000 procedurally generated environments.",
+    "id": "L0_P_87",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "The test environments are unseen by models trained on the second dataset, enabling evaluation of generalization capabilities. These datasets offer diverse scenarios for training and evaluating inference models.",
+    "id": "L0_P_88",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Heading",
+    "content": "5 Inference Methods and Baselines",
+    "id": "L0_H_13",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Subheading",
+    "content": "5.1 Simulation with Learned Agent Models",
+    "id": "L0_H_14",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "Our first inference method (Appendix E) uses Monte Carlo Tree Search (MCTS) with learned agent policy models.",
+    "id": "L0_P_89",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "At inference time, this method performs Monte Carlo rollouts starting from time τ, assuming that it has access to the ground truth world model (provided by the simulator).",
+    "id": "L0_P_90",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "An agent-specific policy for agent i, πi : Ω → A, is first learned through imitation learning from a dataset of past agent behaviors. We perform m Monte Carlo rollouts for each agent i starting from the current state sτ and observation oτ, and the model predicts agent action aτ using the learned policy model. Then, the predicted action is passed to the simulator to query for sτ+1 and oτ+1, and the model predicts the next action. The probability of reaching the query state sT, given by P(sT|πi, o0:τ), corresponds to the fraction of the m sampled rollouts that reach sT. Assuming Boltzmann rationality, normalized predictions are obtained by applying a softmax function to the probability for each agent. Now, we discuss four variants of this baseline, each of which uses different types of observations.",
+    "id": "L0_P_91",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Subheading2",
+    "content": "Vision-Only Model",
+    "id": "L0_H_15",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "The first variant learns to predict the next low-level action at+1 given the current visual observation ovt.",
+    "id": "L0_P_93",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "It uses a vision transformer as an encoder and a policy head that outputs a probability distribution over all possible actions P(a|ovt). The network is trained using supervised learning, i.e., through behavioral cloning.",
+    "id": "L0_P_94",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Subheading2",
+    "content": "Audio-Augmented Model",
+    "id": "L0_H_16",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "Our second implementation leverages both visual ovt and audio oat observations.",
+    "id": "L0_P_95",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "Audio information is used here in a limited setting to improve the prediction accuracy of the first action in the rollout, as it reveals partial information about the agent's next low-level action.",
+    "id": "L0_P_96",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "We first obtain a predicted action distribution from the vision-only model, and then leverage audio evidence to refine the distribution. We then obtain the probability of the next action being an action a, conditioned on the visual and audio observations, by using Bayes' rule: P(a|ovt, oat) ∝ P(oat|a)P(a|ovt), where the probability P(a|ovt) is predicted by the vision-only model, and P(oat|a) is computed using a mapping from the action to the audio observation that is given.",
+    "id": "L0_P_97",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Subheading2",
+    "content": "Language-Conditioned Model",
+    "id": "L0_H_17",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "The third variant uses language observations olt, which reveal information about the subgoal that the agent is aiming to achieve at time t.",
+    "id": "L0_P_98",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "Intuitively, the intended subgoal reveals future information that will improve low-level action prediction accuracy. At time t, the language-conditioned model predicts the next low-level action at by conditioning on both the visual observation ovt and the subgoal revealed by the language observation olt.",
+    "id": "L0_P_99",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Subheading2",
+    "content": "Audio-Augmented Language-Conditioned Model",
+    "id": "L0_H_18",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "The final variant uses observations from all three modalities – vision, language, and audio.",
+    "id": "L0_P_100",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "At test time t, this variant uses the language-conditioned model to predict the next action at, conditioned on both the visual ovt and language observation olt. Audio evidence oat is then leveraged to refine the distribution over possible actions.",
+    "id": "L0_P_101",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Subheading",
+    "content": "5.2 Additional Baselines",
+    "id": "L0_H_19",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Subheading2",
+    "content": "LLM",
+    "id": "L0_H_20",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "For our second class of baselines, we ask state-of-the-art large language models to predict which agent is more likely to have caused the query state, given visual observations of both agents at two consecutive timesteps, ot-1 and ot.",
+    "id": "L0_P_102",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "We benchmark GPT-4-0613 with a standard zero-shot \"let's think step-by-step\" prompt as our primary LLM baseline. In addition, we evaluate the performance of top open-source models, Llama-3.1-8B-Instruct and Qwen2-7B-Instruct, chosen due to their large context length.",
+    "id": "L0_P_103",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "To perform the inference task, these LLMs must reason about changes in consecutive states and consider how the agent may reach the query state sT. Both the evidence and query states are provided to the model using a standard scene graph representation, containing a set of nodes and directed edges. Each node represents an agent or object, along with the states of that entity (e.g., a drawer is open). The directed edges represent physical relations between entities, e.g., “onTop” (object-object relation) and \"inRoom” (object-room relation). For a more comprehensive analysis, we also benchmark GPT-4 with in-context learning on select inference scenarios. We modify our zero-shot prompt and include examples from two other trajectories. Each example contains the inference answer and scene graphs of the current, previous, and query states of both agents at the same time step.",
+    "id": "L0_P_104",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Subheading2",
+    "content": "Human Baseline",
+    "id": "L0_H_21",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "As a third baseline, we run an experiment with two human experts.",
+    "id": "L0_P_105",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "Each participant is provided with a habituation phase, in which they are familiarized with MARPLE domain knowledge, the inference setup, and a few examples of agent trajectories. During experiments, participants answer the inference question, given side-by-side visual observations of agent trajectories, presented one step at a time from t = 0 to T. This allows participants to build an incremental understanding of agent trajectories and compare agent behaviors within the scenario.",
+    "id": "L0_P_106",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Heading",
+    "content": "6 Experiments and Results",
+    "id": "L0_H_22",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Subheading",
+    "content": "6.1 Benchmarking Model Performance in Long-Horizon Inference Scenarios",
+    "id": "L0_H_23",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "For each inference method and baseline, we run experiments on all five inference scenarios.",
+    "id": "L0_P_107",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "We test on 10 randomly generated environments of each inference scenario, resulting in 50 total trials. For each trial, we ask the model to answer the inference question and obtain its inference accuracy given evidence at various time steps, namely τ = 0, τ = T/10, ..., τ = T. The inference problem becomes easier at later time steps, as more evidence is revealed, and the inference horizon decreases. Thus, we expect accuracy to increase as τ increases. We are especially interested in how much evidence is required to choose the correct agent. For our MCTS baseline, we focus on two variants: vision-only and audio-augmented language-conditioned. In this setup, each agent always performs one mission, and the agent models are trained on a dataset of agent trajectories for that mission. The dataset contains 500 trajectories in each of the 10 environments seen at test time. The number of rollouts is set to be m = 100. For our second baseline, we use GPT-4-0613 at temperature T = 0.5 using n = 10 completions for each API call.",
+    "id": "L0_P_108",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Subheading2",
+    "content": "Main Results",
+    "id": "L0_H_24",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "Our key results are summarized in Figure 4.",
+    "id": "L0_P_109",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "Across all five inference scenarios, the accuracies of all baselines increase over time and eventually converge at the end of the trajectory (except GPT-4, as discussed below).",
+    "id": "L0_P_110",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "Our evaluation, however, is centered on how early the methods are able to make the correct inference, rather than on convergence itself. With this in mind, we see that MARPLE presents a challenging benchmark for all baselines. Overall, human participants provide a strong upper bound on performance, even without extensive prior knowledge about the agents' preferences and past behaviors. Humans consistently outperform all models, achieving higher accuracies with less evidence and demonstrating stronger robustness.",
+    "id": "L0_P_111",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Subheading2",
+    "content": "Analysis of Simulation Methods",
+    "id": "L0_H_25",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "When contrasting simulation methods (vision-only and vision+audio+language) with GPT-4, we observe that simulation-based models generally achieve higher accuracy and always converge to 1.0 by the end of the trajectory.",
+    "id": "L0_P_112",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "This highlights the benefit of explicitly modeling agent behaviors and performing step-by-step simulations. As a concrete example, we examine an instance of the scenario: \"Who picked up the plant?\" Evidence shown 50% into the trajectory reveals that the two agents are in the same state – next to the turned-on light. In this case, GPT-4 doesn't make the correct inference, as it only considers the evidence at the current and last time steps. Meanwhile, the simulation baseline achieves a 0.9 accuracy. The state Toggledon(light) is a meaningful one that always occurs before Pickup(plant), and the simulation baseline leverages its knowledge of agent behaviors to successfully estimate future states.",
+    "id": "L0_P_113",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Subheading2",
+    "content": "Analysis of LLM Performance",
+    "id": "L0_H_26",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "While GPT-4 performs competitively on some inference scenarios, GPT-4 fails to converge on two in particular: \"Who turned on the shower?\" and \"Who turned on the laundry?\".",
+    "id": "L0_P_114",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "We find that although ICL improves GPT-4's performance, it still struggles to converge. An analysis of GPT-4's chain-of-thought reasoning reveals that the model was biased toward changes in agent states, such as position, direction, or whether the agent was carrying an object. We speculate that this prevented GPT-4 from converging for these two tasks because their query states were only reflected as a change in the environment state and not the agent state. By contrast, in the other three scenarios, the agent was holding an object in the query state, making it easier for GPT-4 to infer the correct answer. Additionally, we provide the results of the open-source LLMs Llama-3.1-8B-Instruct and Qwen2-7B-Instruct in Appendix H. Both demonstrate lower perform than GPT-4 and exhibit similar inconsistencies in performance, including difficulties in comprehending changes in the environment and ultimately failing to converge. Despite the abilities of these LLMs to perform strong general reasoning, their failure modes reveal important opportunities for future work that better leverage in-context examples or additional scaffolds to study language models on our benchmark.",
+    "id": "L0_P_115",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Subheading2",
+    "content": "Analysis of Human Performance",
+    "id": "L0_H_27",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "Humans consistently outperform the other baselines, on average reaching 0.8 accuracy given only 48% of the evidence.",
+    "id": "L0_P_116",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "Even without significant training, humans require 10% and 47% less evidence than the best MCTS variant in-distribution and GPT-4.",
+    "id": "L0_P_117",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Subheading",
+    "content": "6.2 Benchmarking Generalization Capabilities of Simulation Models",
+    "id": "L0_H_28",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "We run additional experiments on all five inference scenarios to evaluate the generalization capabilities of the simulation approach.",
+    "id": "L0_P_118",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "We train models under two settings: one with trajectories in the same 10 environments as the test set, and the other using procedurally generated environments and tested in 10 unseen environments. While the models perform well in distribution, they struggle to generalize to novel environments. Even the vision + audio + language variant, the strongest MCTS method, suffers a significant performance drop in unseen environments. This is primarily because the learned agent model does not generalize well to novel environments, leading to decreased accuracy in action prediction and rollouts. In sharp contrast, humans achieve strong performance even without prior training. the performance gap between humans and the best simulation method increases from 10% to 33% less evidence out-of-distribution, highlighting significant room for improvement in building robust and generalizable inference models.",
+    "id": "L0_P_119",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Subheading",
+    "content": "6.3 Benchmarking in Multimodal Settings",
+    "id": "L0_H_29",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "We now study how incorporating multimodal observations can improve the simulation model's performance.",
+    "id": "L0_P_120",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "We conduct experiments on the four variants of the simulation baseline: vision-only, audio-augmented, language-conditioned, and audio-augmented and language-conditioned. The results for \"Who turned on the shower?\" are shown in Figure 6. While language seems more valuable than audio in our setting, the baseline using all three modalities consistently outperforms the others. This suggests that audio and language provide different signals and are both beneficial.",
+    "id": "L0_P_121",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Subheading2",
+    "content": "Effect of Audio Evidence",
+    "id": "L0_H_30",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "In all settings, audio evidence slightly improves performance over the vision-only model, as correctly predicting the current action results in a more accurate distribution of the rollouts.",
+    "id": "L0_P_122",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "This demonstrates the benefit of including audio evidence, but note that the benefits are limited under this setup as we only leverage one timestep of audio evidence for one action prediction.",
+    "id": "L0_P_123",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Subheading2",
+    "content": "Effect of Language Evidence",
+    "id": "L0_H_31",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "We find that the language-conditioned model significantly outperforms other baselines and stays consistent even when others' performances decrease.",
+    "id": "L0_P_124",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "As expected, knowing the subgoal leads to more accurate action prediction. When evaluated on the inference trajectories, the language-conditioned policy achieves 0.92 accuracy, as compared to 0.86 for the vision-only policy. This advantage is critical for boosting performance in long-horizon rollouts due to compounding errors and is even more salient under challenging inference settings, as discussed next.",
+    "id": "L0_P_125",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Subheading",
+    "content": "6.4 Additional Benchmarking Experiments",
+    "id": "L0_H_32",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "In contrast to our primary experiments, where we assume that each agent is dedicated to a single mission, this time, we allow agents to undertake both their own mission and the other's.",
+    "id": "L0_P_126",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "We vary agent preferences to be 1.0, 0.8, and 0.6 for their own mission and 0.0, 0.2, and 0.4 for the other, respectively. We use the inference scenario where the agents perform feed dog and do laundry due to the substantial differences between the two missions. The distinct subgoals of the two agents result in divergent agent behaviors when each has a 1.0 preference for their primary mission. As agent preferences converge – such as 0.6 for their own mission and 0.4 for the other – agent behaviors become increasingly similar, thereby increasing inference difficulty.",
+    "id": "L0_P_127",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Subheading2",
+    "content": "Effect of Agent Preferences",
+    "id": "L0_H_33",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "As agent preferences converge and agent behaviors become more similar, we see that performance worsens for the vision-only and audio-augmented models.",
+    "id": "L0_P_128",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "When agents have a preference of 1.0 for their primary missions, both models reach 0.6 inference accuracy when observing around 40% of the trajectory. When the primary mission preferences are 0.6 though, model performance decreases. The audio-augmented and vision-only models require evidence up to 70% and 85% of the whole trajectory, respectively, to reach the same accuracy of 0.6.",
+    "id": "L0_P_129",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Heading",
+    "content": "7 Limitations and Conclusion",
+    "id": "L0_H_34",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Subheading",
+    "content": "Limitations",
+    "id": "L0_H_35",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "The benchmark has several limitations: its GridWorld environment lacks physical realism, the language and audio are template-based, and the \"whodunit\" scenarios are simplified to have a single unique cause.",
+    "id": "L0_P_130",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "Future work aims to address these by incorporating more realistic stimuli and more complex scenarios with multiple agents and interactions.",
+    "id": "L0_P_131",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Subheading",
+    "content": "Conclusion",
+    "id": "L0_H_36",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "The paper introduced MARPLE, a novel benchmark for evaluating long-horizon, multimodal inference, and demonstrated that current AI models fall short of human performance.",
+    "id": "L0_P_133",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "The authors hope MARPLE will spur further research in AI and cognitive science to bridge the gap between human and machine reasoning abilities in complex, real-world scenarios.",
+    "id": "L0_P_134",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Subheading",
+    "content": "Acknowledgments and Disclosure of Funding",
+    "id": "L0_H_37",
+    "level": 0,
+    "link": []
+  },
+  {
+    "types": "Paragraph",
+    "content": "The work received support from several institutions, including the Stanford Institute for Human-Centered Artificial Intelligence (HAI), the NSF, and the ONR.",
+    "id": "L0_P_136",
+    "level": 0,
+    "link": []
+  }
+]
