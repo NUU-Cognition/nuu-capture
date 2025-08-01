@@ -9,7 +9,8 @@ a detailed prompt stored in a text file.
 import os
 import sys
 import json
-import requests
+import re
+import anthropic
 from pathlib import Path
 from typing import Optional
 
@@ -19,7 +20,7 @@ class ClaudeMarkdownFormatter:
     Uses Claude API to format markdown documents based on a detailed prompt.
     """
     
-    def __init__(self, api_key: str, model: str = "claude-3-5-sonnet-20241022"):
+    def __init__(self, api_key: str, model: str = "claude-sonnet-4-20250514"):
         """
         Initialize the Claude formatter.
         
@@ -29,12 +30,7 @@ class ClaudeMarkdownFormatter:
         """
         self.api_key = api_key
         self.model = model
-        self.base_url = "https://api.anthropic.com/v1/messages"
-        self.headers = {
-            "Content-Type": "application/json",
-            "x-api-key": api_key,
-            "anthropic-version": "2023-06-01"
-        }
+        self.client = anthropic.Anthropic(api_key=api_key)
     
     def load_prompt(self, prompt_file: str) -> str:
         """
@@ -88,33 +84,37 @@ class ClaudeMarkdownFormatter:
             The formatted markdown content, or None if there was an error
         """
         try:
-            payload = {
-                "model": self.model,
-                "max_tokens": 4000,
-                "messages": [
+            print("Sending request to Claude API...")
+            
+            message = self.client.messages.create(
+                model=self.model,
+                max_tokens=15000,  # Higher limit for Sonnet 4
+                messages=[
                     {
                         "role": "user",
-                        "content": f"{prompt}\n\nHere is the markdown content to format:\n\n{markdown_content}"
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": prompt
+                            },
+                            {
+                                "type": "text", 
+                                "text": f"\n\nHere is the raw text to format:\n\n{markdown_content}"
+                            }
+                        ]
                     }
                 ]
-            }
+            )
             
-            print("Sending request to Claude API...")
-            response = requests.post(self.base_url, headers=self.headers, json=payload)
-            
-            if response.status_code == 200:
-                result = response.json()
-                formatted_content = result['content'][0]['text']
-                print("✅ Claude API request successful")
-                return formatted_content
-            else:
-                print(f"❌ Claude API error: {response.status_code}")
-                print(f"Response: {response.text}")
-                return None
+            formatted_content = message.content[0].text
+            print("✅ Claude API request successful")
+            return formatted_content
                 
         except Exception as e:
             print(f"❌ Error calling Claude API: {e}")
             return None
+    
+
     
     def format_document(self, input_file: str, output_file: str, prompt_file: str) -> bool:
         """
