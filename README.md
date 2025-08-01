@@ -8,6 +8,7 @@ A production-ready Python backend script that converts long-form PDF documents i
 - **Document URL Processing**: Process PDFs from public URLs
 - **Markdown Output**: Structured markdown with preserved formatting
 - **Image Extraction**: Extract and reference images from documents
+- **Markdown Formatting**: Comprehensive tool to fix OCR formatting issues
 - **Error Handling**: Comprehensive error handling and logging
 - **Environment Management**: Secure API key management
 
@@ -40,6 +41,11 @@ cp env_template.txt .env
 ### 5. Test the OCR processor
 ```bash
 python process_pdf.py
+```
+
+### 6. Format the generated markdown (optional)
+```bash
+python markdown_formatter.py saved_markdowns/processed_document.md
 ```
 
 ## Configuration
@@ -97,6 +103,33 @@ with open(os.path.join(output_dir, "processed_document.md"), 'w', encoding='utf-
     f.write(result['markdown_content'])
 ```
 
+### Formatting the Generated Markdown
+
+The OCR output may contain formatting issues. Use the markdown formatter to clean up the text:
+
+```python
+from markdown_formatter import MarkdownFormatter
+
+# Initialize the formatter
+formatter = MarkdownFormatter()
+
+# Format the markdown text
+formatted_text = formatter.format_markdown(markdown_content)
+
+# Save the formatted version
+with open("formatted_document.md", 'w', encoding='utf-8') as f:
+    f.write(formatted_text)
+```
+
+**Formatting Features:**
+- Fixes run-on sentences and paragraph breaks
+- Removes duplicate content
+- Standardizes image captions
+- Preserves heading structure
+- Cleans up punctuation and spacing
+- Handles LaTeX math notation
+- Converts HTML line breaks to markdown
+
 ## API Response Structure
 
 The OCR processor returns a structured response:
@@ -122,10 +155,12 @@ The OCR processor returns a structured response:
 ocr_script_own/
 ├── simple_ocr_processor.py    # Core OCR processing logic
 ├── process_pdf.py             # Example usage script
+├── markdown_formatter.py      # Comprehensive markdown formatting tool
 ├── requirements.txt           # Python dependencies
 ├── .env                      # Environment variables (not in repo)
 ├── .gitignore               # Git ignore rules
 ├── env_template.txt         # Environment template
+├── FORMATTING_IMPROVEMENTS.md # Documentation of formatting improvements
 ├── test_pdf/               # Test PDF files (not in repo)
 ├── saved_markdowns/        # Output directory (not in repo)
 └── venv/                   # Virtual environment (not in repo)
