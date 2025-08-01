@@ -8,7 +8,7 @@ A production-ready Python backend script that converts long-form PDF documents i
 - **Document URL Processing**: Process PDFs from public URLs
 - **Markdown Output**: Structured markdown with preserved formatting
 - **Image Extraction**: Extract and reference images from documents
-- **Markdown Formatting**: Comprehensive tool to fix OCR formatting issues
+- **Safe Markdown Formatting**: Zero-information-loss formatting tool
 - **Error Handling**: Comprehensive error handling and logging
 - **Environment Management**: Secure API key management
 
@@ -45,7 +45,7 @@ python process_pdf.py
 
 ### 6. Format the generated markdown (optional)
 ```bash
-python markdown_formatter.py saved_markdowns/processed_document.md
+python markdown_formatter_safe.py saved_markdowns/processed_document.md
 ```
 
 ## Configuration
@@ -105,30 +105,30 @@ with open(os.path.join(output_dir, "processed_document.md"), 'w', encoding='utf-
 
 ### Formatting the Generated Markdown
 
-The OCR output may contain formatting issues. Use the markdown formatter to clean up the text:
+The OCR output may contain formatting issues. Use the safe markdown formatter to clean up the text with zero information loss:
 
 ```python
-from markdown_formatter import MarkdownFormatter
+from markdown_formatter_safe import SafeMarkdownFormatter
 
-# Initialize the formatter
-formatter = MarkdownFormatter()
+# Initialize the safe formatter
+formatter = SafeMarkdownFormatter()
 
-# Format the markdown text
-formatted_text = formatter.format_markdown(markdown_content)
+# Format the markdown text safely
+formatted_text = formatter.format_markdown_safe(markdown_content)
 
 # Save the formatted version
 with open("formatted_document.md", 'w', encoding='utf-8') as f:
     f.write(formatted_text)
 ```
 
-**Formatting Features:**
-- Fixes run-on sentences and paragraph breaks
-- Removes duplicate content
-- Standardizes image captions
-- Preserves heading structure
-- Cleans up punctuation and spacing
-- Handles LaTeX math notation
-- Converts HTML line breaks to markdown
+**Safe Formatting Features:**
+- ✅ **Zero information loss guaranteed**
+- Fixes HTML line breaks (`<br>` → markdown)
+- Repairs broken URLs (`https: //` → `https://`)
+- Adds proper spacing after sentence endings
+- Consolidates excessive blank lines
+- Preserves all content: tables, math, references, images
+- Conservative approach - only safe formatting changes
 
 ## API Response Structure
 
@@ -155,12 +155,11 @@ The OCR processor returns a structured response:
 ocr_script_own/
 ├── simple_ocr_processor.py    # Core OCR processing logic
 ├── process_pdf.py             # Example usage script
-├── markdown_formatter.py      # Comprehensive markdown formatting tool
+├── markdown_formatter_safe.py # Safe markdown formatting tool
 ├── requirements.txt           # Python dependencies
 ├── .env                      # Environment variables (not in repo)
 ├── .gitignore               # Git ignore rules
 ├── env_template.txt         # Environment template
-├── FORMATTING_IMPROVEMENTS.md # Documentation of formatting improvements
 ├── test_pdf/               # Test PDF files (not in repo)
 ├── saved_markdowns/        # Output directory (not in repo)
 └── venv/                   # Virtual environment (not in repo)

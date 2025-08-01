@@ -1,248 +1,203 @@
 #!/usr/bin/env python3
 """
-Safe Markdown Formatter for OCR Output
+Claude API Markdown Formatter
 
-A conservative markdown formatter that makes minimal formatting improvements
-while ensuring ZERO information loss. This version is much more careful
-about preserving all original content.
+This script reads a markdown file and uses Claude API to format it according to
+a detailed prompt stored in a text file.
 """
 
-import re
-import logging
+import os
 import sys
-from typing import List, Tuple, Dict, Optional
+import json
+import requests
 from pathlib import Path
-
-# Configure logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-logger = logging.getLogger(__name__)
+from typing import Optional
 
 
-class SafeMarkdownFormatter:
+class ClaudeMarkdownFormatter:
     """
-    A conservative markdown formatter that ensures zero information loss
-    while making minimal formatting improvements.
+    Uses Claude API to format markdown documents based on a detailed prompt.
     """
     
-    def __init__(self):
-        """Initialize the safe markdown formatter."""
-        # Only compile patterns for safe operations
-        self.patterns = {
-            # HTML line breaks - safe to convert
-            'html_line_breaks': re.compile(r'<br\s*/?>', re.IGNORECASE),
-            
-            # Spaces before punctuation - safe to fix
-            'spaces_before_punctuation': re.compile(r'\s+([,.!?;:])'),
-            
-            # Broken URLs - safe to fix
-            'broken_urls': re.compile(r'(https?://[^\s]+)\s+([^\s]+)'),
-            
-            # Run-on sentences - safe to fix
-            'run_on_sentences': re.compile(r'([.!?])([A-Z])'),
+    def __init__(self, api_key: str, model: str = "claude-3-5-sonnet-20241022"):
+        """
+        Initialize the Claude formatter.
+        
+        Args:
+            api_key: Claude API key
+            model: Claude model to use
+        """
+        self.api_key = api_key
+        self.model = model
+        self.base_url = "https://api.anthropic.com/v1/messages"
+        self.headers = {
+            "Content-Type": "application/json",
+            "x-api-key": api_key,
+            "anthropic-version": "2023-06-01"
         }
-        
-        logger.info("SafeMarkdownFormatter initialized - ZERO information loss guaranteed")
     
-    def fix_html_line_breaks(self, text: str) -> str:
+    def load_prompt(self, prompt_file: str) -> str:
         """
-        Replace HTML line breaks with markdown line breaks.
-        This is safe as it only converts formatting, not content.
-        """
-        fixed_text = self.patterns['html_line_breaks'].sub('  \n', text)
-        logger.debug("Fixed HTML line break tags")
-        return fixed_text
-    
-    def fix_spaces_before_punctuation(self, text: str) -> str:
-        """
-        Remove unnecessary spaces before punctuation marks.
-        This is safe as it only affects spacing, not content.
-        """
-        fixed_text = self.patterns['spaces_before_punctuation'].sub(r'\1', text)
-        logger.debug("Fixed spaces before punctuation")
-        return fixed_text
-    
-    def fix_broken_urls(self, text: str) -> str:
-        """
-        Fix broken URLs with spaces.
-        This is safe as it only fixes formatting, not content.
-        """
-        # Fix URLs with spaces in them
-        fixed_text = self.patterns['broken_urls'].sub(r'\1\2', text)
-        
-        # Fix common URL formatting issues
-        fixed_text = re.sub(r'https:\s*//', 'https://', fixed_text)
-        fixed_text = re.sub(r'http:\s*//', 'http://', fixed_text)
-        
-        logger.debug("Fixed broken URLs")
-        return fixed_text
-    
-    def fix_run_on_sentences(self, text: str) -> str:
-        """
-        Fix run-on sentences where punctuation is immediately followed by a capital letter.
-        This is safe as it only adds spacing, doesn't remove content.
-        """
-        fixed_text = self.patterns['run_on_sentences'].sub(r'\1 \2', text)
-        logger.debug("Fixed run-on sentences")
-        return fixed_text
-    
-    def consolidate_excessive_blank_lines(self, text: str) -> str:
-        """
-        Consolidate excessive blank lines (4 or more) into 3 blank lines.
-        This is conservative and preserves paragraph structure.
-        """
-        # Replace 4 or more consecutive blank lines with 3 blank lines
-        fixed_text = re.sub(r'\n\s*\n\s*\n\s*\n+', '\n\n\n', text)
-        logger.debug("Consolidated excessive blank lines")
-        return fixed_text
-    
-    def preserve_all_content(self, text: str) -> str:
-        """
-        Validation function to ensure no content is lost.
-        This is a safety check.
-        """
-        # Count important elements
-        lines = text.split('\n')
-        non_empty_lines = [line for line in lines if line.strip()]
-        
-        logger.info(f"Content validation: {len(lines)} total lines, {len(non_empty_lines)} non-empty lines")
-        return text
-    
-    def format_markdown_safe(self, text: str) -> str:
-        """
-        Apply only safe formatting fixes that guarantee zero information loss.
+        Load the formatting prompt from a text file.
         
         Args:
-            text: Input markdown text
+            prompt_file: Path to the prompt file
             
         Returns:
-            Formatted markdown text with zero information loss
+            The prompt content as a string
         """
-        logger.info("Starting SAFE markdown formatting process")
-        
-        # Store original text for comparison
-        original_text = text
-        original_lines = len(text.split('\n'))
-        original_chars = len(text)
-        
-        # Apply only safe formatting fixes
-        text = self.fix_html_line_breaks(text)
-        text = self.fix_spaces_before_punctuation(text)
-        text = self.fix_broken_urls(text)
-        text = self.fix_run_on_sentences(text)
-        text = self.consolidate_excessive_blank_lines(text)
-        text = self.preserve_all_content(text)
-        
-        # Log summary of changes
-        formatted_lines = len(text.split('\n'))
-        formatted_chars = len(text)
-        
-        logger.info(f"SAFE formatting complete:")
-        logger.info(f"  Original: {original_lines} lines, {original_chars} characters")
-        logger.info(f"  Formatted: {formatted_lines} lines, {formatted_chars} characters")
-        logger.info(f"  Line difference: {formatted_lines - original_lines}")
-        logger.info(f"  Character difference: {formatted_chars - original_chars}")
-        
-        # Safety check - ensure we didn't lose too much
-        if formatted_chars < original_chars * 0.95:  # Allow max 5% reduction
-            logger.warning(f"Significant content reduction detected! ({original_chars} -> {formatted_chars})")
-            logger.warning("This may indicate information loss. Consider using original text.")
-        
-        return text
+        try:
+            with open(prompt_file, 'r', encoding='utf-8') as f:
+                return f.read().strip()
+        except FileNotFoundError:
+            print(f"Error: Prompt file not found: {prompt_file}")
+            return ""
+        except Exception as e:
+            print(f"Error reading prompt file: {e}")
+            return ""
     
-    def process_file_safe(self, input_path: str, output_path: Optional[str] = None) -> str:
+    def load_markdown(self, input_file: str) -> str:
         """
-        Process a markdown file safely and save the formatted version.
+        Load the markdown content from file.
         
         Args:
-            input_path: Path to input markdown file
-            output_path: Path to output file (optional, defaults to input_path with _safe_formatted suffix)
+            input_file: Path to the markdown file
             
         Returns:
-            Path to the output file
+            The markdown content as a string
         """
-        input_file = Path(input_path)
+        try:
+            with open(input_file, 'r', encoding='utf-8') as f:
+                return f.read()
+        except FileNotFoundError:
+            print(f"Error: Input file not found: {input_file}")
+            return ""
+        except Exception as e:
+            print(f"Error reading input file: {e}")
+            return ""
+    
+    def format_with_claude(self, markdown_content: str, prompt: str) -> Optional[str]:
+        """
+        Send the markdown content to Claude API for formatting.
         
-        if not input_file.exists():
-            raise FileNotFoundError(f"Input file not found: {input_path}")
+        Args:
+            markdown_content: The markdown content to format
+            prompt: The formatting prompt to use
+            
+        Returns:
+            The formatted markdown content, or None if there was an error
+        """
+        try:
+            payload = {
+                "model": self.model,
+                "max_tokens": 4000,
+                "messages": [
+                    {
+                        "role": "user",
+                        "content": f"{prompt}\n\nHere is the markdown content to format:\n\n{markdown_content}"
+                    }
+                ]
+            }
+            
+            print("Sending request to Claude API...")
+            response = requests.post(self.base_url, headers=self.headers, json=payload)
+            
+            if response.status_code == 200:
+                result = response.json()
+                formatted_content = result['content'][0]['text']
+                print("✅ Claude API request successful")
+                return formatted_content
+            else:
+                print(f"❌ Claude API error: {response.status_code}")
+                print(f"Response: {response.text}")
+                return None
+                
+        except Exception as e:
+            print(f"❌ Error calling Claude API: {e}")
+            return None
+    
+    def format_document(self, input_file: str, output_file: str, prompt_file: str) -> bool:
+        """
+        Format a markdown document using Claude API.
         
-        # Read input file
-        logger.info(f"Reading markdown file: {input_path}")
-        with open(input_file, 'r', encoding='utf-8') as f:
-            text = f.read()
+        Args:
+            input_file: Path to input markdown file
+            output_file: Path to output formatted file
+            prompt_file: Path to prompt file
+            
+        Returns:
+            True if successful, False otherwise
+        """
+        print(f"📖 Loading markdown from: {input_file}")
+        markdown_content = self.load_markdown(input_file)
+        if not markdown_content:
+            return False
         
-        # Format the text safely
-        formatted_text = self.format_markdown_safe(text)
+        print(f"📝 Loading prompt from: {prompt_file}")
+        prompt = self.load_prompt(prompt_file)
+        if not prompt:
+            return False
         
-        # Determine output path
-        if output_path is None:
-            output_file = input_file.parent / f"{input_file.stem}_safe_formatted{input_file.suffix}"
-        else:
-            output_file = Path(output_path)
+        print(f"🤖 Sending to Claude API for formatting...")
+        formatted_content = self.format_with_claude(markdown_content, prompt)
+        if not formatted_content:
+            return False
         
-        # Write formatted text
-        logger.info(f"Writing safely formatted markdown to: {output_file}")
-        with open(output_file, 'w', encoding='utf-8') as f:
-            f.write(formatted_text)
-        
-        return str(output_file)
+        print(f"💾 Saving formatted content to: {output_file}")
+        try:
+            with open(output_file, 'w', encoding='utf-8') as f:
+                f.write(formatted_content)
+            print("✅ Formatting complete!")
+            return True
+        except Exception as e:
+            print(f"❌ Error saving output file: {e}")
+            return False
 
 
 def main():
     """
-    Main function demonstrating usage of the SafeMarkdownFormatter.
+    Main function to run the Claude markdown formatter.
     """
-    import argparse
-    
-    parser = argparse.ArgumentParser(description='Safely format markdown files with zero information loss')
-    parser.add_argument('input_file', help='Path to input markdown file')
-    parser.add_argument('-o', '--output', help='Path to output file (optional)')
-    parser.add_argument('-v', '--verbose', action='store_true', help='Enable verbose logging')
-    
-    args = parser.parse_args()
-    
-    if args.verbose:
-        logging.getLogger().setLevel(logging.DEBUG)
-    
-    # Initialize safe formatter
-    formatter = SafeMarkdownFormatter()
-    
-    try:
-        # Process the file safely
-        output_file = formatter.process_file_safe(args.input_file, args.output)
-        print(f"✅ Successfully formatted markdown file SAFELY")
-        print(f"📁 Output saved to: {output_file}")
-        print(f"🔒 ZERO information loss guaranteed")
-        
-    except Exception as e:
-        logger.error(f"Error processing file: {e}")
+    # Check for API key
+    api_key = os.getenv('CLAUDE_API_KEY')
+    if not api_key:
+        print("❌ Error: CLAUDE_API_KEY environment variable not set")
+        print("Please set your Claude API key:")
+        print("export CLAUDE_API_KEY='your_api_key_here'")
         return 1
     
-    return 0
+    # Default file paths for our local environment
+    input_file = "saved_markdowns/processed_document.md"
+    output_file = "saved_markdowns/processed_document_claude_formatted.md"
+    prompt_file = "formatting_prompt.txt"
+    
+    # Allow command line arguments to override defaults
+    if len(sys.argv) > 1:
+        input_file = sys.argv[1]
+    if len(sys.argv) > 2:
+        output_file = sys.argv[2]
+    if len(sys.argv) > 3:
+        prompt_file = sys.argv[3]
+    
+    print(f"🔧 Claude Markdown Formatter")
+    print(f"📁 Input: {input_file}")
+    print(f"📁 Output: {output_file}")
+    print(f"📁 Prompt: {prompt_file}")
+    print("=" * 50)
+    
+    # Initialize formatter
+    formatter = ClaudeMarkdownFormatter(api_key)
+    
+    # Format the document
+    success = formatter.format_document(input_file, output_file, prompt_file)
+    
+    if success:
+        print("🎉 Formatting completed successfully!")
+        return 0
+    else:
+        print("💥 Formatting failed!")
+        return 1
 
 
 if __name__ == "__main__":
-    # Example usage
-    if len(sys.argv) == 1:
-        # No command line arguments, run example
-        print("🔒 Safe Markdown Formatter - Example Usage")
-        print("=" * 50)
-        
-        # Example with the processed document
-        formatter = SafeMarkdownFormatter()
-        
-        input_file = "saved_markdowns/processed_document.md"
-        if Path(input_file).exists():
-            try:
-                output_file = formatter.process_file_safe(input_file)
-                print(f"✅ Safely formatted: {input_file}")
-                print(f"📁 Output: {output_file}")
-                print(f"🔒 Zero information loss guaranteed")
-            except Exception as e:
-                print(f"❌ Error: {e}")
-        else:
-            print(f"⚠️  Example file not found: {input_file}")
-            print("Run with: python markdown_formatter_safe.py <input_file>")
-    else:
-        # Run with command line arguments
-        import sys
-        sys.exit(main()) 
+    sys.exit(main())
