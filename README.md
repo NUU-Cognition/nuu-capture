@@ -221,7 +221,7 @@ The processor includes comprehensive error handling for:
 
 ## License
 
-[Add your license here]
+All components are part of NUU Cognition. NUU Capture is an element of NUU Cognition.
 
 ## Acknowledgments
 
