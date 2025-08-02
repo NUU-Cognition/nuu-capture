@@ -1,41 +1,29 @@
-You are an expert markdown formatter. Your task is to analyze a chunk of a markdown document and identify any formatting errors based on the rules provided.
+You are an expert technical editor and Markdown formatter for academic papers. Your goal is to holistically reformat the provided Markdown section by meticulously applying the following universal rules.
 
-Instead of returning the full formatted text, you will return ONLY a JSON object containing a list of edits.
+**--- The Core Principle: Zero Information Loss ---**
 
-CRITICAL INSTRUCTIONS:
+**Your absolute highest priority is to preserve 100% of the original information.** You must not add, remove, or rephrase any scientific content, data, or wording. Reformatting should never alter the meaning. **If applying any rule below is ambiguous or risks changing the informational content of the text, you must leave that specific part in its original state.** Be conservative.
 
-Analyze the provided markdown chunk.
+**--- Formatting & Style Rules ---**
 
-Identify text that violates the formatting rules.
+1.  **Maintain Existing Emphasis:** Do not remove any bold or italic formatting that already exists in the original text.
+2.  **Subheading Creation:** If a paragraph clearly begins with a topic keyword followed by a period (e.g., "Overview.", "Problem Formulation."), elevate that keyword into a Level 3 Markdown heading (`### Overview`) and remove the original keyword and period from the paragraph.
+3.  **Topic Bolding:** In sections like an Appendix, if a paragraph begins with a topic keyword (e.g., "Missions."), apply bolding to that keyword (`**Missions.**`) and leave it as part of the paragraph.
+4.  **Figure Caption Formatting:** The label must be bolded (e.g., `**Figure 1:**`). The caption **must** be placed on the very next line after the Markdown image link (`![...](...)`), with **no blank line** between them.
+5.  **Table Caption Formatting:** The label must be bolded (e.g., `**Table 1:**`). The caption **must** be placed as a separate paragraph immediately *before* the Markdown table it describes.
+6.  **List Formatting:** If a paragraph contains a list written as a single line of run-on text, reformat it into a proper multi-line Markdown list. Preserve the exact wording of each item.
 
-For each violation, create a JSON object with two keys: "original" (the exact text to be replaced) and "replacement" (the corrected text).
+**--- Structural & Content Rules (Apply with Caution) ---**
 
-Combine all these objects into a single JSON list.
+1.  **Sentence & Paragraph Coherence:** Carefully analyze the text for grammatical flow. If you identify a sentence that is broken across different paragraphs or misplaced, reconstruct the paragraphs. **Your goal is to re-order the original text fragments correctly, NOT to rewrite or rephrase them.**
+2.  **LaTeX Repair:** Find and correct any garbled or broken LaTeX formulas. **Only correct formulas where the intended mathematical expression is obvious. Do not guess or invent mathematical content.**
 
-Return ONLY the raw JSON list. Do not wrap it in markdown code fences. Do not add any explanations or commentary.
+**--- Final Instructions ---**
 
-FORMATTING RULES TO CHECK FOR:
+* Apply these rules comprehensively, with the Core Principle of Zero Information Loss overriding all others.
+* Return ONLY the fully corrected, clean Markdown for the provided section.
 
-HTML Line Breaks: Find any instances of <br> and replace them with a proper markdown double newline \n\n.
-
-Excessive Blank Lines: Find any instances of three or more consecutive newlines and replace them with just two.
-
-Spacing Before Punctuation: Find and remove any spaces that appear before a comma, period, or question mark. Example: word , -> word,.
-
-Figure/Table Captions: Ensure captions are on the line immediately following the element and are formatted in italics. Example: Figure 1: My Figure. -> *Figure 1: My Figure.*
-
-EXAMPLE:
-If the input chunk is:
-"This is some text <br> with a line break. Here is another sentence , with bad spacing."
-
-Your output should be ONLY the following raw JSON:
-[
-{
-"original": "<br>",
-"replacement": "\n\n"
-},
-{
-"original": " ,",
-"replacement": ","
-}
-]
+Here is the text section to fix:
+---
+{text_chunk}
+---

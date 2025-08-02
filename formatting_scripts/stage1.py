@@ -24,8 +24,6 @@ def fix_paragraphs(text: str) -> str:
     block (e.g., headings, lists, blank lines). All consecutive lines of
     regular text between these breakers are joined into a single paragraph.
     """
-    
-    # This regex identifies lines that should NOT be joined with a previous line.
     breaker_line_pattern = re.compile(
         r'^\s*('
         r'#{1,6}\s'          # Headings (e.g., #, ##)
@@ -39,7 +37,7 @@ def fix_paragraphs(text: str) -> str:
         r'\[\^.*\]:'         # Footnote definition
         r'Figure \d+:'       # Figure Captions
         r'Table \d+:'        # Table Captions
-        r'```'               # Code fence <<< ADDED
+        r'```'               # Code fence
         r')$'
     )
     
@@ -51,28 +49,57 @@ def fix_paragraphs(text: str) -> str:
         stripped_line = line.strip()
         is_table_row = '|' in stripped_line
 
-        # Check if the line is a breaker, a table row, or is blank
         if not stripped_line or breaker_line_pattern.match(stripped_line) or is_table_row:
-            # If we have a paragraph in the buffer, process and add it.
             if paragraph_buffer:
                 processed_lines.append(' '.join(paragraph_buffer))
                 paragraph_buffer = []
-            
-            # Add the breaker/blank line itself.
             processed_lines.append(line)
         else:
-            # This is a regular line of text, add it to our buffer.
             paragraph_buffer.append(stripped_line)
 
-    # After the loop, add any remaining text from the buffer.
     if paragraph_buffer:
         processed_lines.append(' '.join(paragraph_buffer))
 
-    # Join all processed lines and clean up potential excess newlines
     final_text = '\n'.join(processed_lines)
-    final_text = re.sub(r'\n{3,}', '\n\n', final_text) # Collapse 3+ newlines to 2
-    
-    return final_text
+    return re.sub(r'\n{3,}', '\n\n', final_text)
+
+# <<< NEW FUNCTION to remove appendix and other content after references >>>
+def truncate_after_references(text: str) -> str:
+    """
+    Finds the 'References' section and removes all content that follows it.
+    If no 'References' section is found, it returns the original text.
+    """
+    # Define a pattern to find the start of the References section
+    ref_pattern = r'(?m)^##\s+References'
+    ref_match = re.search(ref_pattern, text)
+
+    if not ref_match:
+        # If no "References" heading is found, return the document as is.
+        print("   -> 'References' section not found. No truncation performed.")
+        return text
+
+    # Get the start index of the "References" heading
+    start_of_references = ref_match.start()
+
+    # Get the text from the start of references to the end of the document
+    text_after_references = text[start_of_references:]
+
+    # Find the NEXT major heading (# or ##) after the start of the References heading
+    # We search in the text *after* the first line of the new section
+    next_heading_pattern = r'(?m)^#{1,2}\s'
+    # Skip the first line (the References heading itself) and search for the next heading
+    text_after_first_line = text_after_references.split('\n', 1)[1] if '\n' in text_after_references else ""
+    next_heading_match = re.search(next_heading_pattern, text_after_first_line)
+
+    if next_heading_match:
+        # If a next heading is found, truncate the document there
+        end_of_references = start_of_references + next_heading_match.start()
+        print("   -> Found next major heading after 'References'. Truncating document.")
+        return text[:end_of_references].strip()
+    else:
+        # If no heading follows, References is the last section. Keep everything.
+        print("   -> 'References' is the last section. No truncation needed.")
+        return text
 
 def main():
     """
@@ -94,7 +121,6 @@ def main():
     
     args = parser.parse_args()
 
-    # Ensure the output directory exists
     output_dir = os.path.dirname(args.output_file)
     if output_dir and not os.path.exists(output_dir):
         os.makedirs(output_dir)
@@ -104,20 +130,23 @@ def main():
     try:
         with open(args.input_file, 'r', encoding='utf-8') as f:
             raw_text = f.read()
-    except FileNotFoundError:
+    except FileNotFoundError as e:
         print(f"[!] Error: Input file not found at '{args.input_file}'", file=sys.stderr)
-        print(f"[!] Please ensure the file exists or provide a different input path.", file=sys.stderr)
         sys.exit(1)
 
     # --- Run the processing pipeline ---
+    # <<< ADDED: New truncation step is now the FIRST step in the pipeline.
+    print("[*] Truncating document to remove appendix...")
+    processed_text = truncate_after_references(raw_text)
+
     print("[*] Applying common OCR fixes...")
-    processed_text = fix_common_ocr_errors(raw_text)
+    processed_text = fix_common_ocr_errors(processed_text)
     
     print("[*] Fixing paragraph formatting...")
     processed_text = fix_paragraphs(processed_text)
     # ------------------------------------
 
-    print(f"[*] Writing cleaned output to: {args.output_file}")
+    print(f"\n[*] Writing cleaned output to: {args.output_file}")
     with open(args.output_file, 'w', encoding='utf-8') as f:
         f.write(processed_text)
         
