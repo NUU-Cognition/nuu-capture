@@ -5,6 +5,10 @@ import os
 import time
 import google.generativeai as genai
 from google.api_core import exceptions
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 # --- LLM Configuration ---
 try:
@@ -67,9 +71,9 @@ def main():
                "If no arguments provided, uses default paths."
     )
     # <<< MODIFIED: Added an argument for the prompt file path.
-    parser.add_argument("input_file", nargs='?', default="saved_markdowns/stage1_format.md", 
+    parser.add_argument("input_file", nargs='?', default="document_ocr_test/stage_1_complete.md", 
                        help="The path to the Stage 1 preprocessed file.")
-    parser.add_argument("output_file", nargs='?', default="saved_markdowns/stage2_format.md",
+    parser.add_argument("output_file", nargs='?', default="document_ocr_test/final_formatted.md",
                        help="The path where the final, fully formatted file will be saved.")
     parser.add_argument("prompt_file", nargs='?', default="txtfiles/formatting_prompt.txt",
                        help="The path to the .txt file containing the master prompt.")

@@ -111,13 +111,13 @@ def main():
         epilog="Example Usage:\n"
                "python preprocess.py [input_file] [output_file]\n"
                "If no arguments provided, uses default paths:\n"
-               "  Input: saved_markdowns/processed_document.md\n"
-               "  Output: saved_markdowns/stage1_format.md"
+               "  Input: document_ocr_test/pre_stage_1.md\n"
+               "  Output: document_ocr_test/stage_1_complete.md"
     )
-    parser.add_argument("input_file", nargs='?', default="saved_markdowns/processed_document.md", 
-                       help="The path to the raw input Markdown file. (default: saved_markdowns/processed_document.md)")
-    parser.add_argument("output_file", nargs='?', default="saved_markdowns/stage1_format.md",
-                       help="The path where the cleaned output file will be saved. (default: saved_markdowns/stage1_format.md)")
+    parser.add_argument("input_file", nargs='?', default="document_ocr_test/pre_stage_1.md", 
+                       help="The path to the raw input Markdown file. (default: document_ocr_test/pre_stage_1.md)")
+    parser.add_argument("output_file", nargs='?', default="document_ocr_test/stage_1_complete.md",
+                       help="The path where the cleaned output file will be saved. (default: document_ocr_test/stage_1_complete.md)")
     
     args = parser.parse_args()
 
