@@ -91,23 +91,24 @@ python ocr_fix/stage2.py
 ### Step 3: Stage 1 Preprocessing (`ocr_fix/stage1.py`)
 - **Input**: `{pdf_name}/pre_stage_1.md`
 - **Process**:
-  - **Smart Document Truncation**: Removes appendix content after References section
-  - **OCR Error Fixes**: Repairs common OCR artifacts (spacing, URLs, etc.)
-  - **Paragraph Reconstruction**: Intelligently joins broken paragraphs
-  - **Zero Information Loss**: Preserves all original research content
+  - **Universal Document Truncation**: Intelligently removes post-references content (acknowledgments, author affiliations, etc.) while adapting to different paper structures
+  - **OCR Error Fixes**: Repairs common OCR artifacts (spacing issues, broken URLs like `https: //` → `https://`)
+  - **Paragraph Reconstruction**: Intelligently joins broken paragraphs while preserving intentional breaks (lists, headings, figures)
+  - **Zero Information Loss**: Preserves all original research content in main document body
 - **Output**: `{pdf_name}/stage_1_complete.md`
 
 ### Step 4: Universal Research Formatting (`ocr_fix/stage2.py`)
 - **Input**: `{pdf_name}/stage_1_complete.md`
 - **Process**:
-  - **Universal Research Prompt**: Adapts to different academic disciplines and styles
-  - **Mathematical Expression Repair**: Fixes LaTeX formulas and scientific notation
-  - **Citation Enhancement**: Repairs reference formatting while preserving author style
-  - **Scientific Content Formatting**: Species names, chemical formulas, gene names
-  - **Figure/Table Processing**: Proper caption formatting and table reconstruction
-  - **Cross-Reference Creation**: Internal document linking
+  - **Universal Research Prompt**: Adapts to different academic disciplines and styles using `txtfiles/universal_research_prompt.txt`
+  - **Section-by-Section Processing**: Intelligently splits document into logical sections for optimal LLM processing
+  - **Mathematical Expression Repair**: Fixes LaTeX formulas and scientific notation (e.g., `$^{133}$` → `<sup>133</sup>`)
+  - **Citation Enhancement**: Repairs reference formatting while preserving author style (`^{11--13,26,19,38}` → `^11-13,19,26,38`)
+  - **Scientific Content Formatting**: Species names, chemical formulas, gene names (`SCGB3A2` → `*SCGB3A2*`)
+  - **Figure/Table Processing**: Creates proper figure references (`![Figure 1](#figure-1)`)
+  - **Cross-Reference Creation**: Internal document linking and navigation
   - **Style Preservation**: Maintains author's original formatting preferences
-  - **Intelligent Error Handling**: Retry logic with fallback to preserve content
+  - **Intelligent Error Handling**: 3-attempt retry logic with exponential backoff and fallback to preserve content
 - **Output**: `{pdf_name}/final_formatted.md`
 
 ## Configuration
@@ -134,17 +135,33 @@ PORT=8000
 
 ## Usage
 
-### Processing PDFs from URLs
+### Processing Different Types of Input
 
-The main processing script (`ocr_get/process_pdf.py`) is configured to process a specific OpenReview paper:
+The main processing script (`ocr_get/process_pdf.py`) supports multiple input methods:
 
-```python
-# Current configuration in process_pdf.py
-DOCUMENT_URL = "https://openreview.net/pdf?id=nAFBHoMpQs"
-OUTPUT_DIR = Path("document_ocr_test")
+**Interactive Mode (Recommended)**:
+```bash
+python ocr_get/process_pdf.py
+# Displays a menu to choose between URL input or local file selection
 ```
 
-To process a different document, modify the `DOCUMENT_URL` variable in the script.
+**Direct URL Processing**:
+```bash
+python ocr_get/process_pdf.py https://example.com/research_paper.pdf
+```
+
+**Local PDF Processing**:
+```bash
+python ocr_get/process_pdf.py test_pdf/my_paper.pdf
+# Automatically creates output folder named "my_paper/"
+```
+
+**Custom Output Directory**:
+```bash
+python ocr_get/process_pdf.py test_pdf/paper.pdf custom_output_folder/
+```
+
+All methods automatically create output folders based on the PDF filename (e.g., `demo_paper_2.pdf` → `demo_paper_2/` folder).
 
 ### Running the Complete Pipeline
 
@@ -188,8 +205,8 @@ ocr_script_own/
 ├── txtfiles/                   # Configuration and templates
 │   ├── requirements.txt        # Python dependencies
 │   ├── env_template.txt        # Environment template
-│   └── formatting_prompt.txt   # Master prompt for Stage 2
-├── document_ocr_test/          # Output directory
+│   └── universal_research_prompt.txt  # Universal research prompt for Stage 2
+├── {pdf_name}/                 # Output directory (auto-generated from PDF filename)
 │   ├── document_content.md     # Raw OCR output
 │   ├── pre_stage_1.md         # After image link fixing
 │   ├── stage_1_complete.md    # Stage 1 output
@@ -208,21 +225,22 @@ ocr_script_own/
 
 ### Stage 1 Features:
 - ✅ **Zero information loss guaranteed**
-- **Document Truncation**: Removes appendix content after References section
-- **OCR Error Fixes**: Repairs common OCR artifacts
-- **Paragraph Joining**: Consolidates broken paragraphs
-- **Spacing Normalization**: Removes excessive blank lines
-- **Preserves All Content**: Tables, math, references, images
+- **Universal Document Truncation**: Intelligently removes post-references content across different paper structures
+- **OCR Error Fixes**: Repairs common artifacts (broken URLs, spacing issues, etc.)
+- **Smart Paragraph Joining**: Consolidates broken paragraphs while preserving intentional formatting
+- **Content Preservation**: Maintains all tables, equations, references, images, and scientific notation
+- **Automatic Path Detection**: Finds and processes the most recent output directory
 
 ### Stage 2 Features:
-- **Subheading Creation**: Converts topic keywords to Level 3 headings
-- **Topic Bolding**: Applies bold formatting to section keywords
-- **Figure Caption Formatting**: Properly formats figure labels and captions
-- **Table Caption Formatting**: Formats table captions and labels
-- **List Reformating**: Converts run-on lists to proper markdown lists
-- **LaTeX Repair**: Fixes broken mathematical expressions
-- **Paragraph Coherence**: Reconstructs broken sentences and paragraphs
-- **Section-by-Section Processing**: Handles large documents efficiently
+- ✅ **Universal Research Paper Support**: Adapts to any academic discipline automatically
+- **Mathematical Expression Enhancement**: Converts LaTeX to proper HTML (`$^{133}$` → `<sup>133</sup>`)
+- **Scientific Content Formatting**: Proper italicization of gene names, species, etc. (`SCGB3A2` → `*SCGB3A2*`)
+- **Citation Format Repair**: Fixes malformed references (`^{11--13,26,19,38}` → `^11-13,19,26,38`)
+- **Figure Reference Creation**: Creates clickable figure links (`![Figure 1](#figure-1)`)
+- **Professional Typography**: Smart quotes, proper em-dashes, spacing improvements
+- **Section-by-Section Processing**: Handles large documents efficiently without truncation
+- **Retry Logic**: 3-attempt processing with exponential backoff for reliability
+- **Zero Information Loss**: Fallback mechanisms preserve all content if processing fails
 
 ## API Response Structure
 
@@ -270,11 +288,11 @@ The pipeline includes comprehensive error handling for:
 
 ## Limitations
 
-- Currently supports document URLs only (not local file uploads)
-- Requires internet connection for API calls
-- Processing time depends on document size and complexity
-- Stage 2 requires Google Gemini API access
-- Image extraction depends on API response format
+- Requires internet connection for API calls to Mistral OCR and Google Gemini
+- Processing time depends on document size and complexity (typically 2-10 minutes for research papers)
+- Stage 2 requires Google Gemini API access with sufficient quota
+- Image extraction quality depends on source PDF quality and API response format
+- Very large documents (>50 pages) may require extended processing time
 
 ## Dependencies
 
