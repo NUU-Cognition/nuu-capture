@@ -1,6 +1,8 @@
 # fix_markdown.py
 import re
 import sys
+import os
+import argparse
 from pathlib import Path
 
 def fix_markdown_image_links(output_dir_path):
@@ -59,12 +61,61 @@ def fix_markdown_image_links(output_dir_path):
     print(f"\n✅ Success! A new file has been saved with corrected image links:")
     print(f"   {fixed_markdown_file}")
 
-if __name__ == "__main__":
-    if len(sys.argv) > 1:
-        # Use provided output directory
-        output_directory = sys.argv[1]
+def main():
+    """Main function with improved argument handling."""
+    parser = argparse.ArgumentParser(
+        description="Fix markdown image links by replacing placeholders with correct filenames.",
+        formatter_class=argparse.RawTextHelpFormatter,
+        epilog="Examples:\n"
+               "  python fix_markdown.py                    # Auto-detect most recent folder\n"
+               "  python fix_markdown.py demo_paper_2       # Use specific folder\n"
+               "  python fix_markdown.py /path/to/folder    # Use absolute path"
+    )
+    parser.add_argument(
+        "directory", 
+        nargs='?', 
+        default=None,
+        help="Directory containing document_content.md and images (default: auto-detect most recent folder)"
+    )
+    
+    args = parser.parse_args()
+    
+    if args.directory:
+        # Use provided directory
+        output_directory = args.directory
+        print(f"[*] Using specified directory: {output_directory}")
     else:
-        # Default fallback (maintaining backward compatibility)
-        output_directory = "document_ocr_test"
+        # Auto-detect most recent output directory
+        print("[*] Auto-detecting most recent output directory...")
+        possible_dirs = [d for d in os.listdir('.') if os.path.isdir(d) and d not in ['ocr_get', 'ocr_fix', 'txtfiles', '.git', 'venv', '__pycache__']]
+        
+        if possible_dirs:
+            # Sort by modification time, most recent first
+            possible_dirs.sort(key=lambda x: os.path.getmtime(x), reverse=True)
+            output_directory = possible_dirs[0]
+            print(f"[*] Detected directory: {output_directory}")
+        else:
+            # Fallback for backward compatibility
+            output_directory = "document_ocr_test"
+            print(f"[*] No directories found, using fallback: {output_directory}")
+    
+    # Check if directory exists
+    if not os.path.exists(output_directory):
+        print(f"[!] Error: Directory '{output_directory}' does not exist.")
+        print("[!] Available directories:")
+        dirs = [d for d in os.listdir('.') if os.path.isdir(d) and d not in ['ocr_get', 'ocr_fix', 'txtfiles', '.git', 'venv', '__pycache__']]
+        for d in sorted(dirs):
+            print(f"    - {d}")
+        sys.exit(1)
+    
+    # Check if document_content.md exists in the directory
+    markdown_path = os.path.join(output_directory, "document_content.md")
+    if not os.path.exists(markdown_path):
+        print(f"[!] Error: 'document_content.md' not found in '{output_directory}'")
+        print(f"[!] Make sure you've run 'python ocr_get/process_pdf.py' first.")
+        sys.exit(1)
     
     fix_markdown_image_links(output_directory)
+
+if __name__ == "__main__":
+    main()

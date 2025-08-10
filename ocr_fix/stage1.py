@@ -66,39 +66,83 @@ def fix_paragraphs(text: str) -> str:
 # <<< NEW FUNCTION to remove appendix and other content after references >>>
 def truncate_after_references(text: str) -> str:
     """
-    Finds the 'References' section and removes all content that follows it.
-    If no 'References' section is found, it returns the original text.
+    Finds the 'References' section and removes most content after it while being universal
+    for different research paper structures. Allows some flexibility for various formats.
     """
-    # Define a pattern to find the start of the References section
-    ref_pattern = r'(?m)^##\s+References'
-    ref_match = re.search(ref_pattern, text)
-
+    # Define patterns to find the References section - be flexible with formatting
+    ref_patterns = [
+        r'(?m)^##\s+References\s*$',  # Standard ## References
+        r'(?m)^#\s+References\s*$',   # Single # References  
+        r'(?m)^References\s*$'        # Just References without #
+    ]
+    
+    ref_match = None
+    for pattern in ref_patterns:
+        ref_match = re.search(pattern, text)
+        if ref_match:
+            break
+    
     if not ref_match:
-        # If no "References" heading is found, return the document as is.
         print("   -> 'References' section not found. No truncation performed.")
         return text
 
-    # Get the start index of the "References" heading
+    # Get everything from References to end
     start_of_references = ref_match.start()
-
-    # Get the text from the start of references to the end of the document
     text_after_references = text[start_of_references:]
-
-    # Find the NEXT major heading (# or ##) after the start of the References heading
-    # We search in the text *after* the first line of the new section
-    next_heading_pattern = r'(?m)^#{1,2}\s'
-    # Skip the first line (the References heading itself) and search for the next heading
-    text_after_first_line = text_after_references.split('\n', 1)[1] if '\n' in text_after_references else ""
-    next_heading_match = re.search(next_heading_pattern, text_after_first_line)
-
-    if next_heading_match:
-        # If a next heading is found, truncate the document there
-        end_of_references = start_of_references + next_heading_match.start()
-        print("   -> Found next major heading after 'References'. Truncating document.")
-        return text[:end_of_references].strip()
+    
+    # Split into lines to analyze structure
+    lines = text_after_references.split('\n')
+    
+    # Find where to cut by looking for common post-references patterns
+    # But be lenient - allow some content to pass through for universality
+    cut_point = None
+    
+    # Look for patterns that clearly indicate end of main references content
+    post_ref_patterns = [
+        r'(?i)^(acknowledgment|acknowledgement)s?',
+        r'(?i)^author contributions?',  
+        r'(?i)^competing interests?',
+        r'(?i)^data availability',
+        r'(?i)^code availability', 
+        r'(?i)^supplementary',
+        r'(?i)^additional information',
+        r'(?i)^publisher.{0,10}note',
+        r'(?i)^open access',
+        r'(?i)^ethics',
+        r'(?i)^reporting summary',
+        r'(?i)^statistics and reproducibility',
+        # Author affiliations (common pattern)
+        r'^\$\{.+\}\$\s+.*Division.*',  # LaTeX author affiliations
+        r'^[0-9]+\s+.*Department.*',     # Numbered affiliations
+        # Methods section that follows refs (some papers structure this way)
+        r'^##\s+(Methods|Materials and Methods|Experimental Procedures)',
+    ]
+    
+    # Scan through lines looking for clear end markers
+    for i, line in enumerate(lines[1:], 1):  # Skip the References heading itself
+        line_stripped = line.strip()
+        if not line_stripped:
+            continue
+            
+        # Check if this line matches any post-references pattern
+        for pattern in post_ref_patterns:
+            if re.match(pattern, line_stripped):
+                cut_point = i
+                break
+        
+        if cut_point:
+            break
+    
+    # If we found a clear cut point, truncate there
+    if cut_point:
+        truncated_lines = lines[:cut_point]
+        result_text = text[:start_of_references] + '\n'.join(truncated_lines)
+        print(f"   -> Found post-references content. Truncating at line {cut_point}.")
+        return result_text.strip()
     else:
-        # If no heading follows, References is the last section. Keep everything.
-        print("   -> 'References' is the last section. No truncation needed.")
+        # If no clear cut point found, keep everything (universal fallback)
+        # This ensures we don't accidentally cut important content from papers with different structures
+        print("   -> References section found but no clear end markers. Keeping full content for safety.")
         return text
 
 def main():
@@ -124,7 +168,7 @@ def main():
     # Auto-detect paths if not provided
     if args.input_file is None or args.output_file is None:
         # Find most recent output directory (fallback to document_ocr_test for backward compatibility)
-        possible_dirs = [d for d in os.listdir('.') if os.path.isdir(d) and d != 'ocr_get' and d != 'ocr_fix' and d != 'txtfiles' and d != '.git']
+        possible_dirs = [d for d in os.listdir('.') if os.path.isdir(d) and not d.startswith('.') and d not in ['ocr_get', 'ocr_fix', 'txtfiles', 'venv', 'example_format_md', 'test_pdf']]
         if possible_dirs:
             # Sort by modification time, most recent first
             possible_dirs.sort(key=lambda x: os.path.getmtime(x), reverse=True)

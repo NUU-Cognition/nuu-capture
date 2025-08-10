@@ -83,7 +83,7 @@ def main():
     # Auto-detect paths if not provided
     if args.input_file is None or args.output_file is None:
         # Find most recent output directory (fallback to document_ocr_test for backward compatibility)
-        possible_dirs = [d for d in os.listdir('.') if os.path.isdir(d) and d != 'ocr_get' and d != 'ocr_fix' and d != 'txtfiles' and d != '.git']
+        possible_dirs = [d for d in os.listdir('.') if os.path.isdir(d) and not d.startswith('.') and d not in ['ocr_get', 'ocr_fix', 'txtfiles', 'venv', 'example_format_md', 'test_pdf']]
         if possible_dirs:
             # Sort by modification time, most recent first
             possible_dirs.sort(key=lambda x: os.path.getmtime(x), reverse=True)
@@ -155,7 +155,18 @@ def main():
             
         sections_to_write = final_sections
 
+        # Create the output file first to ensure it exists
+        print(f"[*] Creating output file: {args.output_file}")
+        try:
+            with open(args.output_file, 'w', encoding='utf-8') as f:
+                f.write("")  # Create empty file
+            print(f"[*] Output file created successfully")
+        except Exception as e:
+            print(f"[!] Error creating output file: {e}")
+            raise
+
         # Write final results to file
+        print(f"[*] Writing content to: {args.output_file}")
         with open(args.output_file, 'w', encoding='utf-8') as output_file:
             for i, section in enumerate(sections_to_write):
                 try:

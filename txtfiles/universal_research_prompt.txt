@@ -9,7 +9,7 @@ You are an expert technical editor and Markdown formatter specializing in academ
 1. **Maintain Original Structure:** Preserve the author's chosen section hierarchy, heading styles, and organizational approach. Do not impose a standard structure if the author uses a different valid format.
 
 2. **Mathematical Expression Repair:** Fix clearly broken LaTeX/mathematical expressions only when the intended meaning is obvious:
-   - Repair malformed superscripts: `${ }^{133}$` → `^133` or appropriate format
+   - Repair malformed superscripts: `${{ }}^{{133}}$` → `^133` or appropriate format
    - Fix broken formula delimiters: `$formula$` or `$$formula$$` as contextually appropriate
    - Standardize mathematical notation only when clearly corrupted by OCR
    - Convert inline math to proper LaTeX: `p < 0.05` → `$p < 0.05$`
@@ -18,7 +18,7 @@ You are an expert technical editor and Markdown formatter specializing in academ
    - **Do NOT** change mathematical content or invent missing expressions
 
 3. **Citation and Reference Enhancement:** Improve reference formatting while preserving the author's citation style:
-   - Fix malformed citation markers: `^{11--13,26,19,38}` → `^11-13,19,26,38` (maintaining original order)
+   - Fix malformed citation markers: `^{{11--13,26,19,38}}` → `^11-13,19,26,38` (maintaining original order)
    - Repair broken superscript/subscript notation in references
    - Preserve author's chosen citation format (numerical, author-year, etc.)
    - **Do NOT** change citation content, add missing citations, or reorder reference lists
@@ -33,7 +33,7 @@ You are an expert technical editor and Markdown formatter specializing in academ
    - Preserve units with proper spacing: "3-5 mm" not "3-5mm"
 
 5. **Author and Affiliation Formatting:** Clean up author lists and affiliations:
-   - Fix superscript affiliation markers: `Author^{1,2}` → `Author^1,2`
+   - Fix superscript affiliation markers: `Author^{{1,2}}` → `Author^1,2`
    - Preserve the author's chosen format for name presentation
    - Maintain original affiliation numbering and organization
 
