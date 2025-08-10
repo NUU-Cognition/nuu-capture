@@ -71,28 +71,47 @@ def main():
                "If no arguments provided, uses default paths."
     )
     # <<< MODIFIED: Added an argument for the prompt file path.
-    parser.add_argument("input_file", nargs='?', default="document_ocr_test/stage_1_complete.md", 
-                       help="The path to the Stage 1 preprocessed file.")
-    parser.add_argument("output_file", nargs='?', default="document_ocr_test/final_formatted.md",
-                       help="The path where the final, fully formatted file will be saved.")
-    parser.add_argument("prompt_file", nargs='?', default="txtfiles/formatting_prompt.txt",
-                       help="The path to the .txt file containing the master prompt.")
+    parser.add_argument("input_file", nargs='?', default=None, 
+                       help="The path to the Stage 1 preprocessed file. (default: auto-detect from most recent folder)")
+    parser.add_argument("output_file", nargs='?', default=None,
+                       help="The path where the final, fully formatted file will be saved. (default: auto-detect from input path)")
+    parser.add_argument("prompt_file", nargs='?', default="txtfiles/universal_research_prompt.txt",
+                       help="The path to the .txt file containing the formatting prompt.")
     
     args = parser.parse_args()
+    
+    # Auto-detect paths if not provided
+    if args.input_file is None or args.output_file is None:
+        # Find most recent output directory (fallback to document_ocr_test for backward compatibility)
+        possible_dirs = [d for d in os.listdir('.') if os.path.isdir(d) and d != 'ocr_get' and d != 'ocr_fix' and d != 'txtfiles' and d != '.git']
+        if possible_dirs:
+            # Sort by modification time, most recent first
+            possible_dirs.sort(key=lambda x: os.path.getmtime(x), reverse=True)
+            detected_dir = possible_dirs[0]
+        else:
+            detected_dir = "document_ocr_test"  # Fallback
+        
+        if args.input_file is None:
+            args.input_file = f"{detected_dir}/stage_1_complete.md"
+        if args.output_file is None:
+            args.output_file = f"{detected_dir}/final_formatted.md"
 
     output_dir = os.path.dirname(args.output_file)
     if output_dir and not os.path.exists(output_dir):
         os.makedirs(output_dir)
         print(f"[*] Created output directory: {output_dir}")
 
-    # <<< MODIFIED: Reads all three files at the start.
+    # Load input files
     print(f"[*] Reading Stage 1 file from: {args.input_file}")
+    
     try:
         with open(args.input_file, 'r', encoding='utf-8') as f:
             stage1_text = f.read()
-        print(f"[*] Reading Master Prompt from: {args.prompt_file}")
+        
+        print(f"[*] Reading Universal Research Prompt from: {args.prompt_file}")
         with open(args.prompt_file, 'r', encoding='utf-8') as f:
-            master_prompt_text = f.read()
+            prompt_text = f.read()
+            
     except FileNotFoundError as e:
         print(f"[!] Error: An input file was not found.", file=sys.stderr)
         print(f"    Details: {e}", file=sys.stderr)
@@ -104,33 +123,65 @@ def main():
     
     model = genai.GenerativeModel('gemini-1.5-pro-latest')
 
+    def process_section_with_retries(section, prompt_text, section_num, pass_name=""):
+        """Process a section with retry logic."""
+        max_retries = 3
+        corrected_chunk = None
+        for attempt in range(max_retries):
+            corrected_chunk = call_llm_for_correction(section, prompt_text, model)
+            if corrected_chunk and corrected_chunk.strip():  # Check for actual content
+                print(f"[*] Section {section_num}{pass_name} processed successfully.")
+                return corrected_chunk
+            elif corrected_chunk:
+                print(f"[!] Section {section_num}{pass_name} returned only whitespace on attempt {attempt + 1}")
+            
+            delay = 5 * (2 ** attempt)
+            print(f"[*] Attempt {attempt + 1} failed. Retrying in {delay} seconds...")
+            time.sleep(delay)
+        
+        print(f"[!] FAILED to process section {section_num}{pass_name} after {max_retries} attempts.")
+        return None
+
     try:
+        # Process all sections with the universal prompt
+        final_sections = []
+        
+        for i, section in enumerate(sections):
+            heading_line = section.strip().split('\n', 1)[0]
+            print(f"\n[*] Processing Section {i+1}/{len(sections)}: '{heading_line[:60]}...'")
+            
+            corrected_chunk = process_section_with_retries(section, prompt_text, i+1)
+            final_sections.append(corrected_chunk if corrected_chunk else section)
+            
+        sections_to_write = final_sections
+
+        # Write final results to file
         with open(args.output_file, 'w', encoding='utf-8') as output_file:
-            for i, section in enumerate(sections):
-                heading_line = section.strip().split('\n', 1)[0]
-                print(f"\n[*] Processing Section {i+1}/{len(sections)}: '{heading_line[:60]}...'")
-                
-                max_retries = 3
-                corrected_chunk = None
-                for attempt in range(max_retries):
-                    # <<< MODIFIED: Pass the loaded master_prompt_text to the function.
-                    corrected_chunk = call_llm_for_correction(section, master_prompt_text, model)
-                    if corrected_chunk:
-                        print(f"[*] Section {i+1} processed successfully.")
-                        break
+            for i, section in enumerate(sections_to_write):
+                try:
+                    if section and section.strip():  # Check if section has actual content
+                        output_file.write(section)
+                    else:
+                        print(f"[!] Warning: Section {i+1} is empty or contains only whitespace, using original...")
+                        # Fall back to original section
+                        if i < len(sections):
+                            output_file.write(sections[i])
+                        else:
+                            print(f"[!] Error: No original section available for section {i+1}")
+                            continue
                     
-                    delay = 5 * (2 ** attempt)
-                    print(f"[*] Attempt {attempt + 1} failed. Retrying in {delay} seconds...")
-                    time.sleep(delay)
-                
-                if corrected_chunk:
-                    output_file.write(corrected_chunk)
-                else:
-                    print(f"[!] FAILED to process section {i+1} after {max_retries} attempts. Writing original content to prevent data loss.")
-                    output_file.write(section)
-                
-                if i < len(sections) - 1:
-                    output_file.write("\n\n")
+                    # Add section separator (but not after the last section)
+                    if i < len(sections_to_write) - 1:
+                        output_file.write("\n\n")
+                        
+                except Exception as e:
+                    print(f"[!] Error writing section {i+1}: {e}")
+                    print(f"[!] Section content type: {type(section)}, length: {len(section) if section else 'None'}")
+                    # Try to write original section as fallback
+                    if i < len(sections):
+                        output_file.write(sections[i])
+                        if i < len(sections_to_write) - 1:
+                            output_file.write("\n\n")
         
         print("\n[+] Stage 2 processing complete! Your document is fully formatted.")
         print(f"[*] Final output saved to: {args.output_file}")

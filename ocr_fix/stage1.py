@@ -114,12 +114,28 @@ def main():
                "  Input: document_ocr_test/pre_stage_1.md\n"
                "  Output: document_ocr_test/stage_1_complete.md"
     )
-    parser.add_argument("input_file", nargs='?', default="document_ocr_test/pre_stage_1.md", 
-                       help="The path to the raw input Markdown file. (default: document_ocr_test/pre_stage_1.md)")
-    parser.add_argument("output_file", nargs='?', default="document_ocr_test/stage_1_complete.md",
-                       help="The path where the cleaned output file will be saved. (default: document_ocr_test/stage_1_complete.md)")
+    parser.add_argument("input_file", nargs='?', default=None, 
+                       help="The path to the raw input Markdown file. (default: auto-detect from most recent folder)")
+    parser.add_argument("output_file", nargs='?', default=None,
+                       help="The path where the cleaned output file will be saved. (default: auto-detect from input path)")
     
     args = parser.parse_args()
+    
+    # Auto-detect paths if not provided
+    if args.input_file is None or args.output_file is None:
+        # Find most recent output directory (fallback to document_ocr_test for backward compatibility)
+        possible_dirs = [d for d in os.listdir('.') if os.path.isdir(d) and d != 'ocr_get' and d != 'ocr_fix' and d != 'txtfiles' and d != '.git']
+        if possible_dirs:
+            # Sort by modification time, most recent first
+            possible_dirs.sort(key=lambda x: os.path.getmtime(x), reverse=True)
+            detected_dir = possible_dirs[0]
+        else:
+            detected_dir = "document_ocr_test"  # Fallback
+        
+        if args.input_file is None:
+            args.input_file = f"{detected_dir}/pre_stage_1.md"
+        if args.output_file is None:
+            args.output_file = f"{detected_dir}/stage_1_complete.md"
 
     output_dir = os.path.dirname(args.output_file)
     if output_dir and not os.path.exists(output_dir):

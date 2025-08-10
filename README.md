@@ -1,17 +1,18 @@
-# OCR Pipeline with Two-Stage Formatting
+# Universal Research Paper OCR Pipeline
 
-A production-ready Python backend script that converts long-form PDF documents into structured Markdown format using the Mistral OCR API, followed by a two-stage formatting pipeline for optimal document quality.
+A production-ready Python backend script that converts research papers and academic documents from PDF to structured Markdown format. Features Mistral OCR API integration with an advanced AI-powered formatting pipeline designed to work across all research disciplines while preserving author intent and ensuring zero information loss.
 
 ## Features
 
-- **Mistral OCR Integration**: Direct integration with Mistral AI's OCR API
-- **Document URL Processing**: Process PDFs from public URLs
-- **Two-Stage Formatting Pipeline**: Advanced formatting with zero information loss
-- **Markdown Output**: Structured markdown with preserved formatting
-- **Image Extraction**: Extract and reference images from documents
-- **Safe Markdown Formatting**: Zero-information-loss formatting tools
-- **Error Handling**: Comprehensive error handling and logging
-- **Environment Management**: Secure API key management
+- **Universal Research Paper Support**: Works across all academic disciplines (Life Sciences, Computer Science, Physics, Social Sciences, etc.)
+- **Mistral OCR Integration**: High-quality OCR extraction using Mistral AI's latest OCR model
+- **Intelligent Document Processing**: Auto-detects PDF filenames and creates organized output folders
+- **Advanced AI Formatting**: Universal research prompt that adapts to different paper styles and conventions
+- **Zero Information Loss**: Preserves 100% of original content while improving formatting
+- **Mathematical Expression Repair**: Fixes LaTeX formulas, citations, and scientific notation
+- **Figure & Table Processing**: Proper caption formatting and table reconstruction
+- **Error Handling**: Comprehensive retry logic and fallback mechanisms
+- **Flexible Input Options**: Process from URLs or local PDF files
 
 ## Quick Start
 
@@ -43,59 +44,71 @@ cp txtfiles/env_template.txt .env
 
 ### 5. Process a PDF document
 ```bash
+# Interactive mode - choose between URL or local file
 python ocr_get/process_pdf.py
+
+# Or process a specific PDF from test_pdf/ folder
+python ocr_get/process_pdf.py test_pdf/your_paper.pdf
+
+# Or process from a URL
+python ocr_get/process_pdf.py https://example.com/paper.pdf
 ```
 
-### 6. Run the two-stage formatting pipeline
+### 6. Run the complete formatting pipeline
 ```bash
+# Fix image links (auto-detects most recent folder)
+python ocr_fix/fix_markdown.py
+
 # Stage 1: Basic preprocessing and OCR fixes
 python ocr_fix/stage1.py
 
-# Stage 2: Advanced LLM-based formatting
+# Stage 2: Universal research paper formatting
 python ocr_fix/stage2.py
 ```
 
 ## Complete Process Flow
 
 ### Step 1: PDF Processing (`ocr_get/process_pdf.py`)
-- **Input**: PDF document URL (currently set to OpenReview paper)
+- **Input**: PDF document from URL, local file, or interactive selection
 - **Process**: 
+  - Auto-detects PDF filename and creates organized output folder (e.g., `demo_paper_2/`)
   - Calls Mistral OCR API with `mistral-ocr-latest` model
-  - Extracts markdown content from each page
-  - Saves images as base64-encoded files (JPEG/PNG/GIF)
-  - Handles image data URI parsing and format detection
+  - Extracts markdown content with high accuracy
+  - Saves images as base64-encoded files with format detection (JPEG/PNG/GIF)
+  - Handles complex academic content (equations, tables, figures)
 - **Output**: 
-  - `document_ocr_test/document_content.md` (raw OCR output)
-  - `document_ocr_test/page_X_image_Y.jpeg` (extracted images)
+  - `{pdf_name}/document_content.md` (raw OCR output)
+  - `{pdf_name}/page_X_image_Y.{format}` (extracted images)
 
 ### Step 2: Image Link Fixing (`ocr_fix/fix_markdown.py`)
-- **Input**: `document_ocr_test/document_content.md`
+- **Input**: `{pdf_name}/document_content.md`
 - **Process**: 
-  - Finds all image tags in markdown
-  - Replaces placeholder image links with correct saved filenames
-  - Ensures proper image references
-- **Output**: `document_ocr_test/pre_stage_1.md`
+  - Auto-detects most recent output folder
+  - Matches image tags with saved image files
+  - Fixes image references for proper markdown display
+- **Output**: `{pdf_name}/pre_stage_1.md`
 
 ### Step 3: Stage 1 Preprocessing (`ocr_fix/stage1.py`)
-- **Input**: `document_ocr_test/pre_stage_1.md`
+- **Input**: `{pdf_name}/pre_stage_1.md`
 - **Process**:
-  - **Document Truncation**: Removes appendix content after References section
-  - **OCR Error Fixes**: Repairs common OCR artifacts (e.g., `https: //` → `https://`)
-  - **Paragraph Formatting**: Joins broken paragraphs and fixes spacing
-  - **Zero Information Loss**: Preserves all original content
-- **Output**: `document_ocr_test/stage_1_complete.md`
+  - **Smart Document Truncation**: Removes appendix content after References section
+  - **OCR Error Fixes**: Repairs common OCR artifacts (spacing, URLs, etc.)
+  - **Paragraph Reconstruction**: Intelligently joins broken paragraphs
+  - **Zero Information Loss**: Preserves all original research content
+- **Output**: `{pdf_name}/stage_1_complete.md`
 
-### Step 4: Stage 2 Advanced Formatting (`ocr_fix/stage2.py`)
-- **Input**: `document_ocr_test/stage_1_complete.md`
+### Step 4: Universal Research Formatting (`ocr_fix/stage2.py`)
+- **Input**: `{pdf_name}/stage_1_complete.md`
 - **Process**:
-  - **LLM-Based Processing**: Uses Gemini AI for intelligent formatting
-  - **Section-by-Section Processing**: Splits document into logical sections
-  - **Subheading Creation**: Converts topic keywords to proper headings
-  - **Figure/Table Caption Formatting**: Properly formats captions and labels
-  - **List Reformating**: Converts run-on lists to proper markdown lists
-  - **LaTeX Repair**: Fixes broken mathematical expressions
-  - **Retry Logic**: Handles API failures with exponential backoff
-- **Output**: `document_ocr_test/final_formatted.md`
+  - **Universal Research Prompt**: Adapts to different academic disciplines and styles
+  - **Mathematical Expression Repair**: Fixes LaTeX formulas and scientific notation
+  - **Citation Enhancement**: Repairs reference formatting while preserving author style
+  - **Scientific Content Formatting**: Species names, chemical formulas, gene names
+  - **Figure/Table Processing**: Proper caption formatting and table reconstruction
+  - **Cross-Reference Creation**: Internal document linking
+  - **Style Preservation**: Maintains author's original formatting preferences
+  - **Intelligent Error Handling**: Retry logic with fallback to preserve content
+- **Output**: `{pdf_name}/final_formatted.md`
 
 ## Configuration
 

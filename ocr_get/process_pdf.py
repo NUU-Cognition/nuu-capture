@@ -109,6 +109,21 @@ def save_image_from_data(image_data_uri, page_index, image_index, output_dir):
         print(f"    -> ❌ FAILED to save image on page {page_index + 1}: {e}")
         return False
 
+def get_pdf_name(document_input):
+    """Extract PDF name without extension from URL or local path."""
+    if is_url(document_input):
+        # Extract filename from URL
+        parsed_url = urlparse(document_input)
+        filename = Path(parsed_url.path).name
+        if filename and filename.lower().endswith('.pdf'):
+            return filename[:-4]  # Remove .pdf extension
+        else:
+            # Fallback to last part of path or domain
+            return parsed_url.path.split('/')[-1] or parsed_url.netloc.replace('.', '_')
+    else:
+        # Local file path
+        return Path(document_input).stem
+
 def main():
     """Main function to run the OCR pipeline."""
     parser = argparse.ArgumentParser(
@@ -129,13 +144,19 @@ def main():
     parser.add_argument(
         "output_dir", 
         nargs='?', 
-        default=DEFAULT_OUTPUT_DIR,
-        help="Output directory for processed files. Default: %(default)s"
+        default=None,
+        help="Output directory for processed files. Default: PDF filename"
     )
     
     args = parser.parse_args()
     document_input = args.document
-    output_dir = Path(args.output_dir)
+    
+    # Generate output directory name from PDF filename if not provided
+    if args.output_dir is None:
+        pdf_name = get_pdf_name(document_input)
+        output_dir = Path(pdf_name)
+    else:
+        output_dir = Path(args.output_dir)
     
     if not MISTRAL_API_KEY:
         raise ValueError("MISTRAL_API_KEY environment variable is required")

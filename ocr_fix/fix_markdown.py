@@ -1,5 +1,6 @@
 # fix_markdown.py
 import re
+import sys
 from pathlib import Path
 
 def fix_markdown_image_links(output_dir_path):
@@ -59,6 +60,11 @@ def fix_markdown_image_links(output_dir_path):
     print(f"   {fixed_markdown_file}")
 
 if __name__ == "__main__":
-    # The directory where your output was saved
-    output_directory = "document_ocr_test"
+    if len(sys.argv) > 1:
+        # Use provided output directory
+        output_directory = sys.argv[1]
+    else:
+        # Default fallback (maintaining backward compatibility)
+        output_directory = "document_ocr_test"
+    
     fix_markdown_image_links(output_directory)
