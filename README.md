@@ -4,6 +4,7 @@ A production-ready Python backend script that converts research papers and acade
 
 ## Features
 
+- **🚀 Unified Pipeline**: Single command processing - run the entire 4-stage pipeline with one command
 - **Universal Research Paper Support**: Works across all academic disciplines (Life Sciences, Computer Science, Physics, Social Sciences, etc.)
 - **Mistral OCR Integration**: High-quality OCR extraction using Mistral AI's latest OCR model
 - **Intelligent Document Processing**: Auto-detects PDF filenames and creates organized output folders
@@ -13,6 +14,7 @@ A production-ready Python backend script that converts research papers and acade
 - **Figure & Table Processing**: Proper caption formatting and table reconstruction
 - **Error Handling**: Comprehensive retry logic and fallback mechanisms
 - **Flexible Input Options**: Process from URLs or local PDF files
+- **Progress Tracking**: Real-time progress updates and detailed logging for each processing stage
 
 ## Quick Start
 
@@ -42,27 +44,38 @@ cp txtfiles/env_template.txt .env
 # - GEMINI_API_KEY (for advanced formatting)
 ```
 
-### 5. Process a PDF document
+### 5. Run the Complete Pipeline (Unified Script)
+**NEW: Single Command Processing** - Run the entire pipeline with one command:
 ```bash
-# Interactive mode - choose between URL or local file
-python ocr_get/process_pdf.py
+# Process a local PDF file
+python unified_pipeline.py test_pdf/bio_paper_1.pdf
 
-# Or process a specific PDF from test_pdf/ folder
-python ocr_get/process_pdf.py test_pdf/your_paper.pdf
+# Process from a URL
+python unified_pipeline.py https://example.com/paper.pdf
 
-# Or process from a URL
-python ocr_get/process_pdf.py https://example.com/paper.pdf
+# Process with custom output directory
+python unified_pipeline.py test_pdf/bio_paper_1.pdf my_custom_folder
 ```
 
-### 6. Run the complete formatting pipeline
+**The unified script automatically runs all 4 stages:**
+1. ✅ PDF Processing (OCR extraction)
+2. ✅ Image Link Fixing 
+3. ✅ Stage 1 Preprocessing
+4. ✅ Stage 2 LLM Formatting
+
+### Alternative: Manual Step-by-Step Processing
+If you prefer to run each stage individually:
 ```bash
-# Fix image links (auto-detects most recent folder)
+# Step 1: PDF Processing
+python ocr_get/process_pdf.py test_pdf/your_paper.pdf
+
+# Step 2: Fix image links (auto-detects most recent folder)
 python ocr_fix/fix_markdown.py
 
-# Stage 1: Basic preprocessing and OCR fixes
+# Step 3: Stage 1 preprocessing and OCR fixes
 python ocr_fix/stage1.py
 
-# Stage 2: Universal research paper formatting
+# Step 4: Stage 2 universal research paper formatting
 python ocr_fix/stage2.py
 ```
 
@@ -135,9 +148,34 @@ PORT=8000
 
 ## Usage
 
-### Processing Different Types of Input
+### Unified Pipeline (Recommended)
 
-The main processing script (`ocr_get/process_pdf.py`) supports multiple input methods:
+The easiest way to process documents is using the unified pipeline script:
+
+```bash
+# Activate virtual environment first
+source venv/bin/activate
+
+# Process a local PDF file
+python unified_pipeline.py test_pdf/bio_paper_1.pdf
+
+# Process from a URL
+python unified_pipeline.py https://example.com/research_paper.pdf
+
+# Process with custom output directory
+python unified_pipeline.py test_pdf/bio_paper_1.pdf custom_output_folder
+```
+
+The unified script provides:
+- ✅ **Automated processing**: Runs all 4 stages sequentially
+- ✅ **Progress tracking**: Real-time updates for each stage
+- ✅ **Error handling**: Stops on errors with detailed messages
+- ✅ **Environment validation**: Checks API keys and dependencies
+- ✅ **File verification**: Confirms each stage completes successfully
+
+### Manual Processing (Individual Scripts)
+
+If you prefer to run each stage individually, the individual processing scripts support multiple input methods:
 
 **Interactive Mode (Recommended)**:
 ```bash
@@ -195,6 +233,7 @@ python ocr_fix/stage2.py input.md output.md prompt.txt
 
 ```
 ocr_script_own/
+├── unified_pipeline.py         # 🚀 NEW: Single command for complete pipeline
 ├── ocr_get/                    # OCR processing tools
 │   ├── process_pdf.py          # Main PDF processing script
 │   └── debug_mistral.py        # Debug script for API testing
@@ -206,6 +245,7 @@ ocr_script_own/
 │   ├── requirements.txt        # Python dependencies
 │   ├── env_template.txt        # Environment template
 │   └── universal_research_prompt.txt  # Universal research prompt for Stage 2
+├── test_pdf/                   # Sample PDF files for testing
 ├── {pdf_name}/                 # Output directory (auto-generated from PDF filename)
 │   ├── document_content.md     # Raw OCR output
 │   ├── pre_stage_1.md         # After image link fixing
