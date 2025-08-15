@@ -22,8 +22,8 @@ def fix_markdown_image_links(output_dir_path):
 
     # 1. Get a list of all saved image files in the correct order
     image_files = sorted(
-        [f for f in output_dir.iterdir() if f.suffix in ['.jpeg', '.png', '.gif']],
-        key=lambda x: (int(x.stem.split('_')[1]), int(x.stem.split('_')[3]))
+        [f for f in output_dir.iterdir() if f.suffix in ['.jpeg', '.png', '.gif'] and f.stem.startswith('img-')],
+        key=lambda x: int(x.stem.split('-')[1])  # Sort by the number after 'img-'
     )
     image_filenames = [f.name for f in image_files]
     print(f"Found {len(image_filenames)} saved images to link.")
@@ -58,7 +58,7 @@ def fix_markdown_image_links(output_dir_path):
     with open(fixed_markdown_file, 'w', encoding='utf-8') as f:
         f.write(content)
 
-    print(f"\n✅ Success! A new file has been saved with corrected image links:")
+    print(f"\n+ Success! A new file has been saved with corrected image links:")
     print(f"   {fixed_markdown_file}")
 
 def main():
@@ -81,8 +81,8 @@ def main():
     args = parser.parse_args()
     
     if args.directory:
-        # Use provided directory
-        output_directory = args.directory
+        # Use provided directory - resolve to absolute path
+        output_directory = str(Path(args.directory).resolve())
         print(f"[*] Using specified directory: {output_directory}")
     else:
         # Auto-detect most recent output directory
@@ -92,11 +92,11 @@ def main():
         if possible_dirs:
             # Sort by modification time, most recent first
             possible_dirs.sort(key=lambda x: os.path.getmtime(x), reverse=True)
-            output_directory = possible_dirs[0]
+            output_directory = str(Path(possible_dirs[0]).resolve())
             print(f"[*] Detected directory: {output_directory}")
         else:
             # Fallback for backward compatibility
-            output_directory = "document_ocr_test"
+            output_directory = str(Path("document_ocr_test").resolve())
             print(f"[*] No directories found, using fallback: {output_directory}")
     
     # Check if directory exists

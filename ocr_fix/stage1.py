@@ -10,7 +10,7 @@ def fix_common_ocr_errors(text: str) -> str:
     fixes = {
         "https: //": "https://",
         # Add other common ligature or OCR mistakes here if needed
-        # e.g., "ﬁ": "fi", "ﬂ": "fl"
+        # e.g., "fi": "fi", "fl": "fl" (ligature fixes)
     }
     for bad, good in fixes.items():
         text = text.replace(bad, good)
@@ -180,6 +180,11 @@ def main():
             args.input_file = f"{detected_dir}/pre_stage_1.md"
         if args.output_file is None:
             args.output_file = f"{detected_dir}/stage_1_complete.md"
+
+    # Resolve paths to absolute paths
+    from pathlib import Path
+    args.input_file = str(Path(args.input_file).resolve())
+    args.output_file = str(Path(args.output_file).resolve())
 
     output_dir = os.path.dirname(args.output_file)
     if output_dir and not os.path.exists(output_dir):

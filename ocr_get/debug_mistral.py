@@ -40,7 +40,7 @@ def is_url(string):
 def prepare_document_payload(document_input):
     """Prepare the document payload based on input type (URL or local file)."""
     if is_url(document_input):
-        print(f"🔍 Calling Mistral OCR API for URL: {document_input}")
+        print(f"Calling Mistral OCR API for URL: {document_input}")
         return {
             "type": "document_url",
             "document_url": document_input
@@ -53,7 +53,7 @@ def prepare_document_payload(document_input):
         if not pdf_path.suffix.lower() == '.pdf':
             raise ValueError(f"File must be a PDF. Got: {pdf_path.suffix}")
             
-        print(f"🔍 Calling Mistral OCR API for local PDF: {document_input}")
+        print(f"Calling Mistral OCR API for local PDF: {document_input}")
         base64_pdf = encode_pdf_to_base64(pdf_path)
         return {
             "type": "document_url",
@@ -65,13 +65,13 @@ def debug_api_call(document_input, output_json_file):
     
     api_key = os.getenv("MISTRAL_API_KEY")
     if not api_key:
-        print("❌ Error: MISTRAL_API_KEY environment variable is required.")
+        print("- Error: MISTRAL_API_KEY environment variable is required.")
         return
 
     try:
         document_payload = prepare_document_payload(document_input)
     except Exception as e:
-        print(f"❌ Error preparing document: {e}")
+        print(f"- Error preparing document: {e}")
         return
 
     base_url = "https://api.mistral.ai/v1/ocr"
@@ -92,7 +92,7 @@ def debug_api_call(document_input, output_json_file):
         with httpx.Client(timeout=600.0) as client:
             response = client.post(base_url, headers=headers, json=payload)
             
-            print(f"✅ API call completed with status code: {response.status_code}")
+            print(f"+ API call completed with status code: {response.status_code}")
             
             if response.status_code == 200:
                 result = response.json()
@@ -100,14 +100,14 @@ def debug_api_call(document_input, output_json_file):
                 # Save the full, raw response
                 with open(output_json_file, 'w', encoding='utf-8') as f:
                     json.dump(result, f, indent=4)
-                print(f"💾 Full API response saved to: {output_json_file}")
+                print(f"+ Full API response saved to: {output_json_file}")
                 
                 # Analyze the response for images
                 print("\n--- Analyzing Response ---")
                 pages = result.get("pages", [])
                 total_images_found = 0
                 if not pages:
-                    print("⚠️ Warning: The API response did not contain a 'pages' array.")
+                    print("Warning: The API response did not contain a 'pages' array.")
                 else:
                     for i, page in enumerate(pages):
                         image_count = len(page.get("images", []))
@@ -119,13 +119,13 @@ def debug_api_call(document_input, output_json_file):
                 
                 print("\n" + "="*50)
                 if total_images_found > 0:
-                    print(f"👍 CONCLUSION: The API *did* return image data.")
+                    print(f"+ CONCLUSION: The API *did* return image data.")
                 else:
-                    print(f"❌ CONCLUSION: The API did NOT return any image data for this document.")
+                    print(f"- CONCLUSION: The API did NOT return any image data for this document.")
                 print("="*50)
 
             else:
-                print(f"❌ API Error: {response.text}")
+                print(f"- API Error: {response.text}")
 
     except Exception as e:
         print(f"An unexpected error occurred: {e}")

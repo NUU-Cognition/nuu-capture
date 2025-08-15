@@ -41,28 +41,28 @@ def is_url(string):
 def prepare_document_payload(document_input):
     """Prepare the document payload based on input type (URL or local file)."""
     if is_url(document_input):
-        print(f"📄 Processing document from URL: {document_input}")
+        print(f"Processing document from URL: {document_input}")
         return {
             "type": "document_url",
             "document_url": document_input
         }
     else:
-        # Treat as local file path
-        pdf_path = Path(document_input)
+        # Treat as local file path - resolve to absolute path
+        pdf_path = Path(document_input).resolve()
         if not pdf_path.exists():
-            raise FileNotFoundError(f"Local PDF file not found: {document_input}")
+            raise FileNotFoundError(f"Local PDF file not found: {pdf_path}")
         if not pdf_path.suffix.lower() == '.pdf':
             raise ValueError(f"File must be a PDF. Got: {pdf_path.suffix}")
             
-        print(f"📄 Processing local PDF file: {document_input}")
+        print(f"Processing local PDF file: {pdf_path}")
         base64_pdf = encode_pdf_to_base64(pdf_path)
         return {
             "type": "document_url",
             "document_url": f"data:application/pdf;base64,{base64_pdf}"
         }
 
-def save_image_from_data(image_data_uri, page_index, image_index, output_dir):
-    """Saves a single base64 encoded image, inferring the type from the data URI."""
+def save_image_from_data(image_data_uri, global_image_counter, output_dir):
+    """Saves a single base64 encoded image with simplified naming."""
     if not image_data_uri:
         print("    ->  FAILED: No image data provided.")
         return False
@@ -70,7 +70,6 @@ def save_image_from_data(image_data_uri, page_index, image_index, output_dir):
         output_dir.mkdir(parents=True, exist_ok=True)
 
         pure_base64_data = image_data_uri
-        extension = ".unknown"  # Default extension
 
         # --- Debug Print ---
         # Print the first 80 characters of the raw data string
@@ -80,33 +79,22 @@ def save_image_from_data(image_data_uri, page_index, image_index, output_dir):
         if image_data_uri.startswith('data:image/') and ';base64,' in image_data_uri:
             print("    -> Detected data URI prefix. Parsing...")
             prefix, pure_base64_data = image_data_uri.split(',', 1)
-            mime_type = prefix.split(';')[0].split(':')[1]
-            image_format = mime_type.split('/')[-1]
-            if image_format:
-                extension = f".{image_format.lower()}"
-                print(f"    -> Parsed extension: {extension}")
         else:
-            # Fallback to magic number check if no prefix is available
-            print("    -> No data URI prefix. Falling back to magic number check...")
-            if pure_base64_data.startswith("/9j/"):
-                extension = ".jpeg"
-            elif pure_base64_data.startswith("iVBOR"):
-                extension = ".png"
-            elif pure_base64_data.startswith("R0lGOD"):
-                extension = ".gif"
-            print(f"    -> Inferred extension: {extension}")
+            # No data URI prefix, use raw base64 data
+            print("    -> No data URI prefix. Using raw base64 data...")
 
-        filename = f"page_{page_index + 1}_image_{image_index + 1}{extension}"
+        # Always save as .jpeg for consistency
+        filename = f"img-{global_image_counter}.jpeg"
         file_path = output_dir / filename
 
         image_bytes = base64.b64decode(pure_base64_data)
         with open(file_path, "wb") as f:
             f.write(image_bytes)
 
-        print(f"    -> ✅ Successfully saved image: {file_path}")
+        print(f"Successfully saved image: {file_path}")
         return True
     except Exception as e:
-        print(f"    -> ❌ FAILED to save image on page {page_index + 1}: {e}")
+        print(f"FAILED to save image {global_image_counter}: {e}")
         return False
 
 def get_pdf_name(document_input):
@@ -158,16 +146,19 @@ def main():
     else:
         output_dir = Path(args.output_dir)
     
+    # Resolve to absolute path to handle paths relative to root directory
+    output_dir = output_dir.resolve()
+    
     if not MISTRAL_API_KEY:
         raise ValueError("MISTRAL_API_KEY environment variable is required")
 
-    print("🚀 Starting PDF Processing with Mistral OCR")
+    print(" Starting PDF Processing with Mistral OCR")
     print("==================================================")
     
     try:
         document_payload = prepare_document_payload(document_input)
     except Exception as e:
-        print(f"❌ Error preparing document: {e}")
+        print(f" Error preparing document: {e}")
         return
 
     base_url = "https://api.mistral.ai/v1"
@@ -190,6 +181,7 @@ def main():
             result = response.json()
             markdown_content = ""
             images_saved_count = 0
+            global_image_counter = 0
 
             pages = result.get("pages", [])
             for page_index, page in enumerate(pages):
@@ -207,21 +199,22 @@ def main():
                         
                         image_data_str = img.get("image_base64") or img.get("base64", "")
                         
-                        if save_image_from_data(image_data_str, page_index, image_index, output_dir):
+                        if save_image_from_data(image_data_str, global_image_counter, output_dir):
                             images_saved_count += 1
+                            global_image_counter += 1
             
             # Save the markdown content
             markdown_file_path = output_dir / "document_content.md"
             with open(markdown_file_path, 'w', encoding='utf-8') as f:
                 f.write(markdown_content)
 
-            print("\n✅ Document processing finished!")
-            print(f"💾 All outputs saved to: {output_dir.resolve()}")
-            print(f"📊 Processed {len(pages)} page(s) with {images_saved_count} image(s) extracted")
-            print("\n✅ Processing task completed successfully!")
+            print("\n+ Document processing finished!")
+            print(f"+ All outputs saved to: {output_dir.resolve()}")
+            print(f"+ Processed {len(pages)} page(s) with {images_saved_count} image(s) extracted")
+            print("\n+ Processing task completed successfully!")
 
     except Exception as e:
-        print(f"❌ An error occurred: {e}")
+        print(f"- An error occurred: {e}")
 
 if __name__ == "__main__":
     main()

@@ -33,7 +33,7 @@ You are an expert technical editor and Markdown formatter specializing in academ
    - Preserve units with proper spacing: "3-5 mm" not "3-5mm"
 
 5. **Author and Affiliation Formatting:** Clean up author lists and affiliations:
-   - Fix superscript affiliation markers: `Author^{{1,2}}` → `Author^1,2`
+   - Change superscript affiliation markers or any citation formatting into bracket format: `Author^{{1,2}}` → `Author[1,2]`
    - Preserve the author's chosen format for name presentation
    - Maintain original affiliation numbering and organization
 

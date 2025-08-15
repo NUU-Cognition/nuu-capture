@@ -16,9 +16,9 @@ try:
     if not api_key:
         raise ValueError("GEMINI_API_KEY environment variable not set.")
     genai.configure(api_key=api_key)
-    print("✅ Gemini API configured successfully")
+    print("+ Gemini API configured successfully")
 except Exception as e:
-    print(f"❌ Error configuring Gemini API: {e}")
+    print(f"- Error configuring Gemini API: {e}")
     sys.exit(1)
 
 
@@ -95,6 +95,12 @@ def main():
             args.input_file = f"{detected_dir}/stage_1_complete.md"
         if args.output_file is None:
             args.output_file = f"{detected_dir}/final_formatted.md"
+
+    # Resolve paths to absolute paths
+    from pathlib import Path
+    args.input_file = str(Path(args.input_file).resolve())
+    args.output_file = str(Path(args.output_file).resolve())
+    args.prompt_file = str(Path(args.prompt_file).resolve())
 
     output_dir = os.path.dirname(args.output_file)
     if output_dir and not os.path.exists(output_dir):
