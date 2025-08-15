@@ -53,7 +53,7 @@ def call_llm_for_correction(text_chunk: str, prompt_template: str, model: LLMMod
     Sends a chunk of text to the LLM with the master prompt and returns the corrected version.
     Returns None if the API call fails.
     """
-    prompt = prompt_template.format(text_chunk=text_chunk)
+    prompt = prompt_template.replace("{text_chunk}", text_chunk)
     try:
         response = model.generate_content(prompt)
         if not response.text.strip():
