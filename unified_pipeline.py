@@ -107,7 +107,7 @@ def check_requirements() -> bool:
         "ocr_fix/fix_markdown.py", 
         "ocr_fix/stage1.py",
         "ocr_fix/stage2.py",
-        "txtfiles/universal_research_prompt.txt"
+        "txtfiles/universal_research_prompt.md"
     ]
     
     for file_path in required_files:
@@ -210,7 +210,7 @@ def run_pipeline(pdf_input: str, output_dir: Optional[str] = None) -> Union[str,
     
     input_file = os.path.join(actual_output_dir, "stage_1_complete.md")
     output_file = os.path.join(actual_output_dir, "final_formatted.md")
-    prompt_file = "txtfiles/universal_research_prompt.txt"
+    prompt_file = "txtfiles/universal_research_prompt.md"
     stage2_cmd = ["python", "ocr_fix/stage2.py", input_file, output_file, prompt_file]
     
     if not run_command(stage2_cmd, "Stage 2 LLM Formatting"):

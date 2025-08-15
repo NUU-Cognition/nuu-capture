@@ -32,13 +32,13 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 
 ### 3. Install dependencies
 ```bash
-pip install -r txtfiles/requirements.txt
+pip install -r txtfiles/requirements.md
 ```
 
 ### 4. Configure environment variables
 Copy the environment template and add your API keys:
 ```bash
-cp txtfiles/env_template.txt .env
+cp txtfiles/env_template.md .env
 # Edit .env and add your API keys:
 # - MISTRAL_API_KEY (for OCR processing)
 # - GEMINI_API_KEY (for advanced formatting)
@@ -113,7 +113,7 @@ python ocr_fix/stage2.py
 ### Step 4: Universal Research Formatting (`ocr_fix/stage2.py`)
 - **Input**: `{pdf_name}/stage_1_complete.md`
 - **Process**:
-  - **Universal Research Prompt**: Adapts to different academic disciplines and styles using `txtfiles/universal_research_prompt.txt`
+  - **Universal Research Prompt**: Adapts to different academic disciplines and styles using `txtfiles/universal_research_prompt.md`
   - **Section-by-Section Processing**: Intelligently splits document into logical sections for optimal LLM processing
   - **Mathematical Expression Repair**: Fixes LaTeX formulas and scientific notation (e.g., `$^{133}$` → `<sup>133</sup>`)
   - **Citation Enhancement**: Repairs reference formatting while preserving author style (`^{11--13,26,19,38}` → `^11-13,19,26,38`)
@@ -226,7 +226,7 @@ All scripts support custom input/output paths:
 python ocr_fix/stage1.py input.md output.md
 
 # Stage 2 with custom paths
-python ocr_fix/stage2.py input.md output.md prompt.txt
+python ocr_fix/stage2.py input.md output.md prompt.md
 ```
 
 ## Project Structure
@@ -242,9 +242,9 @@ ocr_script_own/
 │   ├── stage2.py               # Stage 2: LLM-based formatting
 │   └── fix_markdown.py         # Image link fixing
 ├── txtfiles/                   # Configuration and templates
-│   ├── requirements.txt        # Python dependencies
-│   ├── env_template.txt        # Environment template
-│   └── universal_research_prompt.txt  # Universal research prompt for Stage 2
+│   ├── requirements.md        # Python dependencies
+│   ├── env_template.md        # Environment template
+│   └── universal_research_prompt.md  # Universal research prompt for Stage 2
 ├── test_pdf/                   # Sample PDF files for testing
 ├── {pdf_name}/                 # Output directory (auto-generated from PDF filename)
 │   ├── document_content.md     # Raw OCR output

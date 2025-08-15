@@ -81,8 +81,8 @@ def main() -> None:
                        help="The path to the Stage 1 preprocessed file. (default: auto-detect from most recent folder)")
     parser.add_argument("output_file", nargs='?', default=None,
                        help="The path where the final, fully formatted file will be saved. (default: auto-detect from input path)")
-    parser.add_argument("prompt_file", nargs='?', default="txtfiles/universal_research_prompt.txt",
-                       help="The path to the .txt file containing the formatting prompt.")
+    parser.add_argument("prompt_file", nargs='?', default="txtfiles/universal_research_prompt.md",
+                       help="The path to the .md file containing the formatting prompt.")
     
     args = parser.parse_args()
     
