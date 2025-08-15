@@ -2,6 +2,7 @@ import re
 import argparse
 import sys
 import os
+from typing import Dict, List
 
 def fix_common_ocr_errors(text: str) -> str:
     """
@@ -145,7 +146,7 @@ def truncate_after_references(text: str) -> str:
         print("   -> References section found but no clear end markers. Keeping full content for safety.")
         return text
 
-def main():
+def main() -> None:
     """
     Main function to run the preprocessing script from the command line.
     """

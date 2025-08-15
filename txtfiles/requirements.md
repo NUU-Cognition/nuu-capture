@@ -6,4 +6,5 @@ pydantic==2.5.2
 python-multipart==0.0.6
 Pillow>=11.3.0
 requests==2.31.0
-google-generativeai>=0.3.0 
+google-generativeai>=0.3.0
+mypy>=1.0.0 

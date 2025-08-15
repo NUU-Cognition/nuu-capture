@@ -4,8 +4,13 @@ import sys
 import os
 import argparse
 from pathlib import Path
+from typing import List, Union
+from pathlib import Path
 
-def fix_markdown_image_links(output_dir_path):
+# Local type definition
+PathLike = Union[str, Path]
+
+def fix_markdown_image_links(output_dir_path: PathLike) -> None:
     """
     Finds all images in the generated markdown and replaces their
     placeholder tags with tags using the correctly saved image filenames.
@@ -61,7 +66,7 @@ def fix_markdown_image_links(output_dir_path):
     print(f"\n✅ Success! A new file has been saved with corrected image links:")
     print(f"   {fixed_markdown_file}")
 
-def main():
+def main() -> None:
     """Main function with improved argument handling."""
     parser = argparse.ArgumentParser(
         description="Fix markdown image links by replacing placeholders with correct filenames.",

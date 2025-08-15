@@ -23,11 +23,12 @@ import time
 from pathlib import Path
 from urllib.parse import urlparse
 from dotenv import load_dotenv
+from typing import Optional, List, Union, Tuple
 
 # Load environment variables
 load_dotenv()
 
-def log_stage(stage_name, message):
+def log_stage(stage_name: str, message: str) -> None:
     """Print formatted log messages for each pipeline stage."""
     print(f"\n{'='*60}")
     print(f"🔄 {stage_name}")
@@ -35,19 +36,19 @@ def log_stage(stage_name, message):
     print(f"📝 {message}")
     print()
 
-def log_success(message):
+def log_success(message: str) -> None:
     """Print success message."""
     print(f"✅ {message}")
 
-def log_error(message):
+def log_error(message: str) -> None:
     """Print error message."""
     print(f"❌ {message}")
 
-def log_info(message):
+def log_info(message: str) -> None:
     """Print info message."""
     print(f"ℹ️  {message}")
 
-def run_command(command, stage_name):
+def run_command(command: List[str], stage_name: str) -> bool:
     """Run a command and handle errors appropriately."""
     log_info(f"Running: {' '.join(command)}")
     try:
@@ -77,7 +78,7 @@ def run_command(command, stage_name):
         log_error(f"Unexpected error in {stage_name}: {e}")
         return False
 
-def check_requirements():
+def check_requirements() -> bool:
     """Check if required API keys and dependencies are available."""
     log_stage("Environment Check", "Verifying API keys and dependencies")
     
@@ -117,7 +118,7 @@ def check_requirements():
     log_success("Environment check passed - all requirements satisfied")
     return True
 
-def get_pdf_name(document_input):
+def get_pdf_name(document_input: str) -> str:
     """Extract PDF name without extension from URL or local path."""
     def is_url(string):
         try:
@@ -139,7 +140,7 @@ def get_pdf_name(document_input):
         # Local file path
         return Path(document_input).stem
 
-def find_most_recent_output_dir():
+def find_most_recent_output_dir() -> Optional[str]:
     """Find the most recently created output directory."""
     possible_dirs = [d for d in os.listdir('.') if os.path.isdir(d) and not d.startswith('.') and d not in ['ocr_get', 'ocr_fix', 'txtfiles', 'venv', 'example_format_md', 'test_pdf']]
     if possible_dirs:
@@ -148,7 +149,7 @@ def find_most_recent_output_dir():
         return possible_dirs[0]
     return None
 
-def run_pipeline(pdf_input, output_dir=None):
+def run_pipeline(pdf_input: str, output_dir: Optional[str] = None) -> Union[str, bool]:
     """Run the complete OCR pipeline."""
     
     # Stage 1: PDF Processing
@@ -217,7 +218,7 @@ def run_pipeline(pdf_input, output_dir=None):
     
     return actual_output_dir
 
-def main():
+def main() -> None:
     """Main function to run the unified OCR pipeline."""
     
     parser = argparse.ArgumentParser(

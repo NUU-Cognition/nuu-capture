@@ -110,4 +110,4 @@ Apply these rules comprehensively while maintaining maximum respect for the auth
 Here is the text section to fix:
 ---
 {text_chunk}
----
+--- 
