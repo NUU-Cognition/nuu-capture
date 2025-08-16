@@ -4,14 +4,13 @@ Single-file script to process a PDF from a URL or local file and save outputs.
 Includes detailed debugging prints.
 """
 import os
-import json
 import httpx
 import base64
 import argparse
 from pathlib import Path
 from urllib.parse import urlparse
 from dotenv import load_dotenv
-from typing import Dict, Union, Optional, TypedDict
+from typing import Union, TypedDict
 from pathlib import Path
 
 # Local type definitions
