@@ -2,6 +2,7 @@ import re
 import argparse
 import sys
 import os
+from typing import List
 
 def fix_common_ocr_errors(text: str) -> str:
     """
@@ -42,8 +43,8 @@ def fix_paragraphs(text: str) -> str:
     )
     
     lines = text.split('\n')
-    processed_lines = []
-    paragraph_buffer = []
+    processed_lines : List[str] = []
+    paragraph_buffer : List[str] = []
 
     for line in lines:
         stripped_line = line.strip()
@@ -145,7 +146,7 @@ def truncate_after_references(text: str) -> str:
         print("   -> References section found but no clear end markers. Keeping full content for safety.")
         return text
 
-def main():
+def main() -> None:
     """
     Main function to run the preprocessing script from the command line.
     """
@@ -195,7 +196,7 @@ def main():
     try:
         with open(args.input_file, 'r', encoding='utf-8') as f:
             raw_text = f.read()
-    except FileNotFoundError as e:
+    except FileNotFoundError as _:
         print(f"[!] Error: Input file not found at '{args.input_file}'", file=sys.stderr)
         sys.exit(1)
 

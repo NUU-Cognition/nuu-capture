@@ -4,13 +4,21 @@ Single-file script to process a PDF from a URL or local file and save outputs.
 Includes detailed debugging prints.
 """
 import os
-import json
 import httpx
 import base64
 import argparse
 from pathlib import Path
 from urllib.parse import urlparse
 from dotenv import load_dotenv
+from typing import Union, TypedDict
+from pathlib import Path
+
+# Local type definitions
+PathLike = Union[str, Path]
+
+class DocumentPayload(TypedDict):
+    type: str
+    document_url: str
 
 # --- Load Environment Variables ---
 load_dotenv()
@@ -20,7 +28,7 @@ MISTRAL_API_KEY = os.getenv("MISTRAL_API_KEY")
 DEFAULT_DOCUMENT_URL = "https://openreview.net/pdf?id=nAFBHoMpQs"
 DEFAULT_OUTPUT_DIR = Path("document_ocr_test")
 
-def encode_pdf_to_base64(pdf_path):
+def encode_pdf_to_base64(pdf_path: PathLike) -> str:
     """Encode a local PDF file to base64 for API upload."""
     try:
         with open(pdf_path, "rb") as pdf_file:
@@ -30,7 +38,7 @@ def encode_pdf_to_base64(pdf_path):
     except Exception as e:
         raise Exception(f"Error encoding PDF: {e}")
 
-def is_url(string):
+def is_url(string: str) -> bool:
     """Check if a string is a valid URL."""
     try:
         result = urlparse(string)
@@ -38,7 +46,7 @@ def is_url(string):
     except:
         return False
 
-def prepare_document_payload(document_input):
+def prepare_document_payload(document_input: str) -> DocumentPayload:
     """Prepare the document payload based on input type (URL or local file)."""
     if is_url(document_input):
         print(f"Processing document from URL: {document_input}")
@@ -61,7 +69,7 @@ def prepare_document_payload(document_input):
             "document_url": f"data:application/pdf;base64,{base64_pdf}"
         }
 
-def save_image_from_data(image_data_uri, global_image_counter, output_dir):
+def save_image_from_data(image_data_uri: str, global_image_counter: int, output_dir: Path):
     """Saves a single base64 encoded image with simplified naming."""
     if not image_data_uri:
         print("    ->  FAILED: No image data provided.")
@@ -78,7 +86,7 @@ def save_image_from_data(image_data_uri, global_image_counter, output_dir):
         # Check if the data is a full data URI (e.g., "data:image/jpeg;base64,...")
         if image_data_uri.startswith('data:image/') and ';base64,' in image_data_uri:
             print("    -> Detected data URI prefix. Parsing...")
-            prefix, pure_base64_data = image_data_uri.split(',', 1)
+            _, pure_base64_data = image_data_uri.split(',', 1)
         else:
             # No data URI prefix, use raw base64 data
             print("    -> No data URI prefix. Using raw base64 data...")
@@ -97,7 +105,7 @@ def save_image_from_data(image_data_uri, global_image_counter, output_dir):
         print(f"FAILED to save image {global_image_counter}: {e}")
         return False
 
-def get_pdf_name(document_input):
+def get_pdf_name(document_input: str) -> str:
     """Extract PDF name without extension from URL or local path."""
     if is_url(document_input):
         # Extract filename from URL
@@ -112,7 +120,7 @@ def get_pdf_name(document_input):
         # Local file path
         return Path(document_input).stem
 
-def main():
+def main() -> None:
     """Main function to run the OCR pipeline."""
     parser = argparse.ArgumentParser(
         description="Process PDF documents using Mistral OCR API.",

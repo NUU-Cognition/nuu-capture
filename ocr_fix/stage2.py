@@ -6,6 +6,12 @@ import time
 import google.generativeai as genai
 from google.api_core import exceptions
 from dotenv import load_dotenv
+from typing import List, Optional, Protocol, Any
+
+# Local type definition
+class LLMModel(Protocol):
+    def generate_content(self, prompt: str) -> Any:
+        ...
 
 # Load environment variables from .env file
 load_dotenv()
@@ -24,7 +30,7 @@ except Exception as e:
 
 # <<< MODIFIED: The MASTER_PROMPT variable has been removed from here.
 
-def split_into_sections(markdown_text: str) -> list[str]:
+def split_into_sections(markdown_text: str) -> List[str]:
     """
     Splits the markdown document into sections based on Level 1 or 2 headings.
     This allows us to process the document chunk by chunk.
@@ -42,12 +48,12 @@ def split_into_sections(markdown_text: str) -> list[str]:
 
 
 # <<< MODIFIED: Function now accepts the prompt_template as an argument.
-def call_llm_for_correction(text_chunk: str, prompt_template: str, model) -> str | None:
+def call_llm_for_correction(text_chunk: str, prompt_template: str, model: LLMModel) -> Optional[str]:
     """
     Sends a chunk of text to the LLM with the master prompt and returns the corrected version.
     Returns None if the API call fails.
     """
-    prompt = prompt_template.format(text_chunk=text_chunk)
+    prompt = prompt_template.replace("{text_chunk}", text_chunk)
     try:
         response = model.generate_content(prompt)
         if not response.text.strip():
@@ -59,7 +65,7 @@ def call_llm_for_correction(text_chunk: str, prompt_template: str, model) -> str
         return None
 
 
-def main():
+def main() -> None:
     """
     Main function to run the Stage 2 processing.
     """
@@ -75,8 +81,8 @@ def main():
                        help="The path to the Stage 1 preprocessed file. (default: auto-detect from most recent folder)")
     parser.add_argument("output_file", nargs='?', default=None,
                        help="The path where the final, fully formatted file will be saved. (default: auto-detect from input path)")
-    parser.add_argument("prompt_file", nargs='?', default="txtfiles/universal_research_prompt.txt",
-                       help="The path to the .txt file containing the formatting prompt.")
+    parser.add_argument("prompt_file", nargs='?', default="txtfiles/universal_research_prompt.md",
+                       help="The path to the .md file containing the formatting prompt.")
     
     args = parser.parse_args()
     

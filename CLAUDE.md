@@ -26,10 +26,10 @@ OCR pipeline that converts PDF documents to structured Markdown using Mistral OC
 # Setup virtual environment and dependencies
 python -m venv venv
 source venv/bin/activate  # Windows: venv\Scripts\activate
-pip install -r txtfiles/requirements.txt
+pip install -r txtfiles/requirements.md
 
 # Configure API keys (required)
-cp txtfiles/env_template.txt .env
+cp txtfiles/env_template.md .env
 # Edit .env to add MISTRAL_API_KEY and GEMINI_API_KEY
 ```
 
@@ -66,7 +66,7 @@ python ocr_get/process_pdf.py test_pdf/document.pdf custom_output/
 python ocr_fix/stage1.py input.md output.md
 
 # Stage 2 with custom paths  
-python ocr_fix/stage2.py input.md output.md txtfiles/formatting_prompt.txt
+python ocr_fix/stage2.py input.md output.md txtfiles/formatting_prompt.md
 
 # Debug API with local file
 python ocr_get/debug_mistral.py test_pdf/document.pdf debug_output.json
@@ -83,7 +83,7 @@ python ocr_get/debug_mistral.py test_pdf/document.pdf debug_output.json
 - **Local PDF Upload Directory**: `test_pdf/` (place PDFs here for local processing)
 - **Input**: Document URL, local PDF file, or interactive selection
 - **Output directory**: `document_ocr_test/` (customizable via command line)
-- **Formatting prompt**: `txtfiles/formatting_prompt.txt`
+- **Formatting prompt**: `txtfiles/formatting_prompt.md`
 
 ### Stage Processing Logic
 - **Stage 1**: Removes appendix after References section, fixes OCR errors, joins broken paragraphs
