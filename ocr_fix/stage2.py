@@ -4,7 +4,6 @@ import sys
 import os
 import time
 import google.generativeai as genai
-from google.api_core import exceptions
 from dotenv import load_dotenv
 from typing import List, Optional, Protocol, Any
 
