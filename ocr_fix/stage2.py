@@ -3,9 +3,10 @@ import argparse
 import sys
 import os
 import time
+import asyncio
 import google.generativeai as genai
 from dotenv import load_dotenv
-from typing import List, Optional, Protocol, Any
+from typing import List, Optional, Protocol, Any, Tuple
 
 # Local type definition
 class LLMModel(Protocol):
@@ -47,8 +48,27 @@ def split_into_sections(markdown_text: str) -> List[str]:
 
 
 # <<< MODIFIED: Function now accepts the prompt_template as an argument.
+async def call_llm_for_correction_async(text_chunk: str, prompt_template: str, model: LLMModel, section_num: int) -> Optional[str]:
+    """
+    Step 1: Asynchronous API Call Function
+    Uses Gemini's native async API for true concurrency.
+    Returns None if the API call fails.
+    """
+    prompt = prompt_template.replace("{text_chunk}", text_chunk)
+    try:
+        # Use the Gemini SDK's native asynchronous method
+        response = await model.generate_content_async(prompt)
+        if not response.text.strip():
+            print(f"[!] Warning: Section {section_num} - LLM returned an empty response.")
+            return None
+        return response.text.strip()
+    except Exception as e:
+        print(f"[!] Error during async LLM call for section {section_num}: {e}")
+        return None
+
 def call_llm_for_correction(text_chunk: str, prompt_template: str, model: LLMModel) -> Optional[str]:
     """
+    Legacy synchronous version (kept for compatibility)
     Sends a chunk of text to the LLM with the master prompt and returns the corrected version.
     Returns None if the API call fails.
     """
@@ -82,6 +102,10 @@ def main() -> None:
                        help="The path where the final, fully formatted file will be saved. (default: auto-detect from input path)")
     parser.add_argument("prompt_file", nargs='?', default="txtfiles/universal_research_prompt.md",
                        help="The path to the .md file containing the formatting prompt.")
+    parser.add_argument("--sync", action="store_true",
+                       help="Use synchronous processing instead of async (slower but more conservative)")
+    parser.add_argument("--max-concurrent", type=int, default=None,
+                       help="Maximum concurrent API calls (default: auto-detected based on document size)")
     
     args = parser.parse_args()
     
@@ -132,10 +156,11 @@ def main() -> None:
     sections = split_into_sections(stage1_text)
     print(f"[*] Found {len(sections)} sections to process.")
     
-    model = genai.GenerativeModel('gemini-1.5-pro-latest')
+    model = genai.GenerativeModel('gemini-1.5-flash-latest')
 
+    
     def process_section_with_retries(section, prompt_text, section_num, pass_name=""):
-        """Process a section with retry logic."""
+        """Legacy synchronous version (kept for compatibility)"""
         max_retries = 3
         corrected_chunk = None
         for attempt in range(max_retries):
@@ -153,18 +178,73 @@ def main() -> None:
         print(f"[!] FAILED to process section {section_num}{pass_name} after {max_retries} attempts.")
         return None
 
-    try:
-        # Process all sections with the universal prompt
-        final_sections = []
+    async def process_all_sections_concurrently():
+        """
+        Step 2: Main Asynchronous Orchestrator
+        Manages and executes all concurrent tasks using asyncio.gather().
+        """
+        print(f"[*] Creating {len(sections)} concurrent API tasks...")
         
+        # Task Creation: Create coroutines for ALL sections (don't await them yet!)
+        tasks = []
         for i, section in enumerate(sections):
             heading_line = section.strip().split('\n', 1)[0]
-            print(f"\n[*] Processing Section {i+1}/{len(sections)}: '{heading_line[:60]}...'")
+            print(f"[*] Creating task for Section {i+1}/{len(sections)}: '{heading_line[:60]}...'")
             
-            corrected_chunk = process_section_with_retries(section, prompt_text, i+1)
-            final_sections.append(corrected_chunk if corrected_chunk else section)
+            # Create the coroutine but DON'T await it yet - this creates the "to-do list"
+            task = call_llm_for_correction_async(section, prompt_text, model, i+1)
+            tasks.append(task)
+        
+        # Concurrent Execution: Execute ALL tasks at once with asyncio.gather
+        print(f"\n[*] Launching {len(tasks)} API calls concurrently...")
+        start_time = time.time()
+        
+        # This single line executes all API calls in parallel
+        results = await asyncio.gather(*tasks, return_exceptions=True)
+        
+        end_time = time.time()
+        processing_time = end_time - start_time
+        
+        print(f"[*] All {len(sections)} API calls completed in {processing_time:.2f} seconds!")
+        
+        # Result Handling: Process results and handle any failures
+        final_sections = []
+        for i, result in enumerate(results):
+            if isinstance(result, Exception):
+                print(f"[!] Section {i+1} failed with exception: {result}")
+                print(f"[!] Using original content for section {i+1}")
+                final_sections.append(sections[i])
+            elif result is None or not result.strip():
+                print(f"[!] Section {i+1} returned empty response")
+                print(f"[!] Using original content for section {i+1}")
+                final_sections.append(sections[i])
+            else:
+                print(f"[*] Section {i+1} processed successfully")
+                final_sections.append(result)
+        
+        return final_sections
+
+    try:
+        # Step 3: Integrate the Async Workflow into main function
+        # Conditional Logic: Choose between sync and async based on command-line flag
+        if args.sync:
+            print("[*] Using synchronous processing (sequential API calls)...")
+            # The original synchronous for loop - one by one processing
+            final_sections = []
             
-        sections_to_write = final_sections
+            for i, section in enumerate(sections):
+                heading_line = section.strip().split('\n', 1)[0]
+                print(f"\n[*] Processing Section {i+1}/{len(sections)}: '{heading_line[:60]}...'")
+                
+                corrected_chunk = process_section_with_retries(section, prompt_text, i+1)
+                final_sections.append(corrected_chunk if corrected_chunk else section)
+            
+            sections_to_write = final_sections
+        else:
+            print("[*] Using asynchronous concurrent processing...")
+            # Single call to start the entire concurrent process
+            final_sections = asyncio.run(process_all_sections_concurrently())
+            sections_to_write = final_sections
 
         # Create the output file first to ensure it exists
         print(f"[*] Creating output file: {args.output_file}")
