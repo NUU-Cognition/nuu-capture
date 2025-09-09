@@ -10,6 +10,9 @@ def fix_common_ocr_errors(text: str) -> str:
     """
     fixes = {
         "https: //": "https://",
+        "ﬁ": "fi",
+        "ﬂ": "fl",
+        "{{ }}^{{133}}": "^133"
         # Add other common ligature or OCR mistakes here if needed
         # e.g., "fi": "fi", "fl": "fl" (ligature fixes)
     }
@@ -19,48 +22,63 @@ def fix_common_ocr_errors(text: str) -> str:
 
 def fix_paragraphs(text: str) -> str:
     """
-    The core function to fix paragraph formatting.
-
-    It iterates through lines, identifying "breaker" lines that signal a new
-    block (e.g., headings, lists, blank lines). All consecutive lines of
-    regular text between these breakers are joined into a single paragraph.
+    Hybrid approach: Uses comprehensive regex patterns for detection
+    with line-by-line processing for control and debugging.
+    Combines the robustness of regex pattern matching with the 
+    maintainability of explicit line processing.
     """
-    breaker_line_pattern = re.compile(
-        r'^\s*('
-        r'#{1,6}\s'          # Headings (e.g., #, ##)
-        r'\*\s'              # Unordered list item (*)
-        r'-\s'               # Unordered list item (-)
-        r'\d+\.\s'           # Ordered list item (1.)
-        r'>'                 # Blockquote
-        r'---'               # Horizontal rule
-        r'==='               # Horizontal rule
-        r'\!\[.*\]\(.*\)'    # Image tag
-        r'\[\^.*\]:'         # Footnote definition
-        r'Figure \d+:'       # Figure Captions
-        r'Table \d+:'        # Table Captions
-        r'```'               # Code fence
-        r')$'
-    )
+    # Define comprehensive breaker patterns (enhanced pattern set)
+    breaker_patterns = [
+        r'^\s*#{1,6}\s',                     # Headings (#, ##, etc.)
+        r'^\s*[\*\-]\s',                     # Unordered list item (*, -)
+        r'^\s*\d+\.\s',                      # Ordered list item (1.)
+        r'^\s*>',                            # Blockquote
+        r'^\s*---',                          # Horizontal rule
+        r'^\s*===',                          # Horizontal rule
+        r'^\s*!\[.*\]\(.*\)',                # Image tag
+        r'^\s*\[\^.*\]:',                    # Footnote definition (e.g., [^1]:)
+        r'^\s*\[\^\d+\]',                    # Footnote reference (e.g., [^1])
+        r'^\s*\|',                           # Table rows
+        r'^\s*```',                          # Code fence
+        r'^\s*Figure\s*(\d+|\.)?:',          # Figure captions
+        r'^\s*Table\s*(\d+|\.)?:',           # Table captions
+        r'^\s*\[\d+\]',                      # Citation on its own line
+        r'^\s*(\d+\.)?\s*(Introduction|Abstract|Methods|Results|Discussion|Conclusion|References|Appendix)', # Common section headers
+        r'^\s*\*\w+\s+\w+\*',                # Italicized species names
+    ]
     
+    # Compile all patterns into a single regex for efficiency
+    combined_pattern = re.compile('|'.join(f'({pattern})' for pattern in breaker_patterns))
+    
+    # Line-by-line processing with enhanced pattern detection
     lines = text.split('\n')
-    processed_lines : List[str] = []
-    paragraph_buffer : List[str] = []
+    processed_lines = []
+    paragraph_buffer = []
 
     for line in lines:
         stripped_line = line.strip()
-        is_table_row = '|' in stripped_line
-
-        if not stripped_line or breaker_line_pattern.match(stripped_line) or is_table_row:
+        
+        # Enhanced detection logic
+        is_blank = not stripped_line
+        is_breaker = combined_pattern.match(stripped_line) is not None
+        is_table_row = '|' in stripped_line and len([c for c in stripped_line if c == '|']) >= 2
+        
+        # Structural line detected - flush buffer and preserve structure
+        if is_blank or is_breaker or is_table_row:
+            # Flush paragraph buffer if it contains content
             if paragraph_buffer:
                 processed_lines.append(' '.join(paragraph_buffer))
                 paragraph_buffer = []
             processed_lines.append(line)
         else:
+            # Accumulate regular text lines for paragraph joining
             paragraph_buffer.append(stripped_line)
 
+    # Handle any remaining paragraph buffer
     if paragraph_buffer:
         processed_lines.append(' '.join(paragraph_buffer))
 
+    # Final cleanup of excessive newlines
     final_text = '\n'.join(processed_lines)
     return re.sub(r'\n{3,}', '\n\n', final_text)
 

@@ -105,8 +105,14 @@ python ocr_fix/stage2.py
 - **Input**: `{pdf_name}/pre_stage_1.md`
 - **Process**:
   - **Universal Document Truncation**: Intelligently removes post-references content (acknowledgments, author affiliations, etc.) while adapting to different paper structures
-  - **OCR Error Fixes**: Repairs common OCR artifacts (spacing issues, broken URLs like `https: //` → `https://`)
-  - **Paragraph Reconstruction**: Intelligently joins broken paragraphs while preserving intentional breaks (lists, headings, figures)
+  - **Enhanced OCR Error Fixes**: Repairs common OCR artifacts including:
+    - Spacing issues: `https: //` → `https://`
+    - Ligature fixes: `ﬁ` → `fi`, `ﬂ` → `fl`
+    - Mathematical expressions: `{{ }}^{{133}}` → `^133`
+  - **Hybrid Paragraph Reconstruction**: Uses advanced regex pattern detection with line-by-line processing to:
+    - Intelligently join broken paragraphs while preserving structural elements
+    - Detect comprehensive range of markdown elements (headings, lists, tables, citations, figures)
+    - Maintain precise control over paragraph buffering and formatting
   - **Zero Information Loss**: Preserves all original research content in main document body
 - **Output**: `{pdf_name}/stage_1_complete.md`
 
@@ -266,8 +272,14 @@ ocr_script_own/
 ### Stage 1 Features:
 - ✅ **Zero information loss guaranteed**
 - **Universal Document Truncation**: Intelligently removes post-references content across different paper structures
-- **OCR Error Fixes**: Repairs common artifacts (broken URLs, spacing issues, etc.)
-- **Smart Paragraph Joining**: Consolidates broken paragraphs while preserving intentional formatting
+- **Enhanced OCR Error Fixes**: Comprehensive repair system including:
+  - URL spacing fixes (`https: //` → `https://`)
+  - Unicode ligature corrections (`ﬁ` → `fi`, `ﬂ` → `fl`)
+  - Mathematical expression cleanup (`{{ }}^{{133}}` → `^133`)
+- **Hybrid Paragraph Reconstruction**: Advanced dual-approach system combining:
+  - Comprehensive regex pattern detection for structural elements
+  - Line-by-line processing for maintainable control flow
+  - Enhanced detection of citations, species names, figure captions, and section headers
 - **Content Preservation**: Maintains all tables, equations, references, images, and scientific notation
 - **Automatic Path Detection**: Finds and processes the most recent output directory
 
