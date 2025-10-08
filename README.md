@@ -1,10 +1,11 @@
 # Universal Research Paper OCR Pipeline
 
-A production-ready Python backend script that converts research papers and academic documents from PDF to structured Markdown format. Features Mistral OCR API integration with an advanced AI-powered formatting pipeline designed to work across all research disciplines while preserving author intent and ensuring zero information loss.
+A production-ready Python backend script that converts research papers and academic documents from PDF to structured Markdown format, with advanced JSON structure parsing capabilities. Features Mistral OCR API integration with an advanced AI-powered formatting pipeline designed to work across all research disciplines while preserving author intent and ensuring zero information loss.
 
 ## Features
 
 - **🚀 Unified Pipeline**: Single command processing - run the entire 4-stage pipeline with one command
+- **📄 Advanced JSON Parser**: High-accuracy document structure parser (v3) with 6-stage architecture
 - **Universal Research Paper Support**: Works across all academic disciplines (Life Sciences, Computer Science, Physics, Social Sciences, etc.)
 - **Mistral OCR Integration**: High-quality OCR extraction using Mistral AI's latest OCR model
 - **Intelligent Document Processing**: Auto-detects PDF filenames and creates organized output folders
@@ -15,6 +16,7 @@ A production-ready Python backend script that converts research papers and acade
 - **Error Handling**: Comprehensive retry logic and fallback mechanisms
 - **Flexible Input Options**: Process from URLs or local PDF files
 - **Progress Tracking**: Real-time progress updates and detailed logging for each processing stage
+- **Structured Output**: Convert markdown to categorized JSON elements with sub-element extraction
 
 ## Quick Start
 
@@ -129,6 +131,36 @@ python ocr_fix/stage2.py
   - **Style Preservation**: Maintains author's original formatting preferences
   - **Intelligent Error Handling**: 3-attempt retry logic with exponential backoff and fallback to preserve content
 - **Output**: `{pdf_name}/final_formatted.md`
+
+### Step 5: JSON Structure Parsing (`json_parser/parser_v3.py`) - **NEW**
+- **Input**: `{pdf_name}/final_formatted.md` or any markdown document
+- **Process**:
+  - **6-Stage Architecture**: Preprocessing → Segmentation → Classification → Detection → Extraction → Validation
+  - **High-Accuracy Classification**: Deterministic hierarchical classification with 11 element types
+  - **Context-Aware Detection**: Smart LaTeX detection (avoids false positives like "$100")
+  - **Sub-Element Extraction**: Inline citations, author fields, LaTeX reference keys
+  - **Element Types Supported**:
+    - Headings (levels 1-6)
+    - Overlay blocks `(>>)`
+    - Code blocks with language detection
+    - Abstract sections
+    - Author sections with contact info
+    - Tables with pipe character detection
+    - LaTeX formulas (display and inline)
+    - Lists (bullet and numbered)
+    - References sections
+    - Paragraphs with citation extraction
+- **Output**: `output_structure.json` with categorized elements and metadata
+
+#### JSON Parser Usage
+```bash
+# Basic usage
+cd json_parser
+python parser_v3.py ../example_format_md/test_document.md -o output.json
+
+# With custom configuration
+python parser_v3.py input.md -c config.yaml -o output.json
+```
 
 ## Configuration
 
@@ -247,6 +279,13 @@ ocr_script_own/
 │   ├── stage1.py               # Stage 1: Preprocessing
 │   ├── stage2.py               # Stage 2: LLM-based formatting
 │   └── fix_markdown.py         # Image link fixing
+├── json_parser/                # 📄 NEW: Advanced JSON structure parser
+│   ├── parser_v3.py            # Main parser with 6-stage architecture
+│   ├── regex_patterns.py       # Centralized regex definitions
+│   ├── config.yaml             # Tunable configuration parameters
+│   ├── TEMP_SYNTAX.MD          # Element type specifications
+│   └── docs/
+│       └── PARSER_DESIGN.md    # Architecture documentation
 ├── txtfiles/                   # Configuration and templates
 │   ├── requirements.md        # Python dependencies
 │   ├── env_template.md        # Environment template
