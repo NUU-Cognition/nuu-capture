@@ -5,7 +5,7 @@ A production-ready Python backend script that converts research papers and acade
 ## Features
 
 - **🚀 Unified Pipeline**: Single command processing - run the entire 4-stage pipeline with one command
-- **📄 Advanced JSON Parser**: High-accuracy document structure parser (v3) with 6-stage architecture
+- **📄 Advanced JSON Parser**: High-accuracy document structure parser (v3.1) with 6-stage architecture and refined element detection
 - **Universal Research Paper Support**: Works across all academic disciplines (Life Sciences, Computer Science, Physics, Social Sciences, etc.)
 - **Mistral OCR Integration**: High-quality OCR extraction using Mistral AI's latest OCR model
 - **Intelligent Document Processing**: Auto-detects PDF filenames and creates organized output folders
@@ -132,19 +132,21 @@ python ocr_fix/stage2.py
   - **Intelligent Error Handling**: 3-attempt retry logic with exponential backoff and fallback to preserve content
 - **Output**: `{pdf_name}/final_formatted.md`
 
-### Step 5: JSON Structure Parsing (`json_parser/parser_v3.py`) - **NEW**
+### Step 5: JSON Structure Parsing (`json_parser/parser_v3.py`) - **v3.1**
 - **Input**: `{pdf_name}/final_formatted.md` or any markdown document
 - **Process**:
   - **6-Stage Architecture**: Preprocessing → Segmentation → Classification → Detection → Extraction → Validation
   - **High-Accuracy Classification**: Deterministic hierarchical classification with 11 element types
+  - **Refined Author Detection**: Eliminates false positives from tables and numbered lists
   - **Context-Aware Detection**: Smart LaTeX detection (avoids false positives like "$100")
   - **Sub-Element Extraction**: Inline citations, author fields, LaTeX reference keys
+  - **Negative Rules Engine**: Advanced filtering to prevent misclassification
   - **Element Types Supported**:
     - Headings (levels 1-6)
     - Overlay blocks `(>>)`
     - Code blocks with language detection
     - Abstract sections
-    - Author sections with contact info
+    - Author sections with contact info (v3.1: refined detection)
     - Tables with pipe character detection
     - LaTeX formulas (display and inline)
     - Lists (bullet and numbered)
@@ -279,8 +281,8 @@ ocr_script_own/
 │   ├── stage1.py               # Stage 1: Preprocessing
 │   ├── stage2.py               # Stage 2: LLM-based formatting
 │   └── fix_markdown.py         # Image link fixing
-├── json_parser/                # 📄 NEW: Advanced JSON structure parser
-│   ├── parser_v3.py            # Main parser with 6-stage architecture
+├── json_parser/                # 📄 Advanced JSON structure parser (v3.1)
+│   ├── parser_v3.py            # Main parser with 6-stage architecture + refined detection
 │   ├── regex_patterns.py       # Centralized regex definitions
 │   ├── config.yaml             # Tunable configuration parameters
 │   ├── TEMP_SYNTAX.MD          # Element type specifications
@@ -377,6 +379,22 @@ The pipeline includes comprehensive error handling for:
 - `test.json`: Sample API response for testing
 - `document_ocr_test/`: Contains processed outputs for analysis
 
+## Recent Updates (v3.1 Parser)
+
+### JSON Parser v3.1 Improvements:
+- **🔧 Author Detection Refinement**: Eliminated false positives from tables and numbered lists
+- **📊 Negative Rules Engine**: Advanced filtering prevents misclassification of non-author content
+- **🎯 Enhanced Accuracy**: Improved classification precision while maintaining recall
+- **⚡ Fallback Validation**: Post-classification validation pass for additional accuracy
+- **🛡️ Robust Detection**: Context-aware heuristics prevent common parsing errors
+
+### Key Features Added:
+- Pipe character detection to exclude tables from author classification
+- Length-based filtering for author sections (max 300 chars, 5 lines)
+- Numbered list detection to prevent false author classifications
+- Position-based validation (author sections must appear early in document)
+- Name pattern validation for final author section verification
+
 ## Limitations
 
 - Requires internet connection for API calls to Mistral OCR and Google Gemini
@@ -384,6 +402,7 @@ The pipeline includes comprehensive error handling for:
 - Stage 2 requires Google Gemini API access with sufficient quota
 - Image extraction quality depends on source PDF quality and API response format
 - Very large documents (>50 pages) may require extended processing time
+- JSON Parser v3.1 is in active development - some edge cases may still require refinement
 
 ## Dependencies
 

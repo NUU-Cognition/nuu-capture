@@ -98,6 +98,9 @@ class DocumentStructureParser:
         # Stage 6: Validation & Post-Processing
         validated_elements = self._validate_and_postprocess(structured_elements)
         
+        # Additional validation pass for author sections
+        validated_elements = self._validate_author_sections(validated_elements)
+        
         return validated_elements
     
     def _preprocess_text(self, text: str) -> str:
@@ -228,7 +231,7 @@ class DocumentStructureParser:
             }
         
         # Priority 5: Author Section
-        if self._is_author_section(block, index):
+        if self._is_author_section(block, index, total_blocks):
             return {
                 "element_type": "author_section",
                 "content": block,
@@ -261,9 +264,11 @@ class DocumentStructureParser:
         
         # Priority 9: List
         if self._is_list(block):
+            items = self._split_list_block(block)
             return {
                 "element_type": "list",
                 "content": block,
+                "items": items,
                 "metadata": {"block_index": index}
             }
         
@@ -299,55 +304,89 @@ class DocumentStructureParser:
         return (index < 10 and 
                 block.lower().strip().startswith('abstract'))
     
-    def _is_author_section(self, block: str, index: int) -> bool:
-        """Check if block is an author section with enhanced heuristics."""
-        if index >= self.config.author_early_blocks_max:
+    def _is_author_section(self, block: str, index: int, total_blocks: int) -> bool:
+        """Check if block is an author section with refined heuristics and negative rules."""
+        lines = [l.strip() for l in block.splitlines() if l.strip()]
+        text = ' '.join(lines)
+
+        # 🚫 Negative rules - reject if any are true
+        if '|' in text:  # Likely a table
             return False
-            
-        if block.count(';') < self.config.author_semicolon_min:
+        if re.match(r'^(\d+\.)|^-|^#', text):  # Starts with list marker or heading
             return False
-            
-        # Check for name pattern (First Last)
-        if not re.search(self.config.author_name_pattern, block):
+        if len(lines) > 5 or len(text) > 300:  # Too long for author info
             return False
+        if sum(1 for l in lines if re.match(r'^\d+\.', l)) >= 2:  # Multiple numbered items
+            return False
+
+        # ✅ Positive signals - only if in early document region
+        if index < 6 or index < 0.1 * total_blocks:
+            # Bolded names detection
+            if re.findall(r'\*\*[A-Za-z ,.\'-]+\*\*', block):
+                return True
             
-        # Check for contact hints (email or URL)
-        has_contact = (re.search(self.regex_patterns['email_pattern'], block) or
-                      re.search(self.regex_patterns['url_pattern'], block))
+            # Semicolon fields with name/affiliation patterns
+            if block.count(';') >= 1 and (self._has_name_pattern(block) or self._has_affiliation(block)):
+                return True
+            
+            # Email detection
+            if self._has_email(block):
+                return True
+            
+            # Multiple lines with capitalized names
+            found_names = sum(1 for l in lines if self._has_name_pattern(l))
+            if found_names >= 2:
+                return True
         
-        return True
+        return False
+    
+    def _has_name_pattern(self, text: str) -> bool:
+        """Check for name pattern (First Last)."""
+        name_pattern = re.compile(r'[A-Z][a-z]+(?:[-\']?[A-Z][a-z]+)?\s+[A-Z][a-z]+')
+        return bool(name_pattern.search(text))
+    
+    def _has_affiliation(self, text: str) -> bool:
+        """Check for affiliation keywords."""
+        affiliation_pattern = re.compile(r'\b(University|Institute|Dept|College|Laboratory|Stanford|MIT|Harvard)\b', re.I)
+        return bool(affiliation_pattern.search(text))
+    
+    def _has_email(self, text: str) -> bool:
+        """Check for email pattern."""
+        email_pattern = re.compile(r'[\w.+-]+@[\w-]+\.[a-zA-Z]{2,}')
+        return bool(email_pattern.search(text))
     
     def _is_table(self, block: str) -> bool:
-        """Check if block is a table (contains | characters)."""
-        lines = block.strip().split('\n')
-        pipe_lines = sum(1 for line in lines if '|' in line)
-        return pipe_lines >= 2 and len(lines) > 1
+        """Check if block is a table with proper header separators."""
+        lines = [l for l in block.splitlines() if l.strip()]
+        pipe_lines = [l for l in lines if '|' in l]
+        if len(pipe_lines) < 2:
+            return False
+        if any(re.search(r'^\s*\|?\s*:?-{2,}:?\s*(\||$)', l) for l in lines):
+            return True
+        counts = [l.count('|') for l in pipe_lines]
+        if len(set(counts)) == 1 and counts[0] >= 2:
+            return True
+        return False
     
     def _is_figure_image(self, block: str) -> bool:
         """Check if block is a figure or image reference."""
         return bool(re.search(self.regex_patterns['image_reference'], block))
     
     def _is_latex_formula(self, block: str) -> bool:
-        """Enhanced LaTeX detection with context awareness."""
-        # Check for LaTeX delimiters
-        if not re.search(r'\${1,2}.*?\${1,2}', block, re.DOTALL):
+        """Token-based LaTeX detection with math context awareness."""
+        if not re.search(r'(\$\$|\\\[|\\\(|\$)', block):
             return False
-            
-        # Calculate math symbol ratio
-        math_symbols = len(re.findall(self.config.math_symbols_pattern, block))
-        total_chars = len(block)
-        
-        if total_chars == 0:
-            return False
-            
-        math_ratio = math_symbols / total_chars
-        
-        # Check for display math ($$) or high math content
-        has_display_math = '$$' in block
-        has_sufficient_math = (math_ratio > self.config.latex_math_ratio_threshold or
-                             math_symbols >= self.config.min_math_symbols)
-        
-        return has_display_math or has_sufficient_math
+        dollar_regions = re.findall(r'\${1,2}(.+?)\${1,2}', block, flags=re.S)
+        for region in dollar_regions:
+            tokens = re.findall(r'\S+', region)
+            if not tokens:
+                continue
+            math_tokens = sum(1 for t in tokens if re.search(r'[=^_{}\\]|\\[a-zA-Z]+', t))
+            if math_tokens / len(tokens) > 0.25:
+                return True
+        if r'\begin{' in block and r'\end{' in block:
+            return True
+        return False
     
     def _is_list(self, block: str) -> bool:
         """Check if block is a list (bullet points or numbered)."""
@@ -355,6 +394,32 @@ class DocumentStructureParser:
         list_lines = sum(1 for line in lines 
                         if re.match(r'^(\s*)([-*+]|\d+\.)\s+', line.strip()))
         return list_lines >= 1 and list_lines >= len(lines) * 0.5
+    
+    def _split_list_block(self, block: str):
+        """Split list block into individual items."""
+        items = []
+        list_item_re = re.compile(r'^\s*(?:[-*+]|(\d+)\.)\s+(.*)$')
+        
+        for line in block.splitlines():
+            match = list_item_re.match(line)
+            if match:
+                items.append(match.group(2).strip())
+            elif items and line.strip():
+                items[-1] += ' ' + line.strip()
+        
+        return items
+    
+    def _extract_inline_citations(self, block: str):
+        """Extract inline citations and split comma-separated ones."""
+        citation_re = re.compile(r'\[([^\]]+?)\]')
+        raw = citation_re.findall(block)
+        out = []
+        for r in raw:
+            r = r.strip().rstrip('.,;:')
+            for part in re.split(r'\s*,\s*', r):
+                if part:
+                    out.append(part)
+        return out
     
     def _is_references_section(self, block: str, index: int, total_blocks: int) -> bool:
         """Check if block is a references section."""
@@ -372,8 +437,7 @@ class DocumentStructureParser:
             
             # Extract inline citations from paragraphs
             if element["element_type"] == "paragraph":
-                citations = re.findall(self.regex_patterns['inline_citation'], 
-                                     element["content"])
+                citations = self._extract_inline_citations(element["content"])
                 if citations:
                     enriched_element["inline_citations"] = [
                         {"id": citation} for citation in citations
@@ -478,6 +542,33 @@ class DocumentStructureParser:
         other_elements = [e for e in merged_elements if e["element_type"] != "references"]
         
         return other_elements + references_elements
+    
+    def _validate_author_sections(self, elements: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        """
+        Additional validation pass to eliminate author section false positives.
+        """
+        validated_elements = []
+        
+        for element in elements:
+            if element["element_type"] == "author_section":
+                # Check if block appears too late in document
+                block_index = element["metadata"].get("block_index", 0)
+                if block_index > 10:
+                    # Downgrade to paragraph if too late
+                    element["element_type"] = "paragraph"
+                    if "author_fields" in element:
+                        del element["author_fields"]
+                
+                # Check if block lacks name pattern
+                elif not re.search(r'[A-Z][a-z]+\s+[A-Z][a-z]+', element["content"]):
+                    # Downgrade to paragraph if no name pattern
+                    element["element_type"] = "paragraph"
+                    if "author_fields" in element:
+                        del element["author_fields"]
+            
+            validated_elements.append(element)
+        
+        return validated_elements
 
 
 def main():
