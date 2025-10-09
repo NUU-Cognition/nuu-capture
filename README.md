@@ -5,7 +5,7 @@ A production-ready Python backend script that converts research papers and acade
 ## Features
 
 - **🚀 Unified Pipeline**: Single command processing - run the entire 4-stage pipeline with one command
-- **📄 Advanced JSON Parser**: High-accuracy document structure parser (v3.1) with 6-stage architecture and refined element detection
+- **📄 Advanced JSON Parser v3.2**: Smart element merging, structured references, individual author parsing, and enhanced table detection
 - **Universal Research Paper Support**: Works across all academic disciplines (Life Sciences, Computer Science, Physics, Social Sciences, etc.)
 - **Mistral OCR Integration**: High-quality OCR extraction using Mistral AI's latest OCR model
 - **Intelligent Document Processing**: Auto-detects PDF filenames and creates organized output folders
@@ -132,26 +132,29 @@ python ocr_fix/stage2.py
   - **Intelligent Error Handling**: 3-attempt retry logic with exponential backoff and fallback to preserve content
 - **Output**: `{pdf_name}/final_formatted.md`
 
-### Step 5: JSON Structure Parsing (`json_parser/parser_v3.py`) - **v3.1**
+### Step 5: JSON Structure Parsing (`json_parser/parser_v3.py`) - **v3.2**
 - **Input**: `{pdf_name}/final_formatted.md` or any markdown document
 - **Process**:
   - **6-Stage Architecture**: Preprocessing → Segmentation → Classification → Detection → Extraction → Validation
   - **High-Accuracy Classification**: Deterministic hierarchical classification with 11 element types
-  - **Refined Author Detection**: Eliminates false positives from tables and numbered lists
-  - **Context-Aware Detection**: Smart LaTeX detection (avoids false positives like "$100")
+  - **Smart Element Merging**: Automatic caption integration for figures and tables
+  - **Refined Author Parsing**: Individual author extraction with affiliations and contact info
+  - **Context-Aware LaTeX**: Display math only ($$...$$), inline math preserved in paragraphs
+  - **Structured References**: Single consolidated node with parsed reference entries
+  - **Enhanced Table Detection**: Multi-line table preservation with proper row segmentation
   - **Sub-Element Extraction**: Inline citations, author fields, LaTeX reference keys
-  - **Negative Rules Engine**: Advanced filtering to prevent misclassification
   - **Element Types Supported**:
-    - Headings (levels 1-6)
-    - Overlay blocks `(>>)`
-    - Code blocks with language detection
-    - Abstract sections
-    - Author sections with contact info (v3.1: refined detection)
-    - Tables with pipe character detection
-    - LaTeX formulas (display and inline)
-    - Lists (bullet and numbered)
-    - References sections
-    - Paragraphs with citation extraction
+    - **Headings**: Levels 1-6 with hierarchy tracking
+    - **Overlay blocks**: Special `(>>)` syntax support
+    - **Code blocks**: With automatic language detection
+    - **Abstract**: Position-aware detection
+    - **Author sections**: Individual author objects with name/institution/contact/website
+    - **Tables**: Proper multi-line detection with optional captions
+    - **Figures/Images**: With automatic caption merging
+    - **LaTeX formulas**: Display math only (not inline)
+    - **Lists**: Bullet and numbered with item extraction
+    - **References**: Consolidated single node with structured [id, content] entries
+    - **Paragraphs**: With inline citations and inline math preservation
 - **Output**: `output_structure.json` with categorized elements and metadata
 
 #### JSON Parser Usage
@@ -162,6 +165,85 @@ python parser_v3.py ../example_format_md/test_document.md -o output.json
 
 # With custom configuration
 python parser_v3.py input.md -c config.yaml -o output.json
+```
+
+#### JSON Output Schema
+
+The parser generates structured JSON with the following element formats:
+
+**Author Section** - Individual author list:
+```json
+{
+  "element_type": "author_section",
+  "metadata": {"block_index": 1},
+  "author_fields": [
+    {
+      "name": "Emily Jin",
+      "institution": "Stanford University",
+      "contact": "emily@stanford.edu",
+      "website": "https://emilyjin.com"
+    }
+  ]
+}
+```
+
+**Figure/Table with Caption** - Merged caption field:
+```json
+{
+  "element_type": "figure_image",
+  "content": "![Figure 1](img-0.jpeg)",
+  "caption": "**Figure 1:** Description of the figure...",
+  "metadata": {"block_index": 8}
+}
+```
+
+**References Section** - Single consolidated node:
+```json
+{
+  "element_type": "references",
+  "metadata": {"block_index": 110},
+  "references": [
+    {
+      "id": 1,
+      "content": "[1] Author et al. Paper title. Venue, Year."
+    },
+    {
+      "id": 2,
+      "content": "[2] Another Author. Another paper. Conference, 2024."
+    }
+  ]
+}
+```
+
+**LaTeX Formula** - Display math only:
+```json
+{
+  "element_type": "latex_formula",
+  "content": "$$E = mc^2$$",
+  "metadata": {"block_index": 52}
+}
+```
+
+**Paragraph** - Inline math and citations preserved:
+```json
+{
+  "element_type": "paragraph",
+  "content": "We use the equation $x = y + z$ to calculate...",
+  "metadata": {"block_index": 15},
+  "inline_citations": [
+    {"id": "1, 2"},
+    {"id": "5"}
+  ]
+}
+```
+
+**Table** - Multi-line preservation:
+```json
+{
+  "element_type": "table",
+  "content": "| Column 1 | Column 2 |\n|----------|----------|\n| Data 1   | Data 2   |",
+  "metadata": {"block_index": 19}
+}
 ```
 
 ## Configuration
@@ -281,10 +363,11 @@ ocr_script_own/
 │   ├── stage1.py               # Stage 1: Preprocessing
 │   ├── stage2.py               # Stage 2: LLM-based formatting
 │   └── fix_markdown.py         # Image link fixing
-├── json_parser/                # 📄 Advanced JSON structure parser (v3.1)
-│   ├── parser_v3.py            # Main parser with 6-stage architecture + refined detection
+├── json_parser/                # 📄 Advanced JSON structure parser (v3.2)
+│   ├── parser_v3.py            # Main parser with smart merging & structured output
 │   ├── regex_patterns.py       # Centralized regex definitions
 │   ├── config.yaml             # Tunable configuration parameters
+│   ├── test_output.json        # Sample parsed output
 │   ├── TEMP_SYNTAX.MD          # Element type specifications
 │   └── docs/
 │       └── PARSER_DESIGN.md    # Architecture documentation
@@ -379,21 +462,46 @@ The pipeline includes comprehensive error handling for:
 - `test.json`: Sample API response for testing
 - `document_ocr_test/`: Contains processed outputs for analysis
 
-## Recent Updates (v3.1 Parser)
+## Recent Updates (v3.2 Parser)
 
-### JSON Parser v3.1 Improvements:
-- **🔧 Author Detection Refinement**: Eliminated false positives from tables and numbered lists
-- **📊 Negative Rules Engine**: Advanced filtering prevents misclassification of non-author content
-- **🎯 Enhanced Accuracy**: Improved classification precision while maintaining recall
-- **⚡ Fallback Validation**: Post-classification validation pass for additional accuracy
-- **🛡️ Robust Detection**: Context-aware heuristics prevent common parsing errors
+### JSON Parser v3.2 Major Updates:
 
-### Key Features Added:
-- Pipe character detection to exclude tables from author classification
-- Length-based filtering for author sections (max 300 chars, 5 lines)
-- Numbered list detection to prevent false author classifications
-- Position-based validation (author sections must appear early in document)
-- Name pattern validation for final author section verification
+#### 🎯 Smart Element Merging
+- **Figure/Table Captions**: Automatically merges caption paragraphs into parent elements
+  - Detects `**Figure X:**` and `**Table X:**` patterns
+  - Creates unified `caption` field for cleaner output
+  - Reduces element count by ~15-20%
+
+#### 👥 Restructured Author Parsing
+- **Individual Author Objects**: Parses bolded names (`**Name**`) into separate entries
+- **Automatic Metadata Extraction**: Detects institutions, emails, and websites
+- **List-Based Output**: `author_fields` is now an array of author objects
+- **No Content Field**: Removes redundant content, keeps only structured data
+
+#### 📐 Refined LaTeX Detection
+- **Display Math Only**: Detects standalone formulas (`$$...$$`, `\[...\]`, `\begin{equation}`)
+- **Inline Math Preservation**: Paragraphs with `$x = y$` remain as paragraphs
+- **Fewer False Positives**: Avoids misclassifying "$100" as LaTeX
+
+#### 📚 Consolidated References
+- **Single References Node**: Merges all reference entries into one element
+- **Structured Parsing**: Extracts `[id]` and content into separate fields
+- **Multi-Line Support**: Handles references spanning multiple lines
+- **Array-Based Output**: `references` field contains list of {id, content} objects
+
+#### 📊 Enhanced Table Detection
+- **Multi-Line Preservation**: Tables no longer collapsed into single lines
+- **Improved Row Detection**: Preserves table structure during preprocessing
+- **Consistent Detection**: Tables with 2+ pipe characters per line
+- **Caption Support**: Same auto-merge functionality as figures
+
+### Technical Improvements:
+- Preprocessing now preserves structural elements (tables, lists, headings)
+- Enhanced `_segment_blocks()` with table-aware merging logic
+- New helper methods: `_parse_individual_authors()` and `_parse_references_list()`
+- `_model_document_structure()` creates consolidated references element
+- Post-processing caption merger in `_validate_and_postprocess()`
+- Updated `ParseConfig` dataclass with 9 new configuration parameters
 
 ## Limitations
 
@@ -402,7 +510,7 @@ The pipeline includes comprehensive error handling for:
 - Stage 2 requires Google Gemini API access with sufficient quota
 - Image extraction quality depends on source PDF quality and API response format
 - Very large documents (>50 pages) may require extended processing time
-- JSON Parser v3.1 is in active development - some edge cases may still require refinement
+- JSON Parser v3.2 handles most academic document structures; edge cases may require configuration tuning
 
 ## Dependencies
 
@@ -410,8 +518,11 @@ Key Python packages:
 - `httpx`: HTTP client for API calls
 - `python-dotenv`: Environment variable management
 - `google-generativeai`: Gemini AI integration
+- `pyyaml`: YAML configuration parsing for JSON parser
 - `Pillow`: Image processing (if needed)
 - `fastapi`, `uvicorn`: Web framework (for future API endpoints)
+
+All dependencies are listed in `txtfiles/requirements.md`
 
 ## Contributing
 

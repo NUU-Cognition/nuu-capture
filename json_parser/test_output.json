@@ -9,16 +9,23 @@
     },
     {
         "element_type": "author_section",
-        "content": "**Emily Jin*** **Zhuoyi Huang*** **Jan-Philipp Fränken** **Weiyu Liu**   **Hannah Cha** **Erik Brockbank** **Sarah Wu** **Ruohan Zhang**   **Jiajun Wu** **Tobias Gerstenberg**   Stanford University",
         "metadata": {
             "block_index": 1
         },
-        "author_fields": {
-            "name": "**Emily Jin*** **Zhuoyi Huang*** **Jan-Philipp Fränken** **Weiyu Liu**   **Hannah Cha** **Erik Brockbank** **Sarah Wu** **Ruohan Zhang**   **Jiajun Wu** **Tobias Gerstenberg**   Stanford University",
-            "institution": null,
-            "contact": null,
-            "website": null
-        }
+        "author_fields": [
+            {
+                "name": "Emily Jin",
+                "institution": "   Stanford University",
+                "contact": null,
+                "website": null
+            },
+            {
+                "name": "Zhuoyi Huang",
+                "institution": "   Stanford University",
+                "contact": null,
+                "website": null
+            }
+        ]
     },
     {
         "element_type": "paragraph",
@@ -103,14 +110,8 @@
         "content": "![Illustrative example of an inference task in MARPLE](img-0.jpeg)",
         "metadata": {
             "block_index": 8
-        }
-    },
-    {
-        "element_type": "paragraph",
-        "content": "**Figure 1:** Illustrative example of an inference task in MARPLE: a \"whodunit\"-inspired benchmark for long-horizon inference. Given a query state change, the challenge is to decide which agent caused the change by leveraging visual, text, and/or audio evidence of both agents A and B up to some timestep $t$. The inference accuracy, probability of choosing the correct agent, is calculated at every timestep and used to evaluate performance.",
-        "metadata": {
-            "block_index": 9
-        }
+        },
+        "caption": "**Figure 1:** Illustrative example of an inference task in MARPLE: a \"whodunit\"-inspired benchmark for long-horizon inference. Given a query state change, the challenge is to decide which agent caused the change by leveraging visual, text, and/or audio evidence of both agents A and B up to some timestep $t$. The inference accuracy, probability of choosing the correct agent, is calculated at every timestep and used to evaluate performance."
     },
     {
         "element_type": "paragraph",
@@ -140,9 +141,11 @@
     },
     {
         "element_type": "list",
-        "content": "1. We introduce a Gridworld simulator to procedurally generate household environments and diverse agent behaviors that yield multimodal evidence (visual, auditory, and language); 2. Using our simulator, we propose a set of long-horizon inference tasks for a) machine learning research on event reconstruction and multimodal reasoning and b) cognitive science research on the processes underlying human inference in complex scenarios. We also provide pre-collected datasets and evaluation metrics; 3. Lastly, we benchmark the performance of machine learning methods (Monte Carlo simulation and LLM) and human experts on the inference tasks.",
+        "content": "1. We introduce a Gridworld simulator to procedurally generate household environments and diverse agent behaviors that yield multimodal evidence (visual, auditory, and language);\n2. Using our simulator, we propose a set of long-horizon inference tasks for a) machine learning research on event reconstruction and multimodal reasoning and b) cognitive science research on the processes underlying human inference in complex scenarios. We also provide pre-collected datasets and evaluation metrics;\n3. Lastly, we benchmark the performance of machine learning methods (Monte Carlo simulation and LLM) and human experts on the inference tasks.",
         "items": [
-            "We introduce a Gridworld simulator to procedurally generate household environments and diverse agent behaviors that yield multimodal evidence (visual, auditory, and language); 2. Using our simulator, we propose a set of long-horizon inference tasks for a) machine learning research on event reconstruction and multimodal reasoning and b) cognitive science research on the processes underlying human inference in complex scenarios. We also provide pre-collected datasets and evaluation metrics; 3. Lastly, we benchmark the performance of machine learning methods (Monte Carlo simulation and LLM) and human experts on the inference tasks."
+            "We introduce a Gridworld simulator to procedurally generate household environments and diverse agent behaviors that yield multimodal evidence (visual, auditory, and language);",
+            "Using our simulator, we propose a set of long-horizon inference tasks for a) machine learning research on event reconstruction and multimodal reasoning and b) cognitive science research on the processes underlying human inference in complex scenarios. We also provide pre-collected datasets and evaluation metrics;",
+            "Lastly, we benchmark the performance of machine learning methods (Monte Carlo simulation and LLM) and human experts on the inference tasks."
         ],
         "metadata": {
             "block_index": 13
@@ -265,8 +268,8 @@
         }
     },
     {
-        "element_type": "paragraph",
-        "content": "| Benchmark | Time (seconds) | Video | Text | Audio | Ecological | High-Level Reasoning | Physical Realism | Controlled Generation | Cognition Inspired | |-----------|----------------|-------|------|-------|------------|---------------------|------------------|---------------------|-------------------| | CLEVR | - | - | ✓ | - | - | - | - | ✓ | - | | MovieQA | 202.7 | ✓ | ✓ | - | ✓ | ✓ | - | - | - | | TGIF-QA | 1.6 | ✓ | ✓ | - | ✓ | - | - | - | - | | TVQA+ | 7.2 | ✓ | ✓ | - | ✓ | - | - | - | - | | AGQA | 30 | ✓ | ✓ | - | ✓ | ✓ | - | - | - | | MultiPLY | - | - | ✓ | ✓ | ✓ | - | - | ✓ | - | | IntPhys | 7 | ✓ | - | - | - | - | ✓ | ✓ | - | | Galileo | - | ✓ | - | - | - | - | ✓ | ✓ | - | | CATER | 12.5 | ✓ | - | - | - | ✓ | ✓ | ✓ | - | | CoPhy | 6 | ✓ | - | - | - | - | ✓ | ✓ | - | | CRAFT | 10 | ✓ | - | - | - | - | ✓ | ✓ | - | | CLEVRER | 5 | ✓ | - | - | - | - | ✓ | ✓ | - | | ComPhy | 5 | ✓ | - | - | - | - | ✓ | ✓ | - | | CLEVRER-Humans | 5 | ✓ | - | - | - | - | ✓ | ✓ | ✓ | | AGENT | 15.4 | ✓ | - | - | - | - | - | ✓ | ✓ | | BIB | 55 | ✓ | - | - | - | ✓ | - | ✓ | ✓ | | PHASE | 17.5 | ✓ | - | - | ✓ | ✓ | ✓ | ✓ | ✓ | | MMToM-QA | 63.4 | ✓ | ✓ | - | ✓ | ✓ | - | ✓ | ✓ | | **MARPLE** | **52.5** | **✓** | **✓** | **✓** | **✓** | **✓** | **-** | **✓** | **✓** |",
+        "element_type": "table",
+        "content": "| Benchmark | Time (seconds) | Video | Text | Audio | Ecological | High-Level Reasoning | Physical Realism | Controlled Generation | Cognition Inspired |\n|-----------|----------------|-------|------|-------|------------|---------------------|------------------|---------------------|-------------------|\n| CLEVR | - | - | ✓ | - | - | - | - | ✓ | - |\n| MovieQA | 202.7 | ✓ | ✓ | - | ✓ | ✓ | - | - | - |\n| TGIF-QA | 1.6 | ✓ | ✓ | - | ✓ | - | - | - | - |\n| TVQA+ | 7.2 | ✓ | ✓ | - | ✓ | - | - | - | - |\n| AGQA | 30 | ✓ | ✓ | - | ✓ | ✓ | - | - | - |\n| MultiPLY | - | - | ✓ | ✓ | ✓ | - | - | ✓ | - |\n| IntPhys | 7 | ✓ | - | - | - | - | ✓ | ✓ | - |\n| Galileo | - | ✓ | - | - | - | - | ✓ | ✓ | - |\n| CATER | 12.5 | ✓ | - | - | - | ✓ | ✓ | ✓ | - |\n| CoPhy | 6 | ✓ | - | - | - | - | ✓ | ✓ | - |\n| CRAFT | 10 | ✓ | - | - | - | - | ✓ | ✓ | - |\n| CLEVRER | 5 | ✓ | - | - | - | - | ✓ | ✓ | - |\n| ComPhy | 5 | ✓ | - | - | - | - | ✓ | ✓ | - |\n| CLEVRER-Humans | 5 | ✓ | - | - | - | - | ✓ | ✓ | ✓ |\n| AGENT | 15.4 | ✓ | - | - | - | - | - | ✓ | ✓ |\n| BIB | 55 | ✓ | - | - | - | ✓ | - | ✓ | ✓ |\n| PHASE | 17.5 | ✓ | - | - | ✓ | ✓ | ✓ | ✓ | ✓ |\n| MMToM-QA | 63.4 | ✓ | ✓ | - | ✓ | ✓ | - | ✓ | ✓ |\n| **MARPLE** | **52.5** | **✓** | **✓** | **✓** | **✓** | **✓** | **-** | **✓** | **✓** |",
         "metadata": {
             "block_index": 19
         }
@@ -326,28 +329,28 @@
         }
     },
     {
-        "element_type": "latex_formula",
+        "element_type": "paragraph",
         "content": "We formalize the inference problem using a Partially Observable Markov Decision Process (POMDP), denoted by the tuple $\\langle\\mathcal{S}, \\mathcal{A}, \\mathcal{R}, \\mathcal{T}, \\Omega, \\mathcal{O}, \\gamma\\rangle$, where $\\mathcal{S}$ is the state space, $\\mathcal{A}$ is the action space, $\\mathcal{R}$ is the reward function, $\\mathcal{T}$ is the transition function, $\\Omega$ is a set of observations, $\\mathcal{O}$ is the observation function, and $\\gamma$ is the discount factor. The state at time step $t$ is $s_{t}$, and visual, auditory, and language observations are denoted by $o_{t}=\\left\\{o_{t}^{V}, o_{t}^{A}, o_{t}^{L}\\right\\}$.",
         "metadata": {
             "block_index": 26
         }
     },
     {
-        "element_type": "latex_formula",
+        "element_type": "paragraph",
         "content": "The action space $\\mathcal{A}$ consists of low-level agent actions, and an agent's action trajectory is determined by its mission. A mission is decomposed into a sequence of mid-level subgoals $g \\in \\mathcal{G}$, which are further decomposed into low-level actions. Each subgoal relies on the completion of past ones and is necessary for completing future ones, creating strong multi-step dependencies between the actions. We represent agent $i$'s behavior using a policy $\\pi^{i}: \\Omega \\rightarrow \\mathcal{A}$ that maps observations $\\Omega$ to a probability distribution over actions in $\\mathcal{A}$, while the transition function $\\mathcal{T}: \\mathcal{S} \\times \\mathcal{A} \\rightarrow \\mathcal{S}$ determines the effects of agent actions.",
         "metadata": {
             "block_index": 27
         }
     },
     {
-        "element_type": "latex_formula",
+        "element_type": "paragraph",
         "content": "In each scenario, the objective is to infer whether agent A or B is more likely to have caused a particular query state (e.g., \"laundry is on\"). We formulate this as predicting the probability $P\\left(s_{T} \\mid \\pi^{i}, o_{0: \\tau}\\right)$ for agent $i$ at any intermediate time step $\\tau$, where $s_{T}$ is the state in query, and $o_{0: \\tau}$ are observations until time step $\\tau$. Different instantiations of $o_{0: \\tau}$ affect the horizon, and hence inference difficulty. For example, when $\\tau=T$, inference is trivial.",
         "metadata": {
             "block_index": 28
         }
     },
     {
-        "element_type": "latex_formula",
+        "element_type": "paragraph",
         "content": "Solving an inference scenario requires knowledge about the world model $\\mathcal{T}\\left(s^{\\prime} \\mid s, a\\right)$, observation model $\\mathcal{O}(o \\mid s)$, and policy $\\pi^{i}(a \\mid o)$ for both agents. The true agent policies are unknown to the inference model and need to be learned in a training stage. A training dataset of previous agent behaviors $\\mathcal{D}_{i}=\\left\\{\\zeta_{1}, \\zeta_{2}, \\ldots, \\zeta_{n}\\right\\}$ is collected, where each trajectory $\\zeta$ is a sequence of agent actions $\\left\\{a_{0}, a_{1}, . ., a_{T}\\right\\}$ paired with observations $\\left\\{o_{0}, o_{1}, . ., o_{T}\\right\\}$. We assume that agents can perform multiple missions, with their preferences for the missions represented as a prior distribution over all possible ones. For example, an agent might prefer to get snack with probability 0.8, pickup the plant with probability 0.2, and all other missions with probability 0. When simulating the agent's trajectories, the missions are sampled according to their mission preferences.",
         "metadata": {
             "block_index": 29
@@ -393,14 +396,8 @@
         "content": "![MARPLE Household Simulator backend](img-1.jpeg)",
         "metadata": {
             "block_index": 34
-        }
-    },
-    {
-        "element_type": "paragraph",
-        "content": "**Figure 2:** MARPLE Household Simulator (backend). The simulator contains a list of pre-defined Missions, each mission consists of a list of Subgoals, and each subgoal is a representation of a Action-State_change-Object-Furniture-Room combination. Given the mission definition and corresponding environment configuration file, we can procedurally generate the environment.",
-        "metadata": {
-            "block_index": 35
-        }
+        },
+        "caption": "**Figure 2:** MARPLE Household Simulator (backend). The simulator contains a list of pre-defined Missions, each mission consists of a list of Subgoals, and each subgoal is a representation of a Action-State_change-Object-Furniture-Room combination. Given the mission definition and corresponding environment configuration file, we can procedurally generate the environment."
     },
     {
         "element_type": "heading",
@@ -467,14 +464,8 @@
         "content": "![Hierarchical planner for procedural generation of agent behaviors](img-2.jpeg)",
         "metadata": {
             "block_index": 42
-        }
-    },
-    {
-        "element_type": "paragraph",
-        "content": "**Figure 3:** A hierarchical planner for procedural generation of agent behaviors. A high-level planner samples a mission, a finite state machine breaks it into subgoals, and a low-level planner determines actions.",
-        "metadata": {
-            "block_index": 43
-        }
+        },
+        "caption": "**Figure 3:** A hierarchical planner for procedural generation of agent behaviors. A high-level planner samples a mission, a finite state machine breaks it into subgoals, and a low-level planner determines actions."
     },
     {
         "element_type": "heading",
@@ -522,11 +513,22 @@
         }
     },
     {
-        "element_type": "latex_formula",
+        "element_type": "paragraph",
         "content": "Our first inference method (Appendix E) uses Monte Carlo Tree Search (MCTS) [6] with learned agent policy models. At inference time, this method performs Monte Carlo rollouts starting from time $\\tau$, assuming that it has access to the ground truth world model (provided by the simulator). An agent-specific policy for agent $i$, $\\pi^{i}: \\Omega \\rightarrow \\mathcal{A}$, is first learned through imitation learning from a dataset of past agent behaviors. We perform $m$ Monte Carlo rollouts for each agent $i$ starting from the current state $s_{\\tau}$ and observation $o_{\\tau}$, and the model predicts agent action $a_{\\tau}$ using the learned policy model. Then, the predicted action is passed to the simulator to query for $s_{\\tau+1}$ and $o_{\\tau+1}$, and the model predicts the next action. The probability of reaching the query state $s_{T}$, given by $P\\left(s_{T} \\mid \\pi^{i}, o_{0: \\tau}^{i}\\right)$, corresponds to the fraction of the $m$ sampled rollouts that reach $s_{T}$. Assuming Boltzmann rationality [2, 29], normalized predictions are obtained by applying a softmax function to the probability for each agent. For example, for agent A, the prediction is ($\\eta=5$ is the temperature parameter):",
         "metadata": {
             "block_index": 51
-        }
+        },
+        "inline_citations": [
+            {
+                "id": "6"
+            },
+            {
+                "id": "2"
+            },
+            {
+                "id": "29"
+            }
+        ]
     },
     {
         "element_type": "latex_formula",
@@ -551,11 +553,19 @@
         }
     },
     {
-        "element_type": "latex_formula",
+        "element_type": "paragraph",
         "content": "The first variant learns to predict the next low-level action $a_{t+1}$ given the current visual observation $o_{t}^{V}$. It uses a vision transformer [8] as an encoder and a policy head that outputs a probability distribution over all possible actions $P\\left(a \\mid o_{t}^{V}\\right)$. The network is trained using supervised learning, i.e., through behavioral cloning [32].",
         "metadata": {
             "block_index": 55
-        }
+        },
+        "inline_citations": [
+            {
+                "id": "8"
+            },
+            {
+                "id": "32"
+            }
+        ]
     },
     {
         "element_type": "heading",
@@ -566,7 +576,7 @@
         }
     },
     {
-        "element_type": "latex_formula",
+        "element_type": "paragraph",
         "content": "Our second implementation leverages both visual $o_{t}^{V}$ and audio $o_{t}^{A}$ observations. Audio information is used here in a limited setting to improve the prediction accuracy of the first action in the rollout, as it reveals partial information about the agent's next low-level action. We first obtain a predicted action distribution from the vision-only model, and then leverage audio evidence to refine the distribution. We then obtain the probability of the next action being an action $a$, conditioned on the visual and audio observations, by using Bayes' rule:",
         "metadata": {
             "block_index": 57
@@ -580,7 +590,7 @@
         }
     },
     {
-        "element_type": "latex_formula",
+        "element_type": "paragraph",
         "content": "where the probability $P\\left(a \\mid o_{t}^{V}\\right)$ is predicted by the vision-only model, and $P\\left(o_{t}^{A} \\mid a\\right)$ is computed using a mapping from the action to the audio observation that is given.",
         "metadata": {
             "block_index": 59
@@ -595,7 +605,7 @@
         }
     },
     {
-        "element_type": "latex_formula",
+        "element_type": "paragraph",
         "content": "The third variant uses language observations $o_{t}^{L}$, which reveal information about the subgoal that the agent is aiming to achieve at time $t$. Intuitively, the intended subgoal reveals future information that will improve low-level action prediction accuracy. At time $t$, the language-conditioned model predicts the next low-level action $a_{t}$ by conditioning on both the visual observation $o_{t}^{V}$ and the subgoal revealed by the language observation $o_{t}^{L}$.",
         "metadata": {
             "block_index": 61
@@ -610,7 +620,7 @@
         }
     },
     {
-        "element_type": "latex_formula",
+        "element_type": "paragraph",
         "content": "The final variant uses observations from all three modalities - vision, language, and audio. At test time $t$, this variant uses the language-conditioned model to predict the next action $o_{t}$, conditioned on both the visual $o_{t}^{V}$ and language observation $o_{t}^{L}$. Audio evidence $o_{t}^{A}$ is then leveraged to refine the distribution over possible actions.",
         "metadata": {
             "block_index": 63
@@ -625,18 +635,37 @@
         }
     },
     {
-        "element_type": "latex_formula",
+        "element_type": "paragraph",
         "content": "For our second class of baselines, we ask state-of-the-art large language models to predict which agent is more likely to have caused the query state, given visual observations of both agents at two consecutive timesteps, $o_{\\tau-1}^{V}$ and $o_{\\tau}^{V}$. We benchmark GPT-4-0613 with a standard zero-shot \"let's think step-by-step\" prompt [39, 42] as our primary LLM baseline. In addition, we evaluate the performance of top open-source models, Llama-3.1-8B-Instruct [9] and Qwen2-7B-Instruct [41], chosen due to their large context length.",
         "metadata": {
             "block_index": 66
-        }
+        },
+        "inline_citations": [
+            {
+                "id": "39"
+            },
+            {
+                "id": "42"
+            },
+            {
+                "id": "9"
+            },
+            {
+                "id": "41"
+            }
+        ]
     },
     {
-        "element_type": "latex_formula",
+        "element_type": "paragraph",
         "content": "To perform the inference task, these LLMs must reason about changes in consecutive states and consider how the agent may reach the query state $s_{T}$. Both the evidence and query states are provided to the model using a standard scene graph representation [25], containing a set of nodes and directed edges. Each node represents an agent or object, along with the states of that entity (e.g., a drawer is open). The directed edges represent physical relations between entities, e.g., \"onTop\" (object-object relation) and \"inRoom\" (object-room relation). See Appendix G for a simplified prompt. For a more comprehensive analysis, we also benchmark GPT-4 with in-context learning on select inference scenarios. We modify our zero-shot prompt and include examples from two other trajectories. Each example contains the inference answer and scene graphs of the current, previous, and query states of both agents at the same time step.",
         "metadata": {
             "block_index": 67
-        }
+        },
+        "inline_citations": [
+            {
+                "id": "25"
+            }
+        ]
     },
     {
         "element_type": "heading",
@@ -647,7 +676,7 @@
         }
     },
     {
-        "element_type": "latex_formula",
+        "element_type": "paragraph",
         "content": "As a third baseline, we run an experiment with two human experts. Each participant is provided with a habituation phase, in which they are familiarized with MARPLE domain knowledge, the inference setup, and a few examples of agent trajectories. During experiments, participants answer the inference question, given side-by-side visual observations of agent trajectories, presented one step at a time from $t=0$ to $\\tau$ (as in Figure K.1). This allows participants to build an incremental understanding of agent trajectories and compare agent behaviors within the scenario.",
         "metadata": {
             "block_index": 69
@@ -662,14 +691,14 @@
         }
     },
     {
-        "element_type": "latex_formula",
+        "element_type": "paragraph",
         "content": "For each inference method and baseline, we run experiments on all five inference scenarios shown in Table A.1. We test on 10 randomly generated environments of each inference scenario, resulting in 50 total trials (see Appendix D for more details). For each trial, we ask the model to answer the inference question and obtain its inference accuracy given evidence at various time steps, namely $\\tau=0, \\tau=T / 10, \\ldots, \\tau=T$. The inference problem becomes easier at later time steps, as more evidence is revealed, and the inference horizon decreases. Thus, we expect accuracy to increase as $\\tau$ increases. We are especially interested in how much evidence is required to choose the correct agent.",
         "metadata": {
             "block_index": 72
         }
     },
     {
-        "element_type": "latex_formula",
+        "element_type": "paragraph",
         "content": "For our MCTS baseline, we focus on two variants: vision-only and audio-augmented language-conditioned. In this setup, each agent always performs one mission, and the agent models are trained on a dataset of agent trajectories for that mission. The dataset contains 500 trajectories in each of the 10 environments seen at test time. The number of rollouts is set to be $m=100$. For our second baseline, we use GPT-4-0613 at temperature $T=0.5$ using $n=10$ completions for each API call.",
         "metadata": {
             "block_index": 73
@@ -692,7 +721,7 @@
     },
     {
         "element_type": "figure_image",
-        "content": "![Performance for each baseline across scenarios](img-3.jpeg) **Figure 4:** Performance for each baseline across scenarios. Results are included for the simulation baseline trained both in-distribution and out-of-distribution (ood). Inference scenarios are presented in order of increasing difficulty from left to right, top to bottom. Error bands correspond to 95% CI intervals across tested trajectories.",
+        "content": "![Performance for each baseline across scenarios](img-3.jpeg)\n**Figure 4:** Performance for each baseline across scenarios. Results are included for the simulation baseline trained both in-distribution and out-of-distribution (ood). Inference scenarios are presented in order of increasing difficulty from left to right, top to bottom. Error bands correspond to 95% CI intervals across tested trajectories.",
         "metadata": {
             "block_index": 76
         }
@@ -714,7 +743,7 @@
     },
     {
         "element_type": "figure_image",
-        "content": "![Example rollouts performed by simulation model](img-4.jpeg) **Figure 5:** Example rollouts performed by our simulation model, starting from the initial state to possible future states. For agent A, this rollout reaches the inference state: Pickup (plant).",
+        "content": "![Example rollouts performed by simulation model](img-4.jpeg)\n**Figure 5:** Example rollouts performed by our simulation model, starting from the initial state to possible future states. For agent A, this rollout reaches the inference state: Pickup (plant).",
         "metadata": {
             "block_index": 79
         }
@@ -806,14 +835,8 @@
         "content": "![Performance for all variants of the simulation baseline](img-5.jpeg)",
         "metadata": {
             "block_index": 90
-        }
-    },
-    {
-        "element_type": "paragraph",
-        "content": "**Figure 6:** Performance for all variants of the simulation baseline, for one inference scenario: \"Who turned on the shower?\". The error bands correspond to 95% CI intervals across test trajectories.",
-        "metadata": {
-            "block_index": 91
-        }
+        },
+        "caption": "**Figure 6:** Performance for all variants of the simulation baseline, for one inference scenario: \"Who turned on the shower?\". The error bands correspond to 95% CI intervals across test trajectories."
     },
     {
         "element_type": "paragraph",
@@ -823,8 +846,8 @@
         }
     },
     {
-        "element_type": "paragraph",
-        "content": "|                       | Human | Vision + Audio + Language | Vision + Language | Vision + Audio | Vision-Only | LLM  | | --------------------- | ----- | ------------------------- | ----------------- | -------------- | ----------- | ---- | | In-Distribution ↓     | 0.48  | 0.58                      | 0.64              | 0.80           | 0.85        | 0.95 | | Out-of-Distribution ↓ | 0.48  | 0.81                      | 0.85              | 0.91           | 0.92        | 0.95 |",
+        "element_type": "table",
+        "content": "|                       | Human | Vision + Audio + Language | Vision + Language | Vision + Audio | Vision-Only | LLM  |\n| --------------------- | ----- | ------------------------- | ----------------- | -------------- | ----------- | ---- |\n| In-Distribution ↓     | 0.48  | 0.58                      | 0.64              | 0.80           | 0.85        | 0.95 |\n| Out-of-Distribution ↓ | 0.48  | 0.81                      | 0.85              | 0.91           | 0.92        | 0.95 |",
         "metadata": {
             "block_index": 93
         }
@@ -951,537 +974,6 @@
     },
     {
         "element_type": "paragraph",
-        "content": "[1] Tayfun Ates, M Samil Atesoglu, Cagatay Yigit, Ilker Kesen, Mert Kobas, Erkut Erdem, Aykut Erdem, Tilbe Goksun, and Deniz Yuret. Craft: A benchmark for causal reasoning about forces and interactions. arXiv preprint arXiv:2012.04293, 2020.",
-        "metadata": {
-            "block_index": 111
-        },
-        "inline_citations": [
-            {
-                "id": "1"
-            }
-        ]
-    },
-    {
-        "element_type": "paragraph",
-        "content": "[2] Chris L Baker, Joshua B Tenenbaum, and Rebecca R Saxe. Goal inference as inverse planning. In CogSci, volume 29, 2007.",
-        "metadata": {
-            "block_index": 112
-        },
-        "inline_citations": [
-            {
-                "id": "2"
-            }
-        ]
-    },
-    {
-        "element_type": "paragraph",
-        "content": "[3] Anton Bakhtin, Laurens van der Maaten, Justin Johnson, Laura Gustafson, and Ross Girshick. Phyre: A new benchmark for physical reasoning. In NeurIPS, volume 32, 2019.",
-        "metadata": {
-            "block_index": 113
-        },
-        "inline_citations": [
-            {
-                "id": "3"
-            }
-        ]
-    },
-    {
-        "element_type": "paragraph",
-        "content": "[4] Maciej Besta, Nils Blach, Ales Kubicek, Robert Gerstenberger, Lukas Gianinazzi, Joanna Gajda, Tomasz Lehmann, Michal Podstawski, Hubert Niewiadomski, Piotr Nyczyk, et al. Graph of thoughts: Solving elaborate problems with large language models. arXiv preprint arXiv:2308.09687, 2023.",
-        "metadata": {
-            "block_index": 114
-        },
-        "inline_citations": [
-            {
-                "id": "4"
-            }
-        ]
-    },
-    {
-        "element_type": "paragraph",
-        "content": "[5] Tom Brown, Benjamin Mann, Nick Ryder, Melanie Subbiah, Jared D Kaplan, Prafulla Dhariwal, Arvind Neelakantan, Pranav Shyam, Girish Sastry, Amanda Askell, Sandhini Agarwal, Ariel Herbert-Voss, Gretchen Krueger, Tom Henighan, Rewon Child, Aditya Ramesh, Daniel Ziegler, Jeffrey Wu, Clemens Winter, Chris Hesse, Mark Chen, Eric Sigler, Mateusz Litwin, Scott Gray, Benjamin Chess, Jack Clark, Christopher Berner, Sam McCandlish, Alec Radford, Ilya Sutskever, and Dario Amodei. Language models are few-shot learners. In NeurIPS, volume 33, 2020.",
-        "metadata": {
-            "block_index": 115
-        },
-        "inline_citations": [
-            {
-                "id": "5"
-            }
-        ]
-    },
-    {
-        "element_type": "paragraph",
-        "content": "[6] Cameron B Browne, Edward Powley, Daniel Whitehouse, Simon M Lucas, Peter I Cowling, Philipp Rohlfshagen, Stephen Tavener, Diego Perez, Spyridon Samothrakis, and Simon Colton. A survey of monte carlo tree search methods. IEEE Transactions on Computational Intelligence and AI in games, 4(1):1-43, 2012.",
-        "metadata": {
-            "block_index": 116
-        },
-        "inline_citations": [
-            {
-                "id": "6"
-            }
-        ]
-    },
-    {
-        "element_type": "paragraph",
-        "content": "[7] Zhenfang Chen, Kexin Yi, Yunzhu Li, Mingyu Ding, Antonio Torralba, Joshua B Tenenbaum, and Chuang Gan. Comphy: Compositional physical reasoning of objects and events from videos. arXiv preprint arXiv:2205.01089, 2022.",
-        "metadata": {
-            "block_index": 117
-        },
-        "inline_citations": [
-            {
-                "id": "7"
-            }
-        ]
-    },
-    {
-        "element_type": "paragraph",
-        "content": "[8] Alexey Dosovitskiy, Lucas Beyer, Alexander Kolesnikov, Dirk Weissenborn, Xiaohua Zhai, Thomas Unterthiner, Mostafa Dehghani, Matthias Minderer, Georg Heigold, Sylvain Gelly, et al. An image is worth 16x16 words: Transformers for image recognition at scale. arXiv preprint arXiv:2010.11929, 2020.",
-        "metadata": {
-            "block_index": 118
-        },
-        "inline_citations": [
-            {
-                "id": "8"
-            }
-        ]
-    },
-    {
-        "element_type": "paragraph",
-        "content": "[9] Abhimanyu Dubey, Abhinav Jauhri, Abhinav Pandey, Abhishek Kadian, Ahmad Al-Dahle, Aiesha Letman, Akhil Mathur, Alan Schelten, Amy Yang, Angela Fan, et al. The llama 3 herd of models. arXiv preprint arXiv:2407.21783, 2024.",
-        "metadata": {
-            "block_index": 119
-        },
-        "inline_citations": [
-            {
-                "id": "9"
-            }
-        ]
-    },
-    {
-        "element_type": "paragraph",
-        "content": "[10] Kanishk Gandhi, Jan-Philipp Fränken, Tobias Gerstenberg, and Noah D Goodman. Understanding social reasoning in language models with language models. In NeurIPS, 2023.",
-        "metadata": {
-            "block_index": 120
-        },
-        "inline_citations": [
-            {
-                "id": "10"
-            }
-        ]
-    },
-    {
-        "element_type": "paragraph",
-        "content": "[11] Kanishk Gandhi, Gala Stojnic, Brenden M Lake, and Moira R Dillon. Baby intuitions benchmark (bib): Discerning the goals, preferences, and actions of others. In NeurIPS, volume 34, 2021.",
-        "metadata": {
-            "block_index": 121
-        },
-        "inline_citations": [
-            {
-                "id": "11"
-            }
-        ]
-    },
-    {
-        "element_type": "paragraph",
-        "content": "[12] Tobias Gerstenberg. Counterfactual simulation in causal cognition. Trends in Cognitive Sciences, 28(10):924-936, 2024.",
-        "metadata": {
-            "block_index": 122
-        },
-        "inline_citations": [
-            {
-                "id": "12"
-            }
-        ]
-    },
-    {
-        "element_type": "paragraph",
-        "content": "[13] Tobias Gerstenberg, Noah D Goodman, David A Lagnado, and Joshua B Tenenbaum. A counterfactual simulation model of causal judgments for physical events. Psychological Review, 128(5):936-975, 2021.",
-        "metadata": {
-            "block_index": 123
-        },
-        "inline_citations": [
-            {
-                "id": "13"
-            }
-        ]
-    },
-    {
-        "element_type": "paragraph",
-        "content": "[14] Tobias Gerstenberg, Max Siegel, and Joshua Tenenbaum. What happened? reconstructing the past through vision and sound. PsyArXiv, 2021. https://psyarxiv.com/tfjdk.",
-        "metadata": {
-            "block_index": 124
-        },
-        "inline_citations": [
-            {
-                "id": "14"
-            }
-        ]
-    },
-    {
-        "element_type": "paragraph",
-        "content": "[15] Rohit Girdhar and Deva Ramanan. Cater: A diagnostic dataset for compositional actions and temporal reasoning. arXiv preprint arXiv:1910.04744, 2019.",
-        "metadata": {
-            "block_index": 125
-        },
-        "inline_citations": [
-            {
-                "id": "15"
-            }
-        ]
-    },
-    {
-        "element_type": "paragraph",
-        "content": "[16] Eugenia Goldvarg and Philip N Johnson-Laird. Naive causality: A mental model theory of causal meaning and reasoning. Cognitive Science, 25(4):565-610, 2001.",
-        "metadata": {
-            "block_index": 126
-        },
-        "inline_citations": [
-            {
-                "id": "16"
-            }
-        ]
-    },
-    {
-        "element_type": "paragraph",
-        "content": "[17] Joseph Y Halpern and Judea Pearl. Causes and explanations: A structural-model approach. BJPS, 2005.",
-        "metadata": {
-            "block_index": 127
-        },
-        "inline_citations": [
-            {
-                "id": "17"
-            }
-        ]
-    },
-    {
-        "element_type": "paragraph",
-        "content": "[18] Peter E Hart, Nils J Nilsson, and Bertram Raphael. A formal basis for the heuristic determination of minimum cost paths. IEEE Transactions on Systems Science and Cybernetics, 4(2):100-107, 1968.",
-        "metadata": {
-            "block_index": 128
-        },
-        "inline_citations": [
-            {
-                "id": "18"
-            }
-        ]
-    },
-    {
-        "element_type": "paragraph",
-        "content": "[19] Yining Hong, Zishuo Zheng, Peihao Chen, Yian Wang, Junyan Li, and Chuang Gan. Multiply: A multisensory object-centric embodied large language model in 3d world. arXiv preprint arXiv:2401.08577, 2024.",
-        "metadata": {
-            "block_index": 129
-        },
-        "inline_citations": [
-            {
-                "id": "19"
-            }
-        ]
-    },
-    {
-        "element_type": "paragraph",
-        "content": "[20] Ahmed Hussein, Mohamed Medhat Gaber, Eyad Elyan, and Chrisina Jayne. Imitation learning: A survey of learning methods. ACM Computing Surveys (CSUR), 50(2):1-35, 2017.",
-        "metadata": {
-            "block_index": 130
-        },
-        "inline_citations": [
-            {
-                "id": "20"
-            }
-        ]
-    },
-    {
-        "element_type": "paragraph",
-        "content": "[21] Chuanyang Jin, Yutong Wu, Jing Cao, Jiannan Xiang, Yen-Ling Kuo, Zhiting Hu, Tomer Ullman, Antonio Torralba, Joshua B Tenenbaum, and Tianmin Shu. Mmtom-qa: Multimodal theory of mind question answering. arXiv preprint arXiv:2401.08743, 2024.",
-        "metadata": {
-            "block_index": 131
-        },
-        "inline_citations": [
-            {
-                "id": "21"
-            }
-        ]
-    },
-    {
-        "element_type": "paragraph",
-        "content": "[22] Emily Jin, Jiaheng Hu, Zhuoyi Huang, Ruohan Zhang, Jiajun Wu, Li Fei-Fei, and Roberto Martín-Martín. Mini-behavior: A procedurally generated benchmark for long-horizon decision-making in embodied ai. arXiv preprint arXiv:2310.01824, 2023.",
-        "metadata": {
-            "block_index": 132
-        },
-        "inline_citations": [
-            {
-                "id": "22"
-            }
-        ]
-    },
-    {
-        "element_type": "paragraph",
-        "content": "[23] Sangeet S Khemlani, Aron K Barbey, and Philip N Johnson-Laird. Causal reasoning with mental models. Frontiers in Human Neuroscience, 8:849, 2014.",
-        "metadata": {
-            "block_index": 133
-        },
-        "inline_citations": [
-            {
-                "id": "23"
-            }
-        ]
-    },
-    {
-        "element_type": "paragraph",
-        "content": "[24] Konrad P Körding, Ulrik Beierholm, Wei Ji Ma, Steven Quartz, Joshua B Tenenbaum, and Ladan Shams. Causal inference in multisensory perception. PLoS one, 2(9):e943, 2007.",
-        "metadata": {
-            "block_index": 134
-        },
-        "inline_citations": [
-            {
-                "id": "24"
-            }
-        ]
-    },
-    {
-        "element_type": "paragraph",
-        "content": "[25] Ranjay Krishna, Yuke Zhu, Oliver Groth, Justin Johnson, Kenji Hata, Joshua Kravitz, Stephanie Chen, Yannis Kalantidis, Li-Jia Li, David A Shamma, et al. Visual genome: Connecting language and vision using crowdsourced dense image annotations. IJCV, 123:32-73, 2017.",
-        "metadata": {
-            "block_index": 135
-        },
-        "inline_citations": [
-            {
-                "id": "25"
-            }
-        ]
-    },
-    {
-        "element_type": "paragraph",
-        "content": "[26] Chengshu Li, Ruohan Zhang, Josiah Wong, Cem Gokmen, Sanjana Srivastava, Roberto Martín-Martín, Chen Wang, Gabrael Levine, Michael Lingelbach, Jiankai Sun, et al. Behavior-1k: A benchmark for embodied ai with 1,000 everyday activities and realistic simulation. In CoRL, pages 80-93. PMLR, 2023.",
-        "metadata": {
-            "block_index": 136
-        },
-        "inline_citations": [
-            {
-                "id": "26"
-            }
-        ]
-    },
-    {
-        "element_type": "paragraph",
-        "content": "[27] Jiayuan Mao, Xuelin Yang, Xikun Zhang, Noah Goodman, and Jiajun Wu. Clevrer-humans: Describing physical and causal events the human way. In NeurIPS, volume 35, 2022.",
-        "metadata": {
-            "block_index": 137
-        },
-        "inline_citations": [
-            {
-                "id": "27"
-            }
-        ]
-    },
-    {
-        "element_type": "paragraph",
-        "content": "[28] Aviv Netanyahu, Tianmin Shu, Boris Katz, Andrei Barbu, and Joshua B Tenenbaum. Phase: Physically-grounded abstract social events for machine social perception. In AAAI, volume 35, pages 845-853, 2021.",
-        "metadata": {
-            "block_index": 138
-        },
-        "inline_citations": [
-            {
-                "id": "28"
-            }
-        ]
-    },
-    {
-        "element_type": "paragraph",
-        "content": "[29] John Von Neumann and Oskar Morgenstern. Theory of Games and Economic Behavior. Princeton University Press, Princeton, NJ, USA, 1944.",
-        "metadata": {
-            "block_index": 139
-        },
-        "inline_citations": [
-            {
-                "id": "29"
-            }
-        ]
-    },
-    {
-        "element_type": "paragraph",
-        "content": "[30] OpenAI. GPT-4 Technical Report. arXiv preprint arXiv:2303.08774, 2023. [31] Judea Pearl. Causality. Cambridge University Press, 2009.",
-        "metadata": {
-            "block_index": 140
-        },
-        "inline_citations": [
-            {
-                "id": "30"
-            },
-            {
-                "id": "31"
-            }
-        ]
-    },
-    {
-        "element_type": "paragraph",
-        "content": "[32] Stefan Schaal. Is imitation learning the route to humanoid robots? Trends in Cognitive Sciences, 3(6):233-242, 1999.",
-        "metadata": {
-            "block_index": 142
-        },
-        "inline_citations": [
-            {
-                "id": "32"
-            }
-        ]
-    },
-    {
-        "element_type": "paragraph",
-        "content": "[33] Tianmin Shu, Abhishek Bhandwaldar, Chuang Gan, Kevin Smith, Shari Liu, Dan Gutfreund, Elizabeth Spelke, Joshua Tenenbaum, and Tomer Ullman. Agent: A benchmark for core psychological reasoning. In ICML, 2021.",
-        "metadata": {
-            "block_index": 143
-        },
-        "inline_citations": [
-            {
-                "id": "33"
-            }
-        ]
-    },
-    {
-        "element_type": "paragraph",
-        "content": "[34] Steven Sloman. Causal models: How people think about the world and its alternatives. Oxford University Press, 2005.",
-        "metadata": {
-            "block_index": 144
-        },
-        "inline_citations": [
-            {
-                "id": "34"
-            }
-        ]
-    },
-    {
-        "element_type": "paragraph",
-        "content": "[35] Steven Sloman, Aron K Barbey, and Jared M Hotaling. A causal model theory of the meaning of cause, enable, and prevent. Cognitive Science, 33(1):21-50, 2009.",
-        "metadata": {
-            "block_index": 145
-        },
-        "inline_citations": [
-            {
-                "id": "35"
-            }
-        ]
-    },
-    {
-        "element_type": "paragraph",
-        "content": "[36] Jiankai Sun, Chuanyang Zheng, Enze Xie, Zhengying Liu, Ruihang Chu, Jianing Qiu, Jiaqi Xu, Mingyu Ding, Hongyang Li, Mengzhe Geng, et al. A survey of reasoning with foundation models. arXiv preprint arXiv:2312.11562, 2023.",
-        "metadata": {
-            "block_index": 146
-        },
-        "inline_citations": [
-            {
-                "id": "36"
-            }
-        ]
-    },
-    {
-        "element_type": "paragraph",
-        "content": "[37] Leonard Talmy. Force dynamics in language and cognition. Cognitive Science, 12(1):49-100, 1988.",
-        "metadata": {
-            "block_index": 147
-        },
-        "inline_citations": [
-            {
-                "id": "37"
-            }
-        ]
-    },
-    {
-        "element_type": "paragraph",
-        "content": "[38] Hugo Touvron, Louis Martin, Kevin Stone, Peter Albert, Amjad Almahairi, Yasmine Babaei, Nikolay Bashlykov, Soumya Batra, Prajjwal Bhargava, Shruti Bhosale, et al. Llama 2: Open foundation and fine-tuned chat models. arXiv preprint arXiv:2307.09288, 2023.",
-        "metadata": {
-            "block_index": 148
-        },
-        "inline_citations": [
-            {
-                "id": "38"
-            }
-        ]
-    },
-    {
-        "element_type": "paragraph",
-        "content": "[39] Jason Wei, Xuezhi Wang, Dale Schuurmans, Maarten Bosma, Ed Chi, Quoc Le, and Denny Zhou. Chain of thought prompting elicits reasoning in large language models. arXiv preprint arXiv:2201.11903, 2022.",
-        "metadata": {
-            "block_index": 149
-        },
-        "inline_citations": [
-            {
-                "id": "39"
-            }
-        ]
-    },
-    {
-        "element_type": "paragraph",
-        "content": "[40] Sarah A Wu, Erik Brockbank, Hannah Cha, Jan-Philipp Fränken, Emily Jin, Zhuoyi Huang, Weiyu Liu, Ruohan Zhang, Jiajun Wu, and Tobias Gerstenberg. Whodunnit? Inferring what happened from multimodal evidence. In CogSci, 2024.",
-        "metadata": {
-            "block_index": 150
-        },
-        "inline_citations": [
-            {
-                "id": "40"
-            }
-        ]
-    },
-    {
-        "element_type": "paragraph",
-        "content": "[41] An Yang, Baosong Yang, Binyuan Hui, Bo Zheng, Bowen Yu, Chang Zhou, Chengpeng Li, Chengyuan Li, Dayiheng Liu, Fei Huang, et al. Qwen2 technical report. arXiv preprint arXiv:2407.10671, 2024.",
-        "metadata": {
-            "block_index": 151
-        },
-        "inline_citations": [
-            {
-                "id": "41"
-            }
-        ]
-    },
-    {
-        "element_type": "paragraph",
-        "content": "[42] Chengrun Yang, Xuezhi Wang, Yifeng Lu, Hanxiao Liu, Quoc V Le, Denny Zhou, and Xinyun Chen. Large language models as optimizers. arXiv preprint arXiv:2309.03409, 2023.",
-        "metadata": {
-            "block_index": 152
-        },
-        "inline_citations": [
-            {
-                "id": "42"
-            }
-        ]
-    },
-    {
-        "element_type": "paragraph",
-        "content": "[43] Shunyu Yao, Dian Yu, Jeffrey Zhao, Izhak Shafran, Thomas L Griffiths, Yuan Cao, and Karthik Narasimhan. Tree of thoughts: Deliberate problem solving with large language models. arXiv preprint arXiv:2305.10601, 2023.",
-        "metadata": {
-            "block_index": 153
-        },
-        "inline_citations": [
-            {
-                "id": "43"
-            }
-        ]
-    },
-    {
-        "element_type": "paragraph",
-        "content": "[44] Shunyu Yao, Jeffrey Zhao, Dian Yu, Nan Du, Izhak Shafran, Karthik Narasimhan, and Yuan Cao. React: Synergizing reasoning and acting in language models. arXiv preprint arXiv:2210.03629, 2022.",
-        "metadata": {
-            "block_index": 154
-        },
-        "inline_citations": [
-            {
-                "id": "44"
-            }
-        ]
-    },
-    {
-        "element_type": "paragraph",
-        "content": "[45] Kexin Yi, Chuang Gan, Yunzhu Li, Pushmeet Kohli, Jiajun Wu, Antonio Torralba, and Joshua B Tenenbaum. Clevrer: Collision events for video representation and reasoning. arXiv preprint arXiv:1910.01442, 2019.",
-        "metadata": {
-            "block_index": 155
-        },
-        "inline_citations": [
-            {
-                "id": "45"
-            }
-        ]
-    },
-    {
-        "element_type": "paragraph",
         "content": "---",
         "metadata": {
             "block_index": 156
@@ -1510,8 +1002,8 @@
         }
     },
     {
-        "element_type": "paragraph",
-        "content": "| Inference Question | Agent A Mission | Agent B Mission | Avg. Horizon | Similarity | |-------------------|----------------|-----------------|--------------|------------| | Who picked up the pillow? | Watch movie cozily | Watch news on TV | 15 | 0.19 | | Who turned on the shower? | Take shower | Feed dog | 26.4 | 0.30 | | Who picked up the snack? | Get snack | Clean living room table | 36.8 | 0.46 | | Who picked up the plant? | Move plant at night | Get night snack | 43.9 | 0.61 | | Who turned on the laundry? | Do laundry | Change outfit | 51.3 | 0.87 |",
+        "element_type": "table",
+        "content": "| Inference Question | Agent A Mission | Agent B Mission | Avg. Horizon | Similarity |\n|-------------------|----------------|-----------------|--------------|------------|\n| Who picked up the pillow? | Watch movie cozily | Watch news on TV | 15 | 0.19 |\n| Who turned on the shower? | Take shower | Feed dog | 26.4 | 0.30 |\n| Who picked up the snack? | Get snack | Clean living room table | 36.8 | 0.46 |\n| Who picked up the plant? | Move plant at night | Get night snack | 43.9 | 0.61 |\n| Who turned on the laundry? | Do laundry | Change outfit | 51.3 | 0.87 |",
         "metadata": {
             "block_index": 162
         }
@@ -1583,14 +1075,14 @@
         }
     },
     {
-        "element_type": "latex_formula",
+        "element_type": "paragraph",
         "content": "**Mission Similarity.** An inference scenario becomes more challenging when the two agents have similar trajectories, which are largely determined by their missions' subgoals. Thus, we define the similarity between a pair of missions, $M_{1}$ and $M_{2}$, as follows:",
         "metadata": {
             "block_index": 171
         }
     },
     {
-        "element_type": "latex_formula",
+        "element_type": "paragraph",
         "content": "$\\text{similarity}(M_{1}, M_{2}) = \\frac{1}{1.5}\\left(\\frac{|M_{1} \\text{ subgoal actions } \\cap M_{2} \\text{ subgoal actions}|}{|M_{1} \\text{ subgoal actions } \\cup M_{2} \\text{ subgoal actions}|}\\right) + 0.5 \\frac{|M_{1} \\text{ subgoal rooms } \\cap M_{2} \\text{ subgoal rooms}|}{|M_{1} \\text{ subgoal rooms } \\cup M_{2} \\text{ subgoal rooms}|}$",
         "metadata": {
             "block_index": 172
@@ -1632,7 +1124,7 @@
         ]
     },
     {
-        "element_type": "latex_formula",
+        "element_type": "paragraph",
         "content": "Our simulator inherits several features from Mini-BEHAVIOR, including the standard $m \\times n$ grid layout and asset library of furniture and object classes, action space, and state space. The asset library statistics are in Table B.1.",
         "metadata": {
             "block_index": 177
@@ -1640,27 +1132,27 @@
     },
     {
         "element_type": "paragraph",
-        "content": "**Table B.1:** MARPLE Household Simulator Elements Type Statistics. | Environment Elements | | | Behavior Elements | | Engine Elements | |---------------------|---|---|-------------------|---|-----------------| | Room Types | Furniture Types | Object Types | Mission Types | Action Types | State Types | | 6 | 22 | 82 | 10 | 10 | 18 |",
+        "content": "**Table B.1:** MARPLE Household Simulator Elements Type Statistics.",
         "metadata": {
             "block_index": 178
         }
     },
     {
+        "element_type": "table",
+        "content": "| Environment Elements | | | Behavior Elements | | Engine Elements |\n|---------------------|---|---|-------------------|---|-----------------|\n| Room Types | Furniture Types | Object Types | Mission Types | Action Types | State Types |\n| 6 | 22 | 82 | 10 | 10 | 18 |",
+        "metadata": {
+            "block_index": 179
+        }
+    },
+    {
         "element_type": "paragraph",
-        "content": "Our simulator further extends Mini-BEHAVIOR to support multimodal stimuli as follows:",
+        "content": "Our simulator further extends Mini-BEHAVIOR to support multimodal stimuli as follows: **Visual.** The visual representation of our environment is a $m \\times n$ grid of cells. We inherit Mini-BEHAVIOR's visualization of agents, objects, and furniture, which are represented as triangles, icons, and colored backgrounds, respectively. Each cell can contain an object and a furniture, and the furniture states are indicated by green borders along the cell edges.",
         "metadata": {
             "block_index": 180
         }
     },
     {
-        "element_type": "latex_formula",
-        "content": "**Visual.** The visual representation of our environment is a $m \\times n$ grid of cells. We inherit Mini-BEHAVIOR's visualization of agents, objects, and furniture, which are represented as triangles, icons, and colored backgrounds, respectively. Each cell can contain an object and a furniture, and the furniture states are indicated by green borders along the cell edges.",
-        "metadata": {
-            "block_index": 181
-        }
-    },
-    {
-        "element_type": "latex_formula",
+        "element_type": "paragraph",
         "content": "Each environment state has a corresponding array and a scene graph representation. An $m \\times n$ environment has a $m \\times n \\times 8$ array representation. The 8 channels indicate the room type, furniture type, furniture states, object types, object states, object ids, agent position, and agent direction at each cell.",
         "metadata": {
             "block_index": 182
@@ -1760,7 +1252,7 @@
         }
     },
     {
-        "element_type": "latex_formula",
+        "element_type": "paragraph",
         "content": "To ensure complexity, the environment size, number of objects, number of rooms can all be scaled as needed. An $m \\times n$ environment has a $m \\times n \\times 8$ state representation, causing the state space to grow exponentially with the array size.",
         "metadata": {
             "block_index": 196
@@ -1882,7 +1374,7 @@
         }
     },
     {
-        "element_type": "latex_formula",
+        "element_type": "paragraph",
         "content": "We plot the inference accuracy across the 50 trials with 95% CI, as shown in Figure 4 and Figure 6. The error bars in Figure 4 and Figure 6 are calculated using the standard formula: $CI = \\bar{x} \\pm \\frac{\\sigma}{\\sqrt{n}}$, where $\\bar{x}$ is inference accuracy, $\\sigma$ is standard deviation, and $n=50$ is the number of trials. Our figures indicate that 50 trials is sufficient, as the error bar is small enough to draw meaningful conclusions.",
         "metadata": {
             "block_index": 214
@@ -1898,21 +1390,30 @@
     },
     {
         "element_type": "paragraph",
-        "content": "**Algorithm E.1** Simulation with Monte Carlo Sampling and Learned Agent Models",
+        "content": "**Algorithm E.1** Simulation with Monte Carlo Sampling and Learned Agent Models **Input:** Observations of both agents $o_{i}^{A}, o_{i}^{B}$  \n**Output:** $P(A), P(B)$ that $A$ or $B$ caused $s_{T}$",
         "metadata": {
             "block_index": 217
         }
     },
     {
-        "element_type": "latex_formula",
-        "content": "**Input:** Observations of both agents $o_{i}^{A}, o_{i}^{B}$   **Output:** $P(A), P(B)$ that $A$ or $B$ caused $s_{T}$",
-        "metadata": {
-            "block_index": 218
-        }
-    },
-    {
-        "element_type": "latex_formula",
-        "content": "1. Initialize count ← 0 2. **for** $i ← 0$ to $m-1$ **do** 3. &nbsp;&nbsp;&nbsp;&nbsp;**for** $t ← \\tau$ to $T$ **do** 4. &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Sample $a_{i}^{A}$ according to $P\\left(a \\mid \\pi^{A}, o_{i}^{A}\\right)$ 5. &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Pass $a_{i}^{A}$ to the simulator, obtain $s_{t+1}^{A}, o_{t+1}^{A}$ 6. &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**if** $s_{t+1}^{A} = s_{T}$ **then** 7. &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;count ← count + 1 8. &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**break** 9. &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**end if** 10. &nbsp;&nbsp;&nbsp;&nbsp;**end for** 11. **end for** 12. $P\\left(s_{T} \\mid \\pi^{A}, o_{0: \\tau}^{A}\\right) ← \\text{count} / m$ 13. Repeat 3-14 for agent $B$ to get $P\\left(s_{T} \\mid \\pi^{B}, o_{0: \\tau}^{B}\\right)$ 14. Normalize using Equation (1) to get $P(A), P(B) = \\text{softmax}\\left(P\\left(s_{T} \\mid \\pi^{A}, o_{0: \\tau}^{A}\\right), P\\left(s_{T} \\mid \\pi^{B}, o_{0: \\tau}^{B}\\right)\\right)$",
+        "element_type": "list",
+        "content": "1. Initialize count ← 0\n2. **for** $i ← 0$ to $m-1$ **do**\n3. &nbsp;&nbsp;&nbsp;&nbsp;**for** $t ← \\tau$ to $T$ **do**\n4. &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Sample $a_{i}^{A}$ according to $P\\left(a \\mid \\pi^{A}, o_{i}^{A}\\right)$\n5. &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Pass $a_{i}^{A}$ to the simulator, obtain $s_{t+1}^{A}, o_{t+1}^{A}$\n6. &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**if** $s_{t+1}^{A} = s_{T}$ **then**\n7. &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;count ← count + 1\n8. &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**break**\n9. &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**end if**\n10. &nbsp;&nbsp;&nbsp;&nbsp;**end for**\n11. **end for**\n12. $P\\left(s_{T} \\mid \\pi^{A}, o_{0: \\tau}^{A}\\right) ← \\text{count} / m$\n13. Repeat 3-14 for agent $B$ to get $P\\left(s_{T} \\mid \\pi^{B}, o_{0: \\tau}^{B}\\right)$\n14. Normalize using Equation (1) to get $P(A), P(B) = \\text{softmax}\\left(P\\left(s_{T} \\mid \\pi^{A}, o_{0: \\tau}^{A}\\right), P\\left(s_{T} \\mid \\pi^{B}, o_{0: \\tau}^{B}\\right)\\right)$",
+        "items": [
+            "Initialize count ← 0",
+            "**for** $i ← 0$ to $m-1$ **do**",
+            "&nbsp;&nbsp;&nbsp;&nbsp;**for** $t ← \\tau$ to $T$ **do**",
+            "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Sample $a_{i}^{A}$ according to $P\\left(a \\mid \\pi^{A}, o_{i}^{A}\\right)$",
+            "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Pass $a_{i}^{A}$ to the simulator, obtain $s_{t+1}^{A}, o_{t+1}^{A}$",
+            "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**if** $s_{t+1}^{A} = s_{T}$ **then**",
+            "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;count ← count + 1",
+            "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**break**",
+            "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**end if**",
+            "&nbsp;&nbsp;&nbsp;&nbsp;**end for**",
+            "**end for**",
+            "$P\\left(s_{T} \\mid \\pi^{A}, o_{0: \\tau}^{A}\\right) ← \\text{count} / m$",
+            "Repeat 3-14 for agent $B$ to get $P\\left(s_{T} \\mid \\pi^{B}, o_{0: \\tau}^{B}\\right)$",
+            "Normalize using Equation (1) to get $P(A), P(B) = \\text{softmax}\\left(P\\left(s_{T} \\mid \\pi^{A}, o_{0: \\tau}^{A}\\right), P\\left(s_{T} \\mid \\pi^{B}, o_{0: \\tau}^{B}\\right)\\right)$"
+        ],
         "metadata": {
             "block_index": 219
         }
@@ -2028,7 +1529,7 @@
     },
     {
         "element_type": "paragraph",
-        "content": "**Initial State of Target Agent:** [state here]   **Current State of Target Agent:** [state here]   **Initial State of Other Agent:** [state here]   **Current State of Other Agent:** [state here]   **Final State:** [state here]",
+        "content": "**Initial State of Target Agent:** [state here]  \n**Current State of Target Agent:** [state here]  \n**Initial State of Other Agent:** [state here]  \n**Current State of Other Agent:** [state here]  \n**Final State:** [state here]",
         "metadata": {
             "block_index": 235
         },
@@ -2071,7 +1572,7 @@
     },
     {
         "element_type": "paragraph",
-        "content": "**Strictly follow this response format:** **Reasoning:** [detailed 'Let's think step-by-step...' reasoning]   **Answer:** [answer as an integer between 0 and 100 here]",
+        "content": "**Strictly follow this response format:**\n**Reasoning:** [detailed 'Let's think step-by-step...' reasoning]  \n**Answer:** [answer as an integer between 0 and 100 here]",
         "metadata": {
             "block_index": 239
         },
@@ -2350,5 +1851,193 @@
         "metadata": {
             "block_index": 271
         }
+    },
+    {
+        "element_type": "references",
+        "metadata": {
+            "block_index": 110
+        },
+        "references": [
+            {
+                "id": 1,
+                "content": "[1] Tayfun Ates, M Samil Atesoglu, Cagatay Yigit, Ilker Kesen, Mert Kobas, Erkut Erdem, Aykut Erdem, Tilbe Goksun, and Deniz Yuret. Craft: A benchmark for causal reasoning about forces and interactions. arXiv preprint arXiv:2012.04293, 2020."
+            },
+            {
+                "id": 2,
+                "content": "[2] Chris L Baker, Joshua B Tenenbaum, and Rebecca R Saxe. Goal inference as inverse planning. In CogSci, volume 29, 2007."
+            },
+            {
+                "id": 3,
+                "content": "[3] Anton Bakhtin, Laurens van der Maaten, Justin Johnson, Laura Gustafson, and Ross Girshick. Phyre: A new benchmark for physical reasoning. In NeurIPS, volume 32, 2019."
+            },
+            {
+                "id": 4,
+                "content": "[4] Maciej Besta, Nils Blach, Ales Kubicek, Robert Gerstenberger, Lukas Gianinazzi, Joanna Gajda, Tomasz Lehmann, Michal Podstawski, Hubert Niewiadomski, Piotr Nyczyk, et al. Graph of thoughts: Solving elaborate problems with large language models. arXiv preprint arXiv:2308.09687, 2023."
+            },
+            {
+                "id": 5,
+                "content": "[5] Tom Brown, Benjamin Mann, Nick Ryder, Melanie Subbiah, Jared D Kaplan, Prafulla Dhariwal, Arvind Neelakantan, Pranav Shyam, Girish Sastry, Amanda Askell, Sandhini Agarwal, Ariel Herbert-Voss, Gretchen Krueger, Tom Henighan, Rewon Child, Aditya Ramesh, Daniel Ziegler, Jeffrey Wu, Clemens Winter, Chris Hesse, Mark Chen, Eric Sigler, Mateusz Litwin, Scott Gray, Benjamin Chess, Jack Clark, Christopher Berner, Sam McCandlish, Alec Radford, Ilya Sutskever, and Dario Amodei. Language models are few-shot learners. In NeurIPS, volume 33, 2020."
+            },
+            {
+                "id": 6,
+                "content": "[6] Cameron B Browne, Edward Powley, Daniel Whitehouse, Simon M Lucas, Peter I Cowling, Philipp Rohlfshagen, Stephen Tavener, Diego Perez, Spyridon Samothrakis, and Simon Colton. A survey of monte carlo tree search methods. IEEE Transactions on Computational Intelligence and AI in games, 4(1):1-43, 2012."
+            },
+            {
+                "id": 7,
+                "content": "[7] Zhenfang Chen, Kexin Yi, Yunzhu Li, Mingyu Ding, Antonio Torralba, Joshua B Tenenbaum, and Chuang Gan. Comphy: Compositional physical reasoning of objects and events from videos. arXiv preprint arXiv:2205.01089, 2022."
+            },
+            {
+                "id": 8,
+                "content": "[8] Alexey Dosovitskiy, Lucas Beyer, Alexander Kolesnikov, Dirk Weissenborn, Xiaohua Zhai, Thomas Unterthiner, Mostafa Dehghani, Matthias Minderer, Georg Heigold, Sylvain Gelly, et al. An image is worth 16x16 words: Transformers for image recognition at scale. arXiv preprint arXiv:2010.11929, 2020."
+            },
+            {
+                "id": 9,
+                "content": "[9] Abhimanyu Dubey, Abhinav Jauhri, Abhinav Pandey, Abhishek Kadian, Ahmad Al-Dahle, Aiesha Letman, Akhil Mathur, Alan Schelten, Amy Yang, Angela Fan, et al. The llama 3 herd of models. arXiv preprint arXiv:2407.21783, 2024."
+            },
+            {
+                "id": 10,
+                "content": "[10] Kanishk Gandhi, Jan-Philipp Fränken, Tobias Gerstenberg, and Noah D Goodman. Understanding social reasoning in language models with language models. In NeurIPS, 2023."
+            },
+            {
+                "id": 11,
+                "content": "[11] Kanishk Gandhi, Gala Stojnic, Brenden M Lake, and Moira R Dillon. Baby intuitions benchmark (bib): Discerning the goals, preferences, and actions of others. In NeurIPS, volume 34, 2021."
+            },
+            {
+                "id": 12,
+                "content": "[12] Tobias Gerstenberg. Counterfactual simulation in causal cognition. Trends in Cognitive Sciences, 28(10):924-936, 2024."
+            },
+            {
+                "id": 13,
+                "content": "[13] Tobias Gerstenberg, Noah D Goodman, David A Lagnado, and Joshua B Tenenbaum. A counterfactual simulation model of causal judgments for physical events. Psychological Review, 128(5):936-975, 2021."
+            },
+            {
+                "id": 14,
+                "content": "[14] Tobias Gerstenberg, Max Siegel, and Joshua Tenenbaum. What happened? reconstructing the past through vision and sound. PsyArXiv, 2021. https://psyarxiv.com/tfjdk."
+            },
+            {
+                "id": 15,
+                "content": "[15] Rohit Girdhar and Deva Ramanan. Cater: A diagnostic dataset for compositional actions and temporal reasoning. arXiv preprint arXiv:1910.04744, 2019."
+            },
+            {
+                "id": 16,
+                "content": "[16] Eugenia Goldvarg and Philip N Johnson-Laird. Naive causality: A mental model theory of causal meaning and reasoning. Cognitive Science, 25(4):565-610, 2001."
+            },
+            {
+                "id": 17,
+                "content": "[17] Joseph Y Halpern and Judea Pearl. Causes and explanations: A structural-model approach. BJPS, 2005."
+            },
+            {
+                "id": 18,
+                "content": "[18] Peter E Hart, Nils J Nilsson, and Bertram Raphael. A formal basis for the heuristic determination of minimum cost paths. IEEE Transactions on Systems Science and Cybernetics, 4(2):100-107, 1968."
+            },
+            {
+                "id": 19,
+                "content": "[19] Yining Hong, Zishuo Zheng, Peihao Chen, Yian Wang, Junyan Li, and Chuang Gan. Multiply: A multisensory object-centric embodied large language model in 3d world. arXiv preprint arXiv:2401.08577, 2024."
+            },
+            {
+                "id": 20,
+                "content": "[20] Ahmed Hussein, Mohamed Medhat Gaber, Eyad Elyan, and Chrisina Jayne. Imitation learning: A survey of learning methods. ACM Computing Surveys (CSUR), 50(2):1-35, 2017."
+            },
+            {
+                "id": 21,
+                "content": "[21] Chuanyang Jin, Yutong Wu, Jing Cao, Jiannan Xiang, Yen-Ling Kuo, Zhiting Hu, Tomer Ullman, Antonio Torralba, Joshua B Tenenbaum, and Tianmin Shu. Mmtom-qa: Multimodal theory of mind question answering. arXiv preprint arXiv:2401.08743, 2024."
+            },
+            {
+                "id": 22,
+                "content": "[22] Emily Jin, Jiaheng Hu, Zhuoyi Huang, Ruohan Zhang, Jiajun Wu, Li Fei-Fei, and Roberto Martín-Martín. Mini-behavior: A procedurally generated benchmark for long-horizon decision-making in embodied ai. arXiv preprint arXiv:2310.01824, 2023."
+            },
+            {
+                "id": 23,
+                "content": "[23] Sangeet S Khemlani, Aron K Barbey, and Philip N Johnson-Laird. Causal reasoning with mental models. Frontiers in Human Neuroscience, 8:849, 2014."
+            },
+            {
+                "id": 24,
+                "content": "[24] Konrad P Körding, Ulrik Beierholm, Wei Ji Ma, Steven Quartz, Joshua B Tenenbaum, and Ladan Shams. Causal inference in multisensory perception. PLoS one, 2(9):e943, 2007."
+            },
+            {
+                "id": 25,
+                "content": "[25] Ranjay Krishna, Yuke Zhu, Oliver Groth, Justin Johnson, Kenji Hata, Joshua Kravitz, Stephanie Chen, Yannis Kalantidis, Li-Jia Li, David A Shamma, et al. Visual genome: Connecting language and vision using crowdsourced dense image annotations. IJCV, 123:32-73, 2017."
+            },
+            {
+                "id": 26,
+                "content": "[26] Chengshu Li, Ruohan Zhang, Josiah Wong, Cem Gokmen, Sanjana Srivastava, Roberto Martín-Martín, Chen Wang, Gabrael Levine, Michael Lingelbach, Jiankai Sun, et al. Behavior-1k: A benchmark for embodied ai with 1,000 everyday activities and realistic simulation. In CoRL, pages 80-93. PMLR, 2023."
+            },
+            {
+                "id": 27,
+                "content": "[27] Jiayuan Mao, Xuelin Yang, Xikun Zhang, Noah Goodman, and Jiajun Wu. Clevrer-humans: Describing physical and causal events the human way. In NeurIPS, volume 35, 2022."
+            },
+            {
+                "id": 28,
+                "content": "[28] Aviv Netanyahu, Tianmin Shu, Boris Katz, Andrei Barbu, and Joshua B Tenenbaum. Phase: Physically-grounded abstract social events for machine social perception. In AAAI, volume 35, pages 845-853, 2021."
+            },
+            {
+                "id": 29,
+                "content": "[29] John Von Neumann and Oskar Morgenstern. Theory of Games and Economic Behavior. Princeton University Press, Princeton, NJ, USA, 1944."
+            },
+            {
+                "id": 30,
+                "content": "[30] OpenAI. GPT-4 Technical Report. arXiv preprint arXiv:2303.08774, 2023."
+            },
+            {
+                "id": 31,
+                "content": "[31] Judea Pearl. Causality. Cambridge University Press, 2009."
+            },
+            {
+                "id": 32,
+                "content": "[32] Stefan Schaal. Is imitation learning the route to humanoid robots? Trends in Cognitive Sciences, 3(6):233-242, 1999."
+            },
+            {
+                "id": 33,
+                "content": "[33] Tianmin Shu, Abhishek Bhandwaldar, Chuang Gan, Kevin Smith, Shari Liu, Dan Gutfreund, Elizabeth Spelke, Joshua Tenenbaum, and Tomer Ullman. Agent: A benchmark for core psychological reasoning. In ICML, 2021."
+            },
+            {
+                "id": 34,
+                "content": "[34] Steven Sloman. Causal models: How people think about the world and its alternatives. Oxford University Press, 2005."
+            },
+            {
+                "id": 35,
+                "content": "[35] Steven Sloman, Aron K Barbey, and Jared M Hotaling. A causal model theory of the meaning of cause, enable, and prevent. Cognitive Science, 33(1):21-50, 2009."
+            },
+            {
+                "id": 36,
+                "content": "[36] Jiankai Sun, Chuanyang Zheng, Enze Xie, Zhengying Liu, Ruihang Chu, Jianing Qiu, Jiaqi Xu, Mingyu Ding, Hongyang Li, Mengzhe Geng, et al. A survey of reasoning with foundation models. arXiv preprint arXiv:2312.11562, 2023."
+            },
+            {
+                "id": 37,
+                "content": "[37] Leonard Talmy. Force dynamics in language and cognition. Cognitive Science, 12(1):49-100, 1988."
+            },
+            {
+                "id": 38,
+                "content": "[38] Hugo Touvron, Louis Martin, Kevin Stone, Peter Albert, Amjad Almahairi, Yasmine Babaei, Nikolay Bashlykov, Soumya Batra, Prajjwal Bhargava, Shruti Bhosale, et al. Llama 2: Open foundation and fine-tuned chat models. arXiv preprint arXiv:2307.09288, 2023."
+            },
+            {
+                "id": 39,
+                "content": "[39] Jason Wei, Xuezhi Wang, Dale Schuurmans, Maarten Bosma, Ed Chi, Quoc Le, and Denny Zhou. Chain of thought prompting elicits reasoning in large language models. arXiv preprint arXiv:2201.11903, 2022."
+            },
+            {
+                "id": 40,
+                "content": "[40] Sarah A Wu, Erik Brockbank, Hannah Cha, Jan-Philipp Fränken, Emily Jin, Zhuoyi Huang, Weiyu Liu, Ruohan Zhang, Jiajun Wu, and Tobias Gerstenberg. Whodunnit? Inferring what happened from multimodal evidence. In CogSci, 2024."
+            },
+            {
+                "id": 41,
+                "content": "[41] An Yang, Baosong Yang, Binyuan Hui, Bo Zheng, Bowen Yu, Chang Zhou, Chengpeng Li, Chengyuan Li, Dayiheng Liu, Fei Huang, et al. Qwen2 technical report. arXiv preprint arXiv:2407.10671, 2024."
+            },
+            {
+                "id": 42,
+                "content": "[42] Chengrun Yang, Xuezhi Wang, Yifeng Lu, Hanxiao Liu, Quoc V Le, Denny Zhou, and Xinyun Chen. Large language models as optimizers. arXiv preprint arXiv:2309.03409, 2023."
+            },
+            {
+                "id": 43,
+                "content": "[43] Shunyu Yao, Dian Yu, Jeffrey Zhao, Izhak Shafran, Thomas L Griffiths, Yuan Cao, and Karthik Narasimhan. Tree of thoughts: Deliberate problem solving with large language models. arXiv preprint arXiv:2305.10601, 2023."
+            },
+            {
+                "id": 44,
+                "content": "[44] Shunyu Yao, Jeffrey Zhao, Dian Yu, Nan Du, Izhak Shafran, Karthik Narasimhan, and Yuan Cao. React: Synergizing reasoning and acting in language models. arXiv preprint arXiv:2210.03629, 2022."
+            },
+            {
+                "id": 45,
+                "content": "[45] Kexin Yi, Chuang Gan, Yunzhu Li, Pushmeet Kohli, Jiajun Wu, Antonio Torralba, and Joshua B Tenenbaum. Clevrer: Collision events for video representation and reasoning. arXiv preprint arXiv:1910.01442, 2019."
+            }
+        ]
     }
 ]

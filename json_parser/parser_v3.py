@@ -34,6 +34,22 @@ class ParseConfig:
     paragraph_merge_threshold: int = 100
     math_symbols_pattern: str = r'[=^_{}\\]'
     min_math_symbols: int = 3
+    latex_display_only: bool = True
+    author_parse_individual: bool = True
+    references_parse_entries: bool = True
+    caption_merge_enabled: bool = True
+    caption_max_distance: int = 1
+    caption_patterns: list = None
+    min_block_length: int = 5
+    max_consecutive_merges: int = 3
+    confidence_thresholds: dict = None
+
+    def __post_init__(self):
+        """Initialize default values for mutable fields."""
+        if self.caption_patterns is None:
+            self.caption_patterns = ['Figure\\s+\\d+:', 'Table\\s+\\d+:', 'Fig\\.\\s+\\d+:']
+        if self.confidence_thresholds is None:
+            self.confidence_thresholds = {}
 
 
 class DocumentStructureParser:
@@ -94,69 +110,116 @@ class DocumentStructureParser:
         
         # Stage 5: Structural Context Modeling
         structured_elements = self._model_document_structure(enriched_elements)
-        
+
+        # Parse references after structure modeling (since references element is created in stage 5)
+        structured_elements = self._parse_references_elements(structured_elements)
+
         # Stage 6: Validation & Post-Processing
         validated_elements = self._validate_and_postprocess(structured_elements)
-        
+
         # Additional validation pass for author sections
         validated_elements = self._validate_author_sections(validated_elements)
-        
+
         return validated_elements
     
     def _preprocess_text(self, text: str) -> str:
         """
         Stage 0: Clean OCR output and normalize formatting.
-        
+
         - Normalize newlines (\\r\\n → \\n)
         - Replace OCR misreads (\\$ → $)
         - Collapse single newlines within paragraphs into spaces
         - Preserve double newlines as block boundaries
+        - Preserve table structures (lines with |)
         - Standardize LaTeX delimiters
         """
         # Normalize line endings
         text = re.sub(r'\r\n?', '\n', text.strip())
-        
+
         # Replace common OCR misreads
         text = text.replace('\\$', '$')
         text = text.replace('\\[', '$$').replace('\\]', '$$')
         text = text.replace('\\(', '$').replace('\\)', '$')
-        
+
         # Collapse single newlines within paragraphs (preserve double newlines)
-        text = re.sub(r'(?<!\n)\n(?!\n)', ' ', text)
-        
+        # BUT preserve newlines in tables (lines with |), code blocks, and lists
+        lines = text.split('\n')
+        result_lines = []
+        i = 0
+
+        while i < len(lines):
+            line = lines[i]
+
+            # Check if this is a structural element that should preserve newlines
+            is_table_line = '|' in line and line.count('|') >= 2
+            is_code_fence = line.strip().startswith('```')
+            is_list_item = re.match(r'^\s*([-*+]|\d+\.)\s+', line)
+            is_heading = re.match(r'^\s*#{1,6}\s+', line)
+            is_blank = not line.strip()
+
+            # If structural element or blank, keep as-is
+            if is_table_line or is_code_fence or is_list_item or is_heading or is_blank:
+                result_lines.append(line)
+                i += 1
+            else:
+                # Regular text line - check if we should join with next
+                if i + 1 < len(lines) and lines[i + 1].strip() and not lines[i + 1].startswith((' ', '\t', '#', '-', '*', '+', '|')):
+                    # Join with next line
+                    line += ' ' + lines[i + 1].strip()
+                    i += 2
+                    while i < len(lines) and lines[i].strip() and not lines[i].startswith((' ', '\t', '#', '-', '*', '+', '|')):
+                        line += ' ' + lines[i].strip()
+                        i += 1
+                    result_lines.append(line)
+                else:
+                    result_lines.append(line)
+                    i += 1
+
+        text = '\n'.join(result_lines)
+
         return text
     
     def _segment_blocks(self, text: str) -> List[str]:
         """
         Stage 1: Split document into semantically coherent blocks.
-        
+
         Uses double newlines as hard boundaries while preserving
         block integrity for formulas, code, and tables.
         """
         blocks = re.split(r'\n{2,}', text)
         merged_blocks = []
         buffer = ''
-        
+
+        def is_table_block(block_text):
+            """Check if a block contains table rows."""
+            lines = block_text.strip().split('\n')
+            pipe_lines = [l for l in lines if '|' in l and l.count('|') >= 2]
+            return len(pipe_lines) >= 2
+
         for block in blocks:
             block = block.strip()
             if not block:
                 continue
-                
-            # Check if this is a table continuation
-            if re.match(r'^\|.*\|$', block):
-                if buffer and not re.match(r'^\|.*\|$', buffer):
+
+            # Check if this is a table block (multiple lines with pipes)
+            if is_table_block(block):
+                if buffer and not is_table_block(buffer):
                     merged_blocks.append(buffer.strip())
                     buffer = ''
-                buffer += '\n' + block
+                # Table blocks should not be merged with adjacent blocks
+                if buffer:
+                    buffer += '\n' + block
+                else:
+                    buffer = block
             else:
                 if buffer:
                     merged_blocks.append(buffer.strip())
                     buffer = ''
                 merged_blocks.append(block)
-        
+
         if buffer:
             merged_blocks.append(buffer.strip())
-            
+
         return [b for b in merged_blocks if b]
     
     def _classify_blocks(self, blocks: List[str]) -> List[Dict[str, Any]]:
@@ -373,19 +436,36 @@ class DocumentStructureParser:
         return bool(re.search(self.regex_patterns['image_reference'], block))
     
     def _is_latex_formula(self, block: str) -> bool:
-        """Token-based LaTeX detection with math context awareness."""
-        if not re.search(r'(\$\$|\\\[|\\\(|\$)', block):
+        r"""
+        Detect ONLY standalone display math formulas (not inline math in paragraphs).
+        Only triggers for display math delimiters: $$...$$ or \[...\] or \begin{equation}
+        """
+        # Must have display math markers (not just inline $...$)
+        has_display_math = ('$$' in block or
+                           r'\[' in block or
+                           r'\begin{' in block and r'\end{' in block)
+
+        if not has_display_math:
             return False
-        dollar_regions = re.findall(r'\${1,2}(.+?)\${1,2}', block, flags=re.S)
-        for region in dollar_regions:
-            tokens = re.findall(r'\S+', region)
-            if not tokens:
-                continue
-            math_tokens = sum(1 for t in tokens if re.search(r'[=^_{}\\]|\\[a-zA-Z]+', t))
-            if math_tokens / len(tokens) > 0.25:
-                return True
+
+        # Additional validation: check for math content
+        # Extract display math regions only
+        display_regions = re.findall(r'\$\$(.+?)\$\$', block, flags=re.S)
+
+        if display_regions:
+            # Validate that display math contains actual math content
+            for region in display_regions:
+                tokens = re.findall(r'\S+', region)
+                if not tokens:
+                    continue
+                math_tokens = sum(1 for t in tokens if re.search(r'[=^_{}\\]|\\[a-zA-Z]+', t))
+                if len(tokens) > 0 and math_tokens / len(tokens) > 0.15:
+                    return True
+
+        # Check for LaTeX environments (always display math)
         if r'\begin{' in block and r'\end{' in block:
             return True
+
         return False
     
     def _is_list(self, block: str) -> bool:
@@ -423,18 +503,122 @@ class DocumentStructureParser:
     
     def _is_references_section(self, block: str, index: int, total_blocks: int) -> bool:
         """Check if block is a references section."""
-        return ('references' in block.lower() and 
+        return ('references' in block.lower() and
                 index > self.config.references_late_threshold * total_blocks)
-    
+
+    def _parse_individual_authors(self, content: str) -> List[Dict[str, Any]]:
+        """
+        Parse author section content into individual author objects.
+        Extracts bolded names (**Name**) and associated metadata.
+        """
+        authors = []
+
+        # Extract bolded names (markdown format: **Name**)
+        bolded_names = re.findall(r'\*\*([A-Za-z\s\.\-\']+)\*\*', content)
+
+        # Extract affiliations (institution names)
+        affiliation_patterns = [
+            r'(Stanford University|MIT|Harvard|University of [A-Za-z\s]+|[A-Za-z\s]+ University)',
+            r'(Institute of [A-Za-z\s]+|[A-Za-z\s]+ Institute)',
+            r'([A-Za-z\s]+ Laboratory|[A-Za-z\s]+ Lab)',
+            r'(Dept\.? of [A-Za-z\s]+|Department of [A-Za-z\s]+)',
+            r'(College of [A-Za-z\s]+|[A-Za-z\s]+ College)'
+        ]
+
+        institutions = []
+        for pattern in affiliation_patterns:
+            institutions.extend(re.findall(pattern, content, re.IGNORECASE))
+
+        # Extract emails
+        emails = re.findall(r'[\w.+-]+@[\w-]+\.[a-zA-Z]{2,}', content)
+
+        # Extract URLs
+        urls = re.findall(r'https?://[^\s<>"]+', content)
+
+        # Build author objects
+        for i, name in enumerate(bolded_names):
+            name = name.strip()
+            # Skip if it's just asterisks or markers
+            if not re.search(r'[A-Z][a-z]+', name):
+                continue
+
+            author_obj = {
+                "name": name,
+                "institution": institutions[0] if institutions else None,
+                "contact": emails[i] if i < len(emails) else None,
+                "website": urls[i] if i < len(urls) else None
+            }
+            authors.append(author_obj)
+
+        # If no bolded names found, try parsing semicolon-separated format
+        if not authors and ';' in content:
+            parts = [p.strip() for p in content.split(';') if p.strip()]
+            for part in parts:
+                # Check if this part contains a name
+                if re.search(r'[A-Z][a-z]+\s+[A-Z][a-z]+', part):
+                    author_obj = {
+                        "name": part,
+                        "institution": None,
+                        "contact": None,
+                        "website": None
+                    }
+                    authors.append(author_obj)
+
+        return authors if authors else [{"name": None, "institution": None, "contact": None, "website": None}]
+
+    def _parse_references_list(self, content: str) -> List[Dict[str, Any]]:
+        """
+        Parse references section content into structured list of references.
+        Extracts [id] content patterns and handles multi-line references.
+        """
+        references = []
+        lines = content.split('\n')
+
+        current_ref = None
+        current_id = None
+
+        for line in lines:
+            line = line.strip()
+            if not line:
+                continue
+
+            # Check if line starts with [number]
+            match = re.match(r'^\[(\d+)\]\s*(.+)$', line)
+
+            if match:
+                # Save previous reference if exists
+                if current_ref is not None and current_id is not None:
+                    references.append({
+                        "id": int(current_id),
+                        "content": current_ref.strip()
+                    })
+
+                # Start new reference
+                current_id = match.group(1)
+                current_ref = f"[{current_id}] {match.group(2)}"
+            else:
+                # Continuation of previous reference
+                if current_ref is not None:
+                    current_ref += " " + line
+
+        # Add final reference
+        if current_ref is not None and current_id is not None:
+            references.append({
+                "id": int(current_id),
+                "content": current_ref.strip()
+            })
+
+        return references
+
     def _extract_sub_elements(self, elements: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         """
         Stage 4: Extract sub-elements like citations, author fields, etc.
         """
         enriched_elements = []
-        
+
         for element in elements:
             enriched_element = element.copy()
-            
+
             # Extract inline citations from paragraphs
             if element["element_type"] == "paragraph":
                 citations = self._extract_inline_citations(element["content"])
@@ -442,17 +626,28 @@ class DocumentStructureParser:
                     enriched_element["inline_citations"] = [
                         {"id": citation} for citation in citations
                     ]
-            
-            # Parse author fields from author sections
+
+            # Parse author fields from author sections into individual author list
             elif element["element_type"] == "author_section":
-                parts = [p.strip() for p in element["content"].split(';') if p.strip()]
-                enriched_element["author_fields"] = {
-                    "name": parts[0] if len(parts) > 0 else None,
-                    "institution": parts[1] if len(parts) > 1 else None,
-                    "contact": parts[2] if len(parts) > 2 else None,
-                    "website": parts[3] if len(parts) > 3 else None
-                }
-            
+                authors = self._parse_individual_authors(element["content"])
+                enriched_element["author_fields"] = authors
+                # Remove content field as per requirements
+                if "content" in enriched_element:
+                    del enriched_element["content"]
+
+            # Parse references section into structured list
+            elif element["element_type"] == "references":
+                # Skip the heading line if it exists
+                content = element["content"]
+                # Remove "References" heading if present
+                content = re.sub(r'^\s*#{0,6}\s*References?\s*\n', '', content, flags=re.IGNORECASE)
+
+                references = self._parse_references_list(content)
+                enriched_element["references"] = references
+                # Remove content field as per requirements
+                if "content" in enriched_element:
+                    del enriched_element["content"]
+
             # Extract LaTeX reference key if present
             elif element["element_type"] == "latex_formula":
                 # Check for reference key like [Eq.1] after formula
@@ -460,61 +655,145 @@ class DocumentStructureParser:
                 if key_match:
                     enriched_element["reference_key"] = key_match.group(1)
                     # Remove key from content
-                    enriched_element["content"] = re.sub(r'\s*\[[^\]]+\]$', '', 
+                    enriched_element["content"] = re.sub(r'\s*\[[^\]]+\]$', '',
                                                        element["content"])
-            
+
             enriched_elements.append(enriched_element)
-            
+
         return enriched_elements
     
+    def _parse_references_elements(self, elements: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        """
+        Parse references elements that were created in structure modeling.
+        Converts content field to structured references list.
+        """
+        parsed_elements = []
+
+        for element in elements:
+            if element["element_type"] == "references" and "content" in element:
+                # Parse the references content into structured list
+                content = element["content"]
+
+                # Remove "References" heading if present
+                content = re.sub(r'^\s*#{0,6}\s*References?\s*\n', '', content, flags=re.IGNORECASE)
+
+                references = self._parse_references_list(content)
+                element["references"] = references
+
+                # Remove content field as per requirements
+                del element["content"]
+
+            parsed_elements.append(element)
+
+        return parsed_elements
+
     def _model_document_structure(self, elements: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         """
         Stage 5: Organize elements hierarchically under headings.
+        Also merges references section into a single element.
         """
         structured_elements = []
         current_section = {"heading": None, "elements": []}
-        
+
         for element in elements:
             if element["element_type"] == "heading":
                 # Save previous section if it has elements
                 if current_section["elements"]:
                     structured_elements.append(current_section)
-                
+
                 # Start new section
                 current_section = {"heading": element, "elements": []}
             else:
                 current_section["elements"].append(element)
-        
+
         # Add final section
         if current_section["elements"]:
             structured_elements.append(current_section)
-            
-        # Flatten back to element list for now (can be enhanced later)
+
+        # Flatten back to element list, but merge references section
         flattened_elements = []
         for section in structured_elements:
             if section["heading"]:
-                flattened_elements.append(section["heading"])
-            flattened_elements.extend(section["elements"])
-            
+                heading = section["heading"]
+                flattened_elements.append(heading)
+
+                # Check if this is the References section
+                if (heading.get("element_type") == "heading" and
+                    "reference" in heading.get("content", "").lower()):
+
+                    # Merge all reference entries into a single references element
+                    reference_paragraphs = section["elements"]
+
+                    # Check if we have reference entries (paragraphs starting with [number])
+                    ref_entries = [p for p in reference_paragraphs
+                                 if p.get("element_type") == "paragraph" and
+                                 re.match(r'^\[\d+\]', p.get("content", ""))]
+
+                    if ref_entries:
+                        # Merge all references into single element
+                        merged_content = "\n\n".join([p["content"] for p in ref_entries])
+                        references_element = {
+                            "element_type": "references",
+                            "content": merged_content,
+                            "metadata": {"block_index": heading["metadata"]["block_index"]}
+                        }
+                        flattened_elements.append(references_element)
+
+                        # Add any non-reference paragraphs (e.g., after references)
+                        non_ref_elements = [p for p in reference_paragraphs if p not in ref_entries]
+                        flattened_elements.extend(non_ref_elements)
+                    else:
+                        # No references found, add elements as-is
+                        flattened_elements.extend(section["elements"])
+                else:
+                    # Regular section, add elements as-is
+                    flattened_elements.extend(section["elements"])
+            else:
+                # No heading for this section
+                flattened_elements.extend(section["elements"])
+
         return flattened_elements
     
     def _validate_and_postprocess(self, elements: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         """
         Stage 6: Final validation and post-processing.
+        Includes caption merging for figures/tables and paragraph merging.
         """
-        # Merge consecutive small paragraphs
         merged_elements = []
         i = 0
-        
+
         while i < len(elements):
             current = elements[i]
-            
-            # Check if we should merge with next paragraph
-            if (current["element_type"] == "paragraph" and 
-                i + 1 < len(elements) and 
+
+            # Check if current is a figure/table and next is a caption paragraph
+            if (current["element_type"] in ["figure_image", "table"] and
+                i + 1 < len(elements) and
+                elements[i + 1]["element_type"] == "paragraph"):
+
+                next_elem = elements[i + 1]
+                next_content = next_elem.get("content", "")
+
+                # Check if next paragraph is a caption (starts with "Figure X:" or "Table X:")
+                # Handle bold markdown formatting: **Figure 1:** or Figure 1:
+                is_caption = (
+                    re.match(r'^\s*\*?\*?Figure\s+\d+:\*?\*?', next_content, re.IGNORECASE) or
+                    re.match(r'^\s*\*?\*?Table\s+\d+:\*?\*?', next_content, re.IGNORECASE) or
+                    re.match(r'^\s*\*?\*?Fig\.?\s+\d+:\*?\*?', next_content, re.IGNORECASE)
+                )
+
+                if is_caption:
+                    # Merge caption into figure/table
+                    current["caption"] = next_content
+                    merged_elements.append(current)
+                    i += 2  # Skip the caption paragraph
+                    continue
+
+            # Check if we should merge with next paragraph (small paragraphs)
+            if (current["element_type"] == "paragraph" and
+                i + 1 < len(elements) and
                 elements[i + 1]["element_type"] == "paragraph" and
-                len(current["content"]) < self.config.paragraph_merge_threshold):
-                
+                len(current.get("content", "")) < self.config.paragraph_merge_threshold):
+
                 # Merge paragraphs
                 merged_content = current["content"] + " " + elements[i + 1]["content"]
                 merged_element = {
@@ -522,25 +801,25 @@ class DocumentStructureParser:
                     "content": merged_content,
                     "metadata": current["metadata"]
                 }
-                
+
                 # Extract citations from merged content
-                citations = re.findall(self.regex_patterns['inline_citation'], 
+                citations = re.findall(self.regex_patterns['inline_citation'],
                                      merged_content)
                 if citations:
                     merged_element["inline_citations"] = [
                         {"id": citation} for citation in citations
                     ]
-                
+
                 merged_elements.append(merged_element)
                 i += 2  # Skip next element as it's merged
             else:
                 merged_elements.append(current)
                 i += 1
-        
+
         # Ensure reference section appears last
         references_elements = [e for e in merged_elements if e["element_type"] == "references"]
         other_elements = [e for e in merged_elements if e["element_type"] != "references"]
-        
+
         return other_elements + references_elements
     
     def _validate_author_sections(self, elements: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
@@ -548,7 +827,7 @@ class DocumentStructureParser:
         Additional validation pass to eliminate author section false positives.
         """
         validated_elements = []
-        
+
         for element in elements:
             if element["element_type"] == "author_section":
                 # Check if block appears too late in document
@@ -557,17 +836,24 @@ class DocumentStructureParser:
                     # Downgrade to paragraph if too late
                     element["element_type"] = "paragraph"
                     if "author_fields" in element:
+                        # Convert author_fields back to content for paragraph
+                        authors_str = "; ".join([a.get("name", "") for a in element["author_fields"] if a.get("name")])
+                        element["content"] = authors_str
                         del element["author_fields"]
-                
-                # Check if block lacks name pattern
-                elif not re.search(r'[A-Z][a-z]+\s+[A-Z][a-z]+', element["content"]):
-                    # Downgrade to paragraph if no name pattern
-                    element["element_type"] = "paragraph"
-                    if "author_fields" in element:
+
+                # Check if author_fields is empty or invalid
+                elif "author_fields" in element:
+                    author_fields = element["author_fields"]
+                    # Check if we have valid authors
+                    has_valid_author = any(a.get("name") for a in author_fields if isinstance(a, dict))
+                    if not has_valid_author:
+                        # Downgrade to paragraph if no valid authors
+                        element["element_type"] = "paragraph"
+                        element["content"] = ""
                         del element["author_fields"]
-            
+
             validated_elements.append(element)
-        
+
         return validated_elements
 
 
