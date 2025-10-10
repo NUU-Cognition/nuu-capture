@@ -95,7 +95,7 @@ def check_requirements() -> bool:
         return False
     
     # Check if required directories exist
-    required_dirs = ["ocr_get", "ocr_fix", "txtfiles"]
+    required_dirs = ["stages/01_extract", "stages/02_preprocess", "stages/03_format", "config"]
     for dir_name in required_dirs:
         if not os.path.exists(dir_name):
             log_error(f"Required directory '{dir_name}' not found")
@@ -103,11 +103,11 @@ def check_requirements() -> bool:
     
     # Check if required files exist
     required_files = [
-        "ocr_get/process_pdf.py",
-        "ocr_fix/fix_markdown.py", 
-        "ocr_fix/stage1.py",
-        "ocr_fix/stage2.py",
-        "txtfiles/universal_research_prompt.md"
+        "stages/01_extract/process_pdf.py",
+        "stages/01_extract/fix_markdown.py", 
+        "stages/02_preprocess/stage1.py",
+        "stages/03_format/stage2.py",
+        "config/universal_research_prompt.md"
     ]
     
     for file_path in required_files:
@@ -142,7 +142,7 @@ def get_pdf_name(document_input: str) -> str:
 
 def find_most_recent_output_dir() -> Optional[str]:
     """Find the most recently created output directory."""
-    possible_dirs = [d for d in os.listdir('.') if os.path.isdir(d) and not d.startswith('.') and d not in ['ocr_get', 'ocr_fix', 'txtfiles', 'venv', 'example_format_md', 'test_pdf']]
+    possible_dirs = [d for d in os.listdir('.') if os.path.isdir(d) and not d.startswith('.') and d not in ['stages', 'config', 'utils', 'output', 'venv']]
     if possible_dirs:
         # Sort by modification time, most recent first
         possible_dirs.sort(key=lambda x: os.path.getmtime(x), reverse=True)
@@ -156,9 +156,9 @@ def run_pipeline(pdf_input: str, output_dir: Optional[str] = None) -> Union[str,
     log_stage("Stage 1: PDF Processing", "Extracting content and images using Mistral OCR API")
     
     if output_dir:
-        process_cmd = ["python", "ocr_get/process_pdf.py", pdf_input, output_dir]
+        process_cmd = ["python", "stages/01_extract/process_pdf.py", pdf_input, output_dir]
     else:
-        process_cmd = ["python", "ocr_get/process_pdf.py", pdf_input]
+        process_cmd = ["python", "stages/01_extract/process_pdf.py", pdf_input]
     
     if not run_command(process_cmd, "PDF Processing"):
         return False
@@ -191,7 +191,7 @@ def run_pipeline(pdf_input: str, output_dir: Optional[str] = None) -> Union[str,
     # Stage 2: Fix Image Links
     log_stage("Stage 2: Image Link Fixing", "Connecting image placeholders to saved image files")
     
-    fix_cmd = ["python", "ocr_fix/fix_markdown.py", actual_output_dir]
+    fix_cmd = ["python", "stages/01_extract/fix_markdown.py", actual_output_dir]
     if not run_command(fix_cmd, "Image Link Fixing"):
         return False
     
@@ -200,7 +200,7 @@ def run_pipeline(pdf_input: str, output_dir: Optional[str] = None) -> Union[str,
     
     input_file = os.path.join(actual_output_dir, "pre_stage_1.md")
     output_file = os.path.join(actual_output_dir, "stage_1_complete.md")
-    stage1_cmd = ["python", "ocr_fix/stage1.py", input_file, output_file]
+    stage1_cmd = ["python", "stages/02_preprocess/stage1.py", input_file, output_file]
     
     if not run_command(stage1_cmd, "Stage 1 Preprocessing"):
         return False
@@ -210,8 +210,8 @@ def run_pipeline(pdf_input: str, output_dir: Optional[str] = None) -> Union[str,
     
     input_file = os.path.join(actual_output_dir, "stage_1_complete.md")
     output_file = os.path.join(actual_output_dir, "final_formatted.md")
-    prompt_file = "txtfiles/universal_research_prompt.md"
-    stage2_cmd = ["python", "ocr_fix/stage2.py", input_file, output_file, prompt_file]
+    prompt_file = "config/universal_research_prompt.md"
+    stage2_cmd = ["python", "stages/03_format/stage2.py", input_file, output_file, prompt_file]
     
     if not run_command(stage2_cmd, "Stage 2 LLM Formatting"):
         return False
@@ -226,10 +226,10 @@ def main() -> None:
         formatter_class=argparse.RawTextHelpFormatter,
         epilog="""
 Examples:
-  python unified_pipeline.py test_pdf/bio_paper_1.pdf
+  python unified_pipeline.py output/test_pdf/bio_paper_1.pdf
   python unified_pipeline.py https://example.com/paper.pdf
-  python unified_pipeline.py test_pdf/bio_paper_1.pdf custom_output_folder
-  python unified_pipeline.py "test_pdf/354_MARPLE_A_Benchmark_for_Lon.pdf"
+  python unified_pipeline.py output/test_pdf/bio_paper_1.pdf custom_output_folder
+  python unified_pipeline.py "output/test_pdf/354_MARPLE_A_Benchmark_for_Lon.pdf"
 
 Pipeline Stages:
   1. PDF Processing    - OCR extraction using Mistral API

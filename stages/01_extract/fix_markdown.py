@@ -92,7 +92,7 @@ def main() -> None:
     else:
         # Auto-detect most recent output directory
         print("[*] Auto-detecting most recent output directory...")
-        possible_dirs = [d for d in os.listdir('.') if os.path.isdir(d) and d not in ['ocr_get', 'ocr_fix', 'txtfiles', '.git', 'venv', '__pycache__']]
+        possible_dirs = [d for d in os.listdir('.') if os.path.isdir(d) and d not in ['stages', 'config', 'utils', 'output', '.git', 'venv', '__pycache__']]
         
         if possible_dirs:
             # Sort by modification time, most recent first
@@ -108,7 +108,7 @@ def main() -> None:
     if not os.path.exists(output_directory):
         print(f"[!] Error: Directory '{output_directory}' does not exist.")
         print("[!] Available directories:")
-        dirs = [d for d in os.listdir('.') if os.path.isdir(d) and d not in ['ocr_get', 'ocr_fix', 'txtfiles', '.git', 'venv', '__pycache__']]
+        dirs = [d for d in os.listdir('.') if os.path.isdir(d) and d not in ['stages', 'config', 'utils', 'output', '.git', 'venv', '__pycache__']]
         for d in sorted(dirs):
             print(f"    - {d}")
         sys.exit(1)
