@@ -34,13 +34,13 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 
 ### 3. Install dependencies
 ```bash
-pip install -r txtfiles/requirements.md
+pip install -r config/requirements.md
 ```
 
 ### 4. Configure environment variables
 Copy the environment template and add your API keys:
 ```bash
-cp txtfiles/env_template.md .env
+cp config/env_template.md .env
 # Edit .env and add your API keys:
 # - MISTRAL_API_KEY (for OCR processing)
 # - GEMINI_API_KEY (for advanced formatting)
@@ -50,13 +50,13 @@ cp txtfiles/env_template.md .env
 **NEW: Single Command Processing** - Run the entire pipeline with one command:
 ```bash
 # Process a local PDF file
-python unified_pipeline.py test_pdf/bio_paper_1.pdf
+python unified_pipeline.py output/test_pdf/bio_paper_1.pdf
 
 # Process from a URL
 python unified_pipeline.py https://example.com/paper.pdf
 
 # Process with custom output directory
-python unified_pipeline.py test_pdf/bio_paper_1.pdf my_custom_folder
+python unified_pipeline.py output/test_pdf/bio_paper_1.pdf my_custom_folder
 ```
 
 **The unified script automatically runs all 4 stages:**
@@ -69,21 +69,21 @@ python unified_pipeline.py test_pdf/bio_paper_1.pdf my_custom_folder
 If you prefer to run each stage individually:
 ```bash
 # Step 1: PDF Processing
-python ocr_get/process_pdf.py test_pdf/your_paper.pdf
+python stages/01_extract/process_pdf.py output/test_pdf/your_paper.pdf
 
 # Step 2: Fix image links (auto-detects most recent folder)
-python ocr_fix/fix_markdown.py
+python stages/01_extract/fix_markdown.py
 
 # Step 3: Stage 1 preprocessing and OCR fixes
-python ocr_fix/stage1.py
+python stages/02_preprocess/stage1.py
 
 # Step 4: Stage 2 universal research paper formatting
-python ocr_fix/stage2.py
+python stages/03_format/stage2.py
 ```
 
 ## Complete Process Flow
 
-### Step 1: PDF Processing (`ocr_get/process_pdf.py`)
+### Step 1: PDF Processing (`stages/01_extract/process_pdf.py`)
 - **Input**: PDF document from URL, local file, or interactive selection
 - **Process**: 
   - Auto-detects PDF filename and creates organized output folder (e.g., `demo_paper_2/`)
@@ -95,7 +95,7 @@ python ocr_fix/stage2.py
   - `{pdf_name}/document_content.md` (raw OCR output)
   - `{pdf_name}/page_X_image_Y.{format}` (extracted images)
 
-### Step 2: Image Link Fixing (`ocr_fix/fix_markdown.py`)
+### Step 2: Image Link Fixing (`stages/01_extract/fix_markdown.py`)
 - **Input**: `{pdf_name}/document_content.md`
 - **Process**: 
   - Auto-detects most recent output folder
@@ -103,7 +103,7 @@ python ocr_fix/stage2.py
   - Fixes image references for proper markdown display
 - **Output**: `{pdf_name}/pre_stage_1.md`
 
-### Step 3: Stage 1 Preprocessing (`ocr_fix/stage1.py`)
+### Step 3: Stage 1 Preprocessing (`stages/02_preprocess/stage1.py`)
 - **Input**: `{pdf_name}/pre_stage_1.md`
 - **Process**:
   - **Universal Document Truncation**: Intelligently removes post-references content (acknowledgments, author affiliations, etc.) while adapting to different paper structures
@@ -118,10 +118,10 @@ python ocr_fix/stage2.py
   - **Zero Information Loss**: Preserves all original research content in main document body
 - **Output**: `{pdf_name}/stage_1_complete.md`
 
-### Step 4: Universal Research Formatting (`ocr_fix/stage2.py`)
+### Step 4: Universal Research Formatting (`stages/03_format/stage2.py`)
 - **Input**: `{pdf_name}/stage_1_complete.md`
 - **Process**:
-  - **Universal Research Prompt**: Adapts to different academic disciplines and styles using `txtfiles/universal_research_prompt.md`
+  - **Universal Research Prompt**: Adapts to different academic disciplines and styles using `config/universal_research_prompt.md`
   - **Section-by-Section Processing**: Intelligently splits document into logical sections for optimal LLM processing
   - **Mathematical Expression Repair**: Fixes LaTeX formulas and scientific notation (e.g., `$^{133}$` → `<sup>133</sup>`)
   - **Citation Enhancement**: Repairs reference formatting while preserving author style (`^{11--13,26,19,38}` → `^11-13,19,26,38`)
@@ -132,7 +132,7 @@ python ocr_fix/stage2.py
   - **Intelligent Error Handling**: 3-attempt retry logic with exponential backoff and fallback to preserve content
 - **Output**: `{pdf_name}/final_formatted.md`
 
-### Step 5: JSON Structure Parsing (`json_parser/parser_v3.py`) - **v3.2**
+### Step 5: JSON Structure Parsing (`stages/04_parse/parser_v3.py`) - **v3.2**
 - **Input**: `{pdf_name}/final_formatted.md` or any markdown document
 - **Process**:
   - **6-Stage Architecture**: Preprocessing → Segmentation → Classification → Detection → Extraction → Validation
@@ -160,8 +160,8 @@ python ocr_fix/stage2.py
 #### JSON Parser Usage
 ```bash
 # Basic usage
-cd json_parser
-python parser_v3.py ../example_format_md/test_document.md -o output.json
+cd stages/04_parse
+python parser_v3.py ../../output/example_format_md/test_document.md -o output.json
 
 # With custom configuration
 python parser_v3.py input.md -c config.yaml -o output.json
@@ -301,24 +301,24 @@ If you prefer to run each stage individually, the individual processing scripts 
 
 **Interactive Mode (Recommended)**:
 ```bash
-python ocr_get/process_pdf.py
+python stages/01_extract/process_pdf.py
 # Displays a menu to choose between URL input or local file selection
 ```
 
 **Direct URL Processing**:
 ```bash
-python ocr_get/process_pdf.py https://example.com/research_paper.pdf
+python stages/01_extract/process_pdf.py https://example.com/research_paper.pdf
 ```
 
 **Local PDF Processing**:
 ```bash
-python ocr_get/process_pdf.py test_pdf/my_paper.pdf
+python stages/01_extract/process_pdf.py output/test_pdf/my_paper.pdf
 # Automatically creates output folder named "my_paper/"
 ```
 
 **Custom Output Directory**:
 ```bash
-python ocr_get/process_pdf.py test_pdf/paper.pdf custom_output_folder/
+python stages/01_extract/process_pdf.py output/test_pdf/paper.pdf custom_output_folder/
 ```
 
 All methods automatically create output folders based on the PDF filename (e.g., `demo_paper_2.pdf` → `demo_paper_2/` folder).
@@ -327,16 +327,16 @@ All methods automatically create output folders based on the PDF filename (e.g.,
 
 ```bash
 # 1. Process PDF and extract content
-python ocr_get/process_pdf.py
+python stages/01_extract/process_pdf.py
 
 # 2. Fix image links in markdown
-python ocr_fix/fix_markdown.py
+python stages/01_extract/fix_markdown.py
 
-# 3. Run Stage 1 preprocessing
-python ocr_fix/stage1.py
+# 3. Run Stage 2 preprocessing
+python stages/02_preprocess/stage1.py
 
-# 4. Run Stage 2 advanced formatting
-python ocr_fix/stage2.py
+# 4. Run Stage 3 advanced formatting
+python stages/03_format/stage2.py
 ```
 
 ### Custom File Paths
@@ -344,51 +344,56 @@ python ocr_fix/stage2.py
 All scripts support custom input/output paths:
 
 ```bash
-# Stage 1 with custom paths
-python ocr_fix/stage1.py input.md output.md
-
 # Stage 2 with custom paths
-python ocr_fix/stage2.py input.md output.md prompt.md
+python stages/02_preprocess/stage1.py input.md output.md
+
+# Stage 3 with custom paths
+python stages/03_format/stage2.py input.md output.md prompt.md
 ```
 
 ## Project Structure
 
 ```
 ocr_script_own/
-├── unified_pipeline.py         # 🚀 NEW: Single command for complete pipeline
-├── ocr_get/                    # OCR processing tools
-│   ├── process_pdf.py          # Main PDF processing script
-│   └── debug_mistral.py        # Debug script for API testing
-├── ocr_fix/                    # Formatting pipeline
-│   ├── stage1.py               # Stage 1: Preprocessing
-│   ├── stage2.py               # Stage 2: LLM-based formatting
-│   └── fix_markdown.py         # Image link fixing
-├── json_parser/                # 📄 Advanced JSON structure parser (v3.2)
-│   ├── parser_v3.py            # Main parser with smart merging & structured output
-│   ├── regex_patterns.py       # Centralized regex definitions
-│   ├── config.yaml             # Tunable configuration parameters
-│   ├── test_output.json        # Sample parsed output
-│   ├── TEMP_SYNTAX.MD          # Element type specifications
-│   └── docs/
-│       └── PARSER_DESIGN.md    # Architecture documentation
-├── txtfiles/                   # Configuration and templates
+├── unified_pipeline.py         # 🚀 Single command for complete pipeline
+├── stages/                     # 📁 Organized by processing stages
+│   ├── 01_extract/            # Stage 1: PDF processing & OCR extraction
+│   │   ├── process_pdf.py     # Main PDF processing script
+│   │   ├── fix_markdown.py    # Image link fixing
+│   │   └── debug_mistral.py   # Debug script for API testing
+│   ├── 02_preprocess/         # Stage 2: Preprocessing & OCR fixes
+│   │   └── stage1.py          # OCR fixes, truncation, paragraph reconstruction
+│   ├── 03_format/             # Stage 3: LLM-based formatting
+│   │   └── stage2.py          # Advanced formatting using Gemini AI
+│   └── 04_parse/              # Stage 4: JSON structure parsing (v3.2)
+│       ├── parser_v3.py       # Main parser with smart merging & structured output
+│       ├── regex_patterns.py  # Centralized regex definitions
+│       ├── config.yaml        # Tunable configuration parameters
+│       ├── test_output.json   # Sample parsed output
+│       ├── TEMP_SYNTAX.MD     # Element type specifications
+│       └── docs/
+│           └── PARSER_DESIGN.md  # Architecture documentation
+├── config/                    # 📁 Configuration and templates
 │   ├── requirements.md        # Python dependencies
 │   ├── env_template.md        # Environment template
-│   └── universal_research_prompt.md  # Universal research prompt for Stage 2
-├── test_pdf/                   # Sample PDF files for testing
-├── {pdf_name}/                 # Output directory (auto-generated from PDF filename)
-│   ├── document_content.md     # Raw OCR output
+│   ├── universal_research_prompt.md  # Universal research prompt for Stage 3
+│   └── cursor_prompt.txt      # Development prompt template
+├── output/                    # 📁 Generated outputs and test data
+│   ├── test_pdf/              # Sample PDF files for testing
+│   └── example_format_md/     # Example output
+│       └── test_document.md   # Sample formatted document
+├── utils/                     # 📁 Shared utilities
+│   └── types.py               # Type definitions
+├── {pdf_name}/                # 📁 Output directory (auto-generated from PDF filename)
+│   ├── document_content.md    # Raw OCR output
 │   ├── pre_stage_1.md         # After image link fixing
-│   ├── stage_1_complete.md    # Stage 1 output
-│   ├── final_formatted.md      # Final formatted output
+│   ├── stage_1_complete.md    # Stage 2 output
+│   ├── final_formatted.md     # Stage 3 output
 │   └── page_X_image_Y.jpeg    # Extracted images
-├── example_format_md/          # Example output
-│   └── formatted_document.md   # Sample formatted document
-├── test_pdf/                   # Test PDF directory
-├── venv/                       # Virtual environment
-├── .env                        # Environment variables (not in repo)
-├── .gitignore                  # Git ignore rules
-└── README.md                   # This file
+├── venv/                      # Virtual environment
+├── .env                       # Environment variables (not in repo)
+├── .gitignore                 # Git ignore rules
+└── README.md                  # This file
 ```
 
 ## Formatting Features
@@ -452,7 +457,7 @@ The pipeline includes comprehensive error handling for:
 
 ## Debugging Tools
 
-### Debug Mistral API (`ocr_get/debug_mistral.py`)
+### Debug Mistral API (`stages/01_extract/debug_mistral.py`)
 - Tests Mistral OCR API connectivity
 - Saves raw API responses to JSON
 - Analyzes image extraction results
@@ -522,7 +527,7 @@ Key Python packages:
 - `Pillow`: Image processing (if needed)
 - `fastapi`, `uvicorn`: Web framework (for future API endpoints)
 
-All dependencies are listed in `txtfiles/requirements.md`
+All dependencies are listed in `config/requirements.md`
 
 ## Contributing
 

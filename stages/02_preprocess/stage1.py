@@ -187,7 +187,7 @@ def main() -> None:
     # Auto-detect paths if not provided
     if args.input_file is None or args.output_file is None:
         # Find most recent output directory (fallback to document_ocr_test for backward compatibility)
-        possible_dirs = [d for d in os.listdir('.') if os.path.isdir(d) and not d.startswith('.') and d not in ['ocr_get', 'ocr_fix', 'txtfiles', 'venv', 'example_format_md', 'test_pdf']]
+        possible_dirs = [d for d in os.listdir('.') if os.path.isdir(d) and not d.startswith('.') and d not in ['stages', 'config', 'utils', 'output', 'venv']]
         if possible_dirs:
             # Sort by modification time, most recent first
             possible_dirs.sort(key=lambda x: os.path.getmtime(x), reverse=True)

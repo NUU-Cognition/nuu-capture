@@ -8,16 +8,19 @@ OCR pipeline that converts PDF documents to structured Markdown using Mistral OC
 
 ## Core Architecture
 
-### Three-Module Structure
-- **ocr_get/**: PDF processing and OCR extraction using Mistral API
-- **ocr_fix/**: Two-stage formatting pipeline with zero-information-loss guarantee
-- **txtfiles/**: Configuration files and formatting prompts
+### Four-Stage Structure
+- **stages/01_extract/**: PDF processing and OCR extraction using Mistral API
+- **stages/02_preprocess/**: OCR fixes and preprocessing
+- **stages/03_format/**: LLM-based formatting pipeline with zero-information-loss guarantee
+- **stages/04_parse/**: JSON structure parsing and analysis
+- **config/**: Configuration files and formatting prompts
 
 ### Processing Pipeline Flow
-1. **PDF Processing** (`ocr_get/process_pdf.py`) → Raw OCR + extracted images
-2. **Image Link Fixing** (`ocr_fix/fix_markdown.py`) → Fixed image references  
-3. **Stage 1** (`ocr_fix/stage1.py`) → Preprocessed, truncated content
-4. **Stage 2** (`ocr_fix/stage2.py`) → LLM-enhanced formatting
+1. **PDF Processing** (`stages/01_extract/process_pdf.py`) → Raw OCR + extracted images
+2. **Image Link Fixing** (`stages/01_extract/fix_markdown.py`) → Fixed image references  
+3. **Stage 2 Preprocessing** (`stages/02_preprocess/stage1.py`) → Preprocessed, truncated content
+4. **Stage 3 Formatting** (`stages/03_format/stage2.py`) → LLM-enhanced formatting
+5. **Stage 4 Parsing** (`stages/04_parse/parser_v3.py`) → JSON structure analysis
 
 ## Common Commands
 
@@ -26,32 +29,32 @@ OCR pipeline that converts PDF documents to structured Markdown using Mistral OC
 # Setup virtual environment and dependencies
 python -m venv venv
 source venv/bin/activate  # Windows: venv\Scripts\activate
-pip install -r txtfiles/requirements.md
+pip install -r config/requirements.md
 
 # Configure API keys (required)
-cp txtfiles/env_template.md .env
+cp config/env_template.md .env
 # Edit .env to add MISTRAL_API_KEY and GEMINI_API_KEY
 ```
 
 ### Full Pipeline Execution
 ```bash
-# Interactive mode (recommended) - choose URL or local PDF from test_pdf/ folder
-python ocr_get/process_pdf.py                               # Interactive selection
-python ocr_fix/fix_markdown.py                              # Fix image links
-python ocr_fix/stage1.py                                    # Stage 1 preprocessing
-python ocr_fix/stage2.py                                    # Stage 2 LLM formatting
+# Interactive mode (recommended) - choose URL or local PDF from output/test_pdf/ folder
+python stages/01_extract/process_pdf.py                     # Interactive selection
+python stages/01_extract/fix_markdown.py                    # Fix image links
+python stages/02_preprocess/stage1.py                       # Stage 2 preprocessing
+python stages/03_format/stage2.py                           # Stage 3 LLM formatting
 
 # Direct processing (URL)
-python ocr_get/process_pdf.py https://example.com/doc.pdf   # OCR extraction from URL
-python ocr_fix/fix_markdown.py                              # Fix image links
-python ocr_fix/stage1.py                                    # Stage 1 preprocessing
-python ocr_fix/stage2.py                                    # Stage 2 LLM formatting
+python stages/01_extract/process_pdf.py https://example.com/doc.pdf   # OCR extraction from URL
+python stages/01_extract/fix_markdown.py                    # Fix image links
+python stages/02_preprocess/stage1.py                       # Stage 2 preprocessing
+python stages/03_format/stage2.py                           # Stage 3 LLM formatting
 
-# Direct processing (local file from test_pdf/)
-python ocr_get/process_pdf.py test_pdf/document.pdf         # OCR extraction from local file
-python ocr_fix/fix_markdown.py                              # Fix image links
-python ocr_fix/stage1.py                                    # Stage 1 preprocessing
-python ocr_fix/stage2.py                                    # Stage 2 LLM formatting
+# Direct processing (local file from output/test_pdf/)
+python stages/01_extract/process_pdf.py output/test_pdf/document.pdf  # OCR extraction from local file
+python stages/01_extract/fix_markdown.py                    # Fix image links
+python stages/02_preprocess/stage1.py                       # Stage 2 preprocessing
+python stages/03_format/stage2.py                           # Stage 3 LLM formatting
 ```
 
 ### Custom File Processing

@@ -100,7 +100,7 @@ def main() -> None:
                        help="The path to the Stage 1 preprocessed file. (default: auto-detect from most recent folder)")
     parser.add_argument("output_file", nargs='?', default=None,
                        help="The path where the final, fully formatted file will be saved. (default: auto-detect from input path)")
-    parser.add_argument("prompt_file", nargs='?', default="txtfiles/universal_research_prompt.md",
+    parser.add_argument("prompt_file", nargs='?', default="config/universal_research_prompt.md",
                        help="The path to the .md file containing the formatting prompt.")
     parser.add_argument("--sync", action="store_true",
                        help="Use synchronous processing instead of async (slower but more conservative)")
@@ -112,7 +112,7 @@ def main() -> None:
     # Auto-detect paths if not provided
     if args.input_file is None or args.output_file is None:
         # Find most recent output directory (fallback to document_ocr_test for backward compatibility)
-        possible_dirs = [d for d in os.listdir('.') if os.path.isdir(d) and not d.startswith('.') and d not in ['ocr_get', 'ocr_fix', 'txtfiles', 'venv', 'example_format_md', 'test_pdf']]
+        possible_dirs = [d for d in os.listdir('.') if os.path.isdir(d) and not d.startswith('.') and d not in ['stages', 'config', 'utils', 'output', 'venv']]
         if possible_dirs:
             # Sort by modification time, most recent first
             possible_dirs.sort(key=lambda x: os.path.getmtime(x), reverse=True)
