@@ -1,14 +1,13 @@
 [
     {
-        "element_type": "heading",
+        "element_type": "title",
         "content": "MARPLE: A Benchmark for Long-Horizon Inference",
-        "level": 1,
         "metadata": {
             "block_index": 0
         }
     },
     {
-        "element_type": "author_section",
+        "element_type": "authors",
         "metadata": {
             "block_index": 1
         },
@@ -106,7 +105,7 @@
         ]
     },
     {
-        "element_type": "figure_image",
+        "element_type": "image",
         "content": "![Illustrative example of an inference task in MARPLE](img-0.jpeg)",
         "metadata": {
             "block_index": 8
@@ -261,18 +260,12 @@
         }
     },
     {
-        "element_type": "paragraph",
-        "content": "**Table 1:** Comparing MARPLE with other visual reasoning, causal reasoning, and cognition-inspired benchmarks. MARPLE is long-horizon, high-level, and with multimodal (vision, text, audio) support. Time refers to average stimuli length, ecological refers to object diversity, and controlled generation refers to annotated data generation.",
-        "metadata": {
-            "block_index": 18
-        }
-    },
-    {
         "element_type": "table",
         "content": "| Benchmark | Time (seconds) | Video | Text | Audio | Ecological | High-Level Reasoning | Physical Realism | Controlled Generation | Cognition Inspired |\n|-----------|----------------|-------|------|-------|------------|---------------------|------------------|---------------------|-------------------|\n| CLEVR | - | - | ✓ | - | - | - | - | ✓ | - |\n| MovieQA | 202.7 | ✓ | ✓ | - | ✓ | ✓ | - | - | - |\n| TGIF-QA | 1.6 | ✓ | ✓ | - | ✓ | - | - | - | - |\n| TVQA+ | 7.2 | ✓ | ✓ | - | ✓ | - | - | - | - |\n| AGQA | 30 | ✓ | ✓ | - | ✓ | ✓ | - | - | - |\n| MultiPLY | - | - | ✓ | ✓ | ✓ | - | - | ✓ | - |\n| IntPhys | 7 | ✓ | - | - | - | - | ✓ | ✓ | - |\n| Galileo | - | ✓ | - | - | - | - | ✓ | ✓ | - |\n| CATER | 12.5 | ✓ | - | - | - | ✓ | ✓ | ✓ | - |\n| CoPhy | 6 | ✓ | - | - | - | - | ✓ | ✓ | - |\n| CRAFT | 10 | ✓ | - | - | - | - | ✓ | ✓ | - |\n| CLEVRER | 5 | ✓ | - | - | - | - | ✓ | ✓ | - |\n| ComPhy | 5 | ✓ | - | - | - | - | ✓ | ✓ | - |\n| CLEVRER-Humans | 5 | ✓ | - | - | - | - | ✓ | ✓ | ✓ |\n| AGENT | 15.4 | ✓ | - | - | - | - | - | ✓ | ✓ |\n| BIB | 55 | ✓ | - | - | - | ✓ | - | ✓ | ✓ |\n| PHASE | 17.5 | ✓ | - | - | ✓ | ✓ | ✓ | ✓ | ✓ |\n| MMToM-QA | 63.4 | ✓ | ✓ | - | ✓ | ✓ | - | ✓ | ✓ |\n| **MARPLE** | **52.5** | **✓** | **✓** | **✓** | **✓** | **✓** | **-** | **✓** | **✓** |",
         "metadata": {
             "block_index": 19
-        }
+        },
+        "caption": "**Table 1:** Comparing MARPLE with other visual reasoning, causal reasoning, and cognition-inspired benchmarks. MARPLE is long-horizon, high-level, and with multimodal (vision, text, audio) support. Time refers to average stimuli length, ecological refers to object diversity, and controlled generation refers to annotated data generation."
     },
     {
         "element_type": "paragraph",
@@ -392,7 +385,7 @@
         ]
     },
     {
-        "element_type": "figure_image",
+        "element_type": "image",
         "content": "![MARPLE Household Simulator backend](img-1.jpeg)",
         "metadata": {
             "block_index": 34
@@ -460,7 +453,7 @@
         ]
     },
     {
-        "element_type": "figure_image",
+        "element_type": "image",
         "content": "![Hierarchical planner for procedural generation of agent behaviors](img-2.jpeg)",
         "metadata": {
             "block_index": 42
@@ -531,7 +524,7 @@
         ]
     },
     {
-        "element_type": "latex_formula",
+        "element_type": "latex",
         "content": "$$P(A)=\\frac{\\exp \\left(\\eta P\\left(s_{T} \\mid \\pi^{A}, o_{0: \\tau}^{A}\\right)\\right)}{\\exp \\left(\\eta P\\left(s_{T} \\mid \\pi^{A}, o_{0: \\tau}^{A}\\right)\\right)+\\exp \\left(\\eta P\\left(s_{T} \\mid \\pi^{B}, o_{0: \\tau}^{B}\\right)\\right)}$$",
         "metadata": {
             "block_index": 52
@@ -583,7 +576,7 @@
         }
     },
     {
-        "element_type": "latex_formula",
+        "element_type": "latex",
         "content": "$$P\\left(a \\mid o_{t}^{V}, o_{t}^{A}\\right) \\propto P\\left(o_{t}^{A} \\mid a\\right) P\\left(a \\mid o_{t}^{V}\\right)$$",
         "metadata": {
             "block_index": 58
@@ -720,7 +713,7 @@
         }
     },
     {
-        "element_type": "figure_image",
+        "element_type": "image",
         "content": "![Performance for each baseline across scenarios](img-3.jpeg)\n**Figure 4:** Performance for each baseline across scenarios. Results are included for the simulation baseline trained both in-distribution and out-of-distribution (ood). Inference scenarios are presented in order of increasing difficulty from left to right, top to bottom. Error bands correspond to 95% CI intervals across tested trajectories.",
         "metadata": {
             "block_index": 76
@@ -742,7 +735,7 @@
         }
     },
     {
-        "element_type": "figure_image",
+        "element_type": "image",
         "content": "![Example rollouts performed by simulation model](img-4.jpeg)\n**Figure 5:** Example rollouts performed by our simulation model, starting from the initial state to possible future states. For agent A, this rollout reaches the inference state: Pickup (plant).",
         "metadata": {
             "block_index": 79
@@ -831,7 +824,7 @@
         }
     },
     {
-        "element_type": "figure_image",
+        "element_type": "image",
         "content": "![Performance for all variants of the simulation baseline](img-5.jpeg)",
         "metadata": {
             "block_index": 90
@@ -839,18 +832,12 @@
         "caption": "**Figure 6:** Performance for all variants of the simulation baseline, for one inference scenario: \"Who turned on the shower?\". The error bands correspond to 95% CI intervals across test trajectories."
     },
     {
-        "element_type": "paragraph",
-        "content": "**Table 2:** Evidence needed for the baselines to achieve a 0.8 inference accuracy, quantified by the fraction of trajectories shown. Humans consistently make more accurate predictions earlier, particularly out-of-distribution.",
-        "metadata": {
-            "block_index": 92
-        }
-    },
-    {
         "element_type": "table",
         "content": "|                       | Human | Vision + Audio + Language | Vision + Language | Vision + Audio | Vision-Only | LLM  |\n| --------------------- | ----- | ------------------------- | ----------------- | -------------- | ----------- | ---- |\n| In-Distribution ↓     | 0.48  | 0.58                      | 0.64              | 0.80           | 0.85        | 0.95 |\n| Out-of-Distribution ↓ | 0.48  | 0.81                      | 0.85              | 0.91           | 0.92        | 0.95 |",
         "metadata": {
             "block_index": 93
-        }
+        },
+        "caption": "**Table 2:** Evidence needed for the baselines to achieve a 0.8 inference accuracy, quantified by the fraction of trajectories shown. Humans consistently make more accurate predictions earlier, particularly out-of-distribution."
     },
     {
         "element_type": "heading",
@@ -962,894 +949,6 @@
         "content": "This work was in part supported by the Stanford Institute for Human-Centered Artificial Intelligence (HAI), NSF CCRI #2120095, RI #2338203, ONR YIP N00014-24-1-2117, and ONR MURI N00014-22-1-2740.",
         "metadata": {
             "block_index": 109
-        }
-    },
-    {
-        "element_type": "heading",
-        "content": "References",
-        "level": 2,
-        "metadata": {
-            "block_index": 110
-        }
-    },
-    {
-        "element_type": "paragraph",
-        "content": "---",
-        "metadata": {
-            "block_index": 156
-        }
-    },
-    {
-        "element_type": "heading",
-        "content": "A.1 Overview",
-        "level": 3,
-        "metadata": {
-            "block_index": 159
-        }
-    },
-    {
-        "element_type": "paragraph",
-        "content": "The MARPLE codebase can be found at https://github.com/marple-benchmark/marple. Our benchmark consists of 10 household missions paired to create a set of 5 inference scenarios, as shown in Table A.1. This provides a representative sample of the diversity and complexity possible by pairing missions.",
-        "metadata": {
-            "block_index": 160
-        }
-    },
-    {
-        "element_type": "paragraph",
-        "content": "**Table A.1:** Five inference scenarios in our benchmark, defined in terms of the inference question, agent A's mission, and agent B's mission. For these tasks, agent A is always the answer to the inference question. The tasks are in order of increasing difficulty, which is determined based on the average inference horizon and similarity between the two missions.",
-        "metadata": {
-            "block_index": 161
-        }
-    },
-    {
-        "element_type": "table",
-        "content": "| Inference Question | Agent A Mission | Agent B Mission | Avg. Horizon | Similarity |\n|-------------------|----------------|-----------------|--------------|------------|\n| Who picked up the pillow? | Watch movie cozily | Watch news on TV | 15 | 0.19 |\n| Who turned on the shower? | Take shower | Feed dog | 26.4 | 0.30 |\n| Who picked up the snack? | Get snack | Clean living room table | 36.8 | 0.46 |\n| Who picked up the plant? | Move plant at night | Get night snack | 43.9 | 0.61 |\n| Who turned on the laundry? | Do laundry | Change outfit | 51.3 | 0.87 |",
-        "metadata": {
-            "block_index": 162
-        }
-    },
-    {
-        "element_type": "heading",
-        "content": "A.2 Inference Scenario Setup",
-        "level": 3,
-        "metadata": {
-            "block_index": 163
-        }
-    },
-    {
-        "element_type": "paragraph",
-        "content": "An inference scenario is defined by the missions performed by agents A and B and a query state. We provide details on the necessary components below:",
-        "metadata": {
-            "block_index": 164
-        }
-    },
-    {
-        "element_type": "paragraph",
-        "content": "**Missions.** We define 10 household missions: Change Outfit, Clean Living Room Table, Do Laundry, Feed Dog, Get Night Snack, Get Snack, Move Plant at Night, Take Shower, Watch Movie Cozily, Watch News on TV. These missions vary in the number of timesteps and types of actions. Each mission is defined by a list of subgoals, which we define next.",
-        "metadata": {
-            "block_index": 165
-        }
-    },
-    {
-        "element_type": "paragraph",
-        "content": "**Subgoals.** A mission's subgoal is a symbolic state that must be satisfied to complete the mission. It is represented as a dictionary with the keys \"obj\", \"fur\", \"room\", \"pos\", \"action\", \"state\", and \"end_state.\" The \"obj\" and \"fur\" determine the target object type, \"room\" and \"pos\" describe the target location, and \"action\" is the action that the agent must perform on the target to result in the desired \"state.\" The \"state\" is a tuple with the state name and boolean value, and \"end_state\" is True if the subgoal is the last one in the mission and False otherwise.",
-        "metadata": {
-            "block_index": 166
-        }
-    },
-    {
-        "element_type": "paragraph",
-        "content": "**Inference Scenario.** To construct an inference scenario, we pair two missions (e.g., do laundry and change outfit) and select a query state unique to one agent (e.g., Pickup(sandwich) = True). The corresponding inference question is: \"Which agent is more likely to have [state action] the [state object]?\" For instance, if the query state is Pickup(sandwich), the question would be: \"Which agent is more likely to have picked-up the sandwich?\"",
-        "metadata": {
-            "block_index": 167
-        },
-        "inline_citations": [
-            {
-                "id": "state action"
-            },
-            {
-                "id": "state object"
-            }
-        ]
-    },
-    {
-        "element_type": "heading",
-        "content": "A.3 Inference Scenario Difficulty",
-        "level": 3,
-        "metadata": {
-            "block_index": 168
-        }
-    },
-    {
-        "element_type": "paragraph",
-        "content": "We identify two key factors that affect the difficulty of an inference scenario: the average inference horizon and the similarity between the two missions.",
-        "metadata": {
-            "block_index": 169
-        }
-    },
-    {
-        "element_type": "paragraph",
-        "content": "**Inference Horizon.** The inference horizon is the number of steps that it takes for agent A to reach its inference state. As the inference horizon increases, difficulty increases because models must understand and predict more future steps. The uncertainty in predictions also compounds over time, leading to greater prediction errors and variation in possible outcomes.",
-        "metadata": {
-            "block_index": 170
-        }
-    },
-    {
-        "element_type": "paragraph",
-        "content": "**Mission Similarity.** An inference scenario becomes more challenging when the two agents have similar trajectories, which are largely determined by their missions' subgoals. Thus, we define the similarity between a pair of missions, $M_{1}$ and $M_{2}$, as follows:",
-        "metadata": {
-            "block_index": 171
-        }
-    },
-    {
-        "element_type": "paragraph",
-        "content": "$\\text{similarity}(M_{1}, M_{2}) = \\frac{1}{1.5}\\left(\\frac{|M_{1} \\text{ subgoal actions } \\cap M_{2} \\text{ subgoal actions}|}{|M_{1} \\text{ subgoal actions } \\cup M_{2} \\text{ subgoal actions}|}\\right) + 0.5 \\frac{|M_{1} \\text{ subgoal rooms } \\cap M_{2} \\text{ subgoal rooms}|}{|M_{1} \\text{ subgoal rooms } \\cup M_{2} \\text{ subgoal rooms}|}$",
-        "metadata": {
-            "block_index": 172
-        }
-    },
-    {
-        "element_type": "heading",
-        "content": "B MARPLE Household Simulator: Details",
-        "level": 2,
-        "metadata": {
-            "block_index": 173
-        }
-    },
-    {
-        "element_type": "paragraph",
-        "content": "The MARPLE Household Simulator consists of two components: a multimodal simulator and a hierarchical agent planner.",
-        "metadata": {
-            "block_index": 174
-        }
-    },
-    {
-        "element_type": "heading",
-        "content": "B.1 Simulator: A Multimodal GridWorld Environment",
-        "level": 3,
-        "metadata": {
-            "block_index": 175
-        }
-    },
-    {
-        "element_type": "paragraph",
-        "content": "The simulator is built on top of Mini-BEHAVIOR [22], a GridWorld environment that is fast, simple, and easy-to-use. It supports procedural generation of diverse environments, symbolic states, and high-level agent actions, making it suitable for simulating realistic, long-horizon tasks.",
-        "metadata": {
-            "block_index": 176
-        },
-        "inline_citations": [
-            {
-                "id": "22"
-            }
-        ]
-    },
-    {
-        "element_type": "paragraph",
-        "content": "Our simulator inherits several features from Mini-BEHAVIOR, including the standard $m \\times n$ grid layout and asset library of furniture and object classes, action space, and state space. The asset library statistics are in Table B.1.",
-        "metadata": {
-            "block_index": 177
-        }
-    },
-    {
-        "element_type": "paragraph",
-        "content": "**Table B.1:** MARPLE Household Simulator Elements Type Statistics.",
-        "metadata": {
-            "block_index": 178
-        }
-    },
-    {
-        "element_type": "table",
-        "content": "| Environment Elements | | | Behavior Elements | | Engine Elements |\n|---------------------|---|---|-------------------|---|-----------------|\n| Room Types | Furniture Types | Object Types | Mission Types | Action Types | State Types |\n| 6 | 22 | 82 | 10 | 10 | 18 |",
-        "metadata": {
-            "block_index": 179
-        }
-    },
-    {
-        "element_type": "paragraph",
-        "content": "Our simulator further extends Mini-BEHAVIOR to support multimodal stimuli as follows: **Visual.** The visual representation of our environment is a $m \\times n$ grid of cells. We inherit Mini-BEHAVIOR's visualization of agents, objects, and furniture, which are represented as triangles, icons, and colored backgrounds, respectively. Each cell can contain an object and a furniture, and the furniture states are indicated by green borders along the cell edges.",
-        "metadata": {
-            "block_index": 180
-        }
-    },
-    {
-        "element_type": "paragraph",
-        "content": "Each environment state has a corresponding array and a scene graph representation. An $m \\times n$ environment has a $m \\times n \\times 8$ array representation. The 8 channels indicate the room type, furniture type, furniture states, object types, object states, object ids, agent position, and agent direction at each cell.",
-        "metadata": {
-            "block_index": 182
-        }
-    },
-    {
-        "element_type": "paragraph",
-        "content": "Meanwhile, the scene graph representation is a standard scene graph with a set of nodes and directed edges. The nodes represent entities, and the directed edges represent physical relations between entities, such as object-object relations and object-room relations.",
-        "metadata": {
-            "block_index": 183
-        }
-    },
-    {
-        "element_type": "paragraph",
-        "content": "**Language.** Our simulator supports two kinds of language descriptions that can be generated by an agent: intent and testimony. An agent's intent describes an action that they are about to perform, e.g. \"I am going to open the closet in the Bedroom.\" An agent's testimony provides information on previous state changes in the environment that it observed, e.g. The clothes in the closet in the Bedroom were picked up. The language descriptions are generated from templates which takes in the action and relevant room and objects.",
-        "metadata": {
-            "block_index": 184
-        }
-    },
-    {
-        "element_type": "paragraph",
-        "content": "**Audio.** To simulate the sounds produced by agent actions, we incorporate realistic audio recordings and define an action-audio mapping. The audio files are obtained from https://freesound.org, and they are clipped to be 1 second long.",
-        "metadata": {
-            "block_index": 185
-        }
-    },
-    {
-        "element_type": "figure_image",
-        "content": "![Examples of the Visual Representation of the MARPLE Simulation Environment](img-6.jpeg)",
-        "metadata": {
-            "block_index": 186
-        }
-    },
-    {
-        "element_type": "paragraph",
-        "content": "**Figure B.1:** Examples of the Visual Representation of the MARPLE Simulation Environment.",
-        "metadata": {
-            "block_index": 187
-        }
-    },
-    {
-        "element_type": "heading",
-        "content": "B.2 Planner: A Hierarchical Planner for Agent Behavior Generation",
-        "level": 3,
-        "metadata": {
-            "block_index": 188
-        }
-    },
-    {
-        "element_type": "paragraph",
-        "content": "The hierarchical planner generates agent trajectories given its mission preferences, a distribution over all possible missions. It consists of 3 components: a high-, mid-, and low-level planner.",
-        "metadata": {
-            "block_index": 189
-        }
-    },
-    {
-        "element_type": "paragraph",
-        "content": "**High-Level Planner.** The high-level planner first samples a mission according to the agent's mission preferences. If the current mission becomes infeasible at any point, the current mission terminates, and the high-level planner resamples a new mission.",
-        "metadata": {
-            "block_index": 190
-        }
-    },
-    {
-        "element_type": "paragraph",
-        "content": "**Mid-Level Planner.** Given a mission, the mid-level planner is a Finite State Machine that determines the next subgoal to accomplish. It is given the sequence of subgoals to accomplish, and it finds the first one in the sequence that has not been executed yet. If the first unaccomplished subgoal is not feasible, (e.g. there is no light in the Kitchen), the current mission terminates.",
-        "metadata": {
-            "block_index": 191
-        }
-    },
-    {
-        "element_type": "paragraph",
-        "content": "**Low Level Planner.** The low-level planner decomposes a subgoal into a sequence of agent actions to accomplish the subgoal, using the A-star algorithm. It generates the shortest path to navigate to the target object, positions the agent, and performs the specified action. The simulator then propagates the environment state based on these actions. When a feasible trajectory is found, the trajectory is saved; otherwise, the current mission terminates.",
-        "metadata": {
-            "block_index": 192
-        }
-    },
-    {
-        "element_type": "heading",
-        "content": "B.3 Usage: Ensuring diversity and complexity",
-        "level": 3,
-        "metadata": {
-            "block_index": 193
-        }
-    },
-    {
-        "element_type": "paragraph",
-        "content": "Inference scenarios are procedurally generated according to a configuration file. This file specifies initial conditions such as objects, states, and positions. Optional constraints include environment size, number of additional rooms, furniture, objects, and their positions.",
-        "metadata": {
-            "block_index": 194
-        }
-    },
-    {
-        "element_type": "paragraph",
-        "content": "The environment is first instantiated with the specified elements, and the additional ones are randomly selected from the asset library. They are placed randomly throughout the environment, resulting in diverse environment instances. The planner then generates agent trajectories within the environment.",
-        "metadata": {
-            "block_index": 195
-        }
-    },
-    {
-        "element_type": "paragraph",
-        "content": "To ensure complexity, the environment size, number of objects, number of rooms can all be scaled as needed. An $m \\times n$ environment has a $m \\times n \\times 8$ state representation, causing the state space to grow exponentially with the array size.",
-        "metadata": {
-            "block_index": 196
-        }
-    },
-    {
-        "element_type": "heading",
-        "content": "C.1 Dataset Details",
-        "level": 3,
-        "metadata": {
-            "block_index": 198
-        }
-    },
-    {
-        "element_type": "paragraph",
-        "content": "**Dataset description.** We provide a dataset description in a datasheet: https://github.com/marple-benchmark/marple/blob/main/datasheet.md.",
-        "metadata": {
-            "block_index": 199
-        }
-    },
-    {
-        "element_type": "paragraph",
-        "content": "**Link and license.** The dataset is uploaded for public download at https://drive.google.com/drive/folders/1zXsErNVOMYjBMWzTnmZS4e4aIljWlRce?usp=sharing. It will be released under the CC-BY-4.0 license.",
-        "metadata": {
-            "block_index": 200
-        }
-    },
-    {
-        "element_type": "paragraph",
-        "content": "**Author statement.** The authors bear all responsibility in case of violation of rights. All dataset trajectories were collected by the authors and we are releasing the dataset under CC-BY-4.0.",
-        "metadata": {
-            "block_index": 201
-        }
-    },
-    {
-        "element_type": "paragraph",
-        "content": "**Format.** The data is uploaded in a simple zip format, with a zip file for each inference scenario in each train and test dataset. Upon decompressing the archive, a directory is provided for each instance that contains two subdirectories, one per agent. These are named with the agent's mission, and they contain files for the array and scene graph representations of each step in the trajectory, labelled by the timestep.",
-        "metadata": {
-            "block_index": 202
-        }
-    },
-    {
-        "element_type": "heading",
-        "content": "C.2 Data Generation",
-        "level": 3,
-        "metadata": {
-            "block_index": 203
-        }
-    },
-    {
-        "element_type": "paragraph",
-        "content": "For each inference scenario, we provide training and testing datasets. Each testing dataset contains 500 paired trajectories, instantiated in 10 diverse, procedurally generated rooms. We provide two types of training sets, each containing 5000 paired trajectories. For one type, 500 trajectories are generated in each of the 10 testing environments. For the second, 5000 environments are procedurally generated with 1 trajectory each. The configuration files used to generate all of the data are provided in our codebase.",
-        "metadata": {
-            "block_index": 204
-        }
-    },
-    {
-        "element_type": "heading",
-        "content": "D.1 MARPLE Simulator: Computational Resources",
-        "level": 3,
-        "metadata": {
-            "block_index": 206
-        }
-    },
-    {
-        "element_type": "paragraph",
-        "content": "Our simulator operates at 600 frames per second (FPS) and requires only 1 frame for a primitive action. We run our experiments on the Stanford SC computational cluster with 1 NVIDIA TITAN RTX GPU and 8 CPU per job. With these resources, each inference trial takes 1.5 hours. The speed and efficiency of our simulator allows researchers to effectively evaluate their methods and focus on solving high-level, long-horizon inference challenges.",
-        "metadata": {
-            "block_index": 207
-        }
-    },
-    {
-        "element_type": "paragraph",
-        "content": "In contrast, a realistic physical simulator such as BEHAVIOR [26] runs at 60 FPS and requires 100 frames to perform a primitive action, making larger-scale experiments impractical. Such detailed physics simulation is also unnecessary for our inference setup, which focuses on understanding high-level agent behavior rather than physical interactions or photorealistic rendering.",
-        "metadata": {
-            "block_index": 208
-        },
-        "inline_citations": [
-            {
-                "id": "26"
-            }
-        ]
-    },
-    {
-        "element_type": "heading",
-        "content": "D.2 Experiment Resource Requirements",
-        "level": 3,
-        "metadata": {
-            "block_index": 209
-        }
-    },
-    {
-        "element_type": "paragraph",
-        "content": "We ran experiments on the Stanford SC computational cluster with 1 NVIDIA TITAN RTX GPU, 8 CPU, and 30 GB RAM for each job. With these resources, each trial for a mental-simulation baseline took 1.5 hours to run. Each trial for GPT-4 took 1 minute to run and required 32 API calls, resulting in a cost of $11 × 8 × $0.50 = $44.00 per trial.",
-        "metadata": {
-            "block_index": 210
-        }
-    },
-    {
-        "element_type": "paragraph",
-        "content": "We evaluate each baseline on 50 trials. Each mental-simulation baseline took 75 hours total (jobs were submitted in parallel), and we evaluate on 4 variants of the simulation baseline for a total of 300 hours. For GPT-4, the 50 trials took 1 hour and cost $2200. For humans, it took roughly 3 hours to complete the set of 50 trials.",
-        "metadata": {
-            "block_index": 211
-        }
-    },
-    {
-        "element_type": "heading",
-        "content": "D.3 Statistical Significance",
-        "level": 3,
-        "metadata": {
-            "block_index": 212
-        }
-    },
-    {
-        "element_type": "paragraph",
-        "content": "We choose to evaluate on 50 trials. This provides a good balance between statistical power and computational resources, as performing inference for a single trial is resource-intensive.",
-        "metadata": {
-            "block_index": 213
-        }
-    },
-    {
-        "element_type": "paragraph",
-        "content": "We plot the inference accuracy across the 50 trials with 95% CI, as shown in Figure 4 and Figure 6. The error bars in Figure 4 and Figure 6 are calculated using the standard formula: $CI = \\bar{x} \\pm \\frac{\\sigma}{\\sqrt{n}}$, where $\\bar{x}$ is inference accuracy, $\\sigma$ is standard deviation, and $n=50$ is the number of trials. Our figures indicate that 50 trials is sufficient, as the error bar is small enough to draw meaningful conclusions.",
-        "metadata": {
-            "block_index": 214
-        }
-    },
-    {
-        "element_type": "heading",
-        "content": "E.1 Algorithm",
-        "level": 3,
-        "metadata": {
-            "block_index": 216
-        }
-    },
-    {
-        "element_type": "paragraph",
-        "content": "**Algorithm E.1** Simulation with Monte Carlo Sampling and Learned Agent Models **Input:** Observations of both agents $o_{i}^{A}, o_{i}^{B}$  \n**Output:** $P(A), P(B)$ that $A$ or $B$ caused $s_{T}$",
-        "metadata": {
-            "block_index": 217
-        }
-    },
-    {
-        "element_type": "list",
-        "content": "1. Initialize count ← 0\n2. **for** $i ← 0$ to $m-1$ **do**\n3. &nbsp;&nbsp;&nbsp;&nbsp;**for** $t ← \\tau$ to $T$ **do**\n4. &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Sample $a_{i}^{A}$ according to $P\\left(a \\mid \\pi^{A}, o_{i}^{A}\\right)$\n5. &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Pass $a_{i}^{A}$ to the simulator, obtain $s_{t+1}^{A}, o_{t+1}^{A}$\n6. &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**if** $s_{t+1}^{A} = s_{T}$ **then**\n7. &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;count ← count + 1\n8. &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**break**\n9. &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**end if**\n10. &nbsp;&nbsp;&nbsp;&nbsp;**end for**\n11. **end for**\n12. $P\\left(s_{T} \\mid \\pi^{A}, o_{0: \\tau}^{A}\\right) ← \\text{count} / m$\n13. Repeat 3-14 for agent $B$ to get $P\\left(s_{T} \\mid \\pi^{B}, o_{0: \\tau}^{B}\\right)$\n14. Normalize using Equation (1) to get $P(A), P(B) = \\text{softmax}\\left(P\\left(s_{T} \\mid \\pi^{A}, o_{0: \\tau}^{A}\\right), P\\left(s_{T} \\mid \\pi^{B}, o_{0: \\tau}^{B}\\right)\\right)$",
-        "items": [
-            "Initialize count ← 0",
-            "**for** $i ← 0$ to $m-1$ **do**",
-            "&nbsp;&nbsp;&nbsp;&nbsp;**for** $t ← \\tau$ to $T$ **do**",
-            "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Sample $a_{i}^{A}$ according to $P\\left(a \\mid \\pi^{A}, o_{i}^{A}\\right)$",
-            "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Pass $a_{i}^{A}$ to the simulator, obtain $s_{t+1}^{A}, o_{t+1}^{A}$",
-            "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**if** $s_{t+1}^{A} = s_{T}$ **then**",
-            "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;count ← count + 1",
-            "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**break**",
-            "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**end if**",
-            "&nbsp;&nbsp;&nbsp;&nbsp;**end for**",
-            "**end for**",
-            "$P\\left(s_{T} \\mid \\pi^{A}, o_{0: \\tau}^{A}\\right) ← \\text{count} / m$",
-            "Repeat 3-14 for agent $B$ to get $P\\left(s_{T} \\mid \\pi^{B}, o_{0: \\tau}^{B}\\right)$",
-            "Normalize using Equation (1) to get $P(A), P(B) = \\text{softmax}\\left(P\\left(s_{T} \\mid \\pi^{A}, o_{0: \\tau}^{A}\\right), P\\left(s_{T} \\mid \\pi^{B}, o_{0: \\tau}^{B}\\right)\\right)$"
-        ],
-        "metadata": {
-            "block_index": 219
-        }
-    },
-    {
-        "element_type": "heading",
-        "content": "E.2 Implementation Details",
-        "level": 3,
-        "metadata": {
-            "block_index": 220
-        }
-    },
-    {
-        "element_type": "paragraph",
-        "content": "**Agent Model Architectures.** We have four variations of our agent policy models: vision-only, audio-augmented, language-conditioned, and audio-augmented language-conditioned.",
-        "metadata": {
-            "block_index": 221
-        }
-    },
-    {
-        "element_type": "paragraph",
-        "content": "The vision-only and audio-augmented policy models are implemented with a Vision Transformer (ViT) as an encoder with a multi-layer perceptron (MLP) to predict the agent actions. After experimenting with different model and layer sizes, we use a ViT encoder with an image size of 20×20, patch size of 1×1, depth of 15, embedding dimension of 1024, 8 channels, and 16 heads and a 4-layer MLP with intermediate ReLU layers.",
-        "metadata": {
-            "block_index": 222
-        }
-    },
-    {
-        "element_type": "paragraph",
-        "content": "The language-conditioned and audio-augmented language-conditioned policy models are transformer-based with a ViT encoder and 4 decoders for the object, furniture, room, and action. Each decoder is a 2-layer MLP with an intermediate ReLU layer. After experimentation, we use a ViT encoder with an image size of 20×20, patch size of 1×1, depth of 15, embedding dimension of 1024, 8 channels, and 16 heads. Each decoder has an input dimension of 256, hidden dimension of 256, position embedding dimension of 64, depth of 8, dropout of 0.1, and gelu activation.",
-        "metadata": {
-            "block_index": 223
-        }
-    },
-    {
-        "element_type": "paragraph",
-        "content": "**Agent Model Training Data.** We learn agent models for all 10 of the provided missions. We train our agent models on two types of agent behavior datasets, as described in Appendix C.",
-        "metadata": {
-            "block_index": 224
-        }
-    },
-    {
-        "element_type": "paragraph",
-        "content": "**Agent Model Training Details.** We perform sweeps for hyperparameter tuning using WandB. Ultimately, we train our low-level policy models using a batch size of 64 and a learning rate of 1e-4, optimized with the Adam optimizer. The models are trained for 20 epochs, and this includes a gradual warmup scheduler with a multiplier of 1 and a warmup period of 4 epochs, followed by a cosine annealing learning rate scheduler over the remaining epochs. Additionally, we employ gradient accumulation to enhance the training efficiency and stability.",
-        "metadata": {
-            "block_index": 225
-        }
-    },
-    {
-        "element_type": "heading",
-        "content": "F Ablations of Simulation with Learned Agent Models",
-        "level": 2,
-        "metadata": {
-            "block_index": 226
-        }
-    },
-    {
-        "element_type": "paragraph",
-        "content": "We provide extensive ablation of our simulation baselines, and we explore the effect of each modality (vision, audio, and language) on performance. These demonstrate that the vision-only baseline performs the worst, and the addition of audio and language are both beneficial. While language seems more valuable than audio in inference, the baseline using all 3 modalities consistently outperforms the others. This suggests that audio and language provide useful, distinct information in inference.",
-        "metadata": {
-            "block_index": 227
-        }
-    },
-    {
-        "element_type": "figure_image",
-        "content": "![Performance of each variant of the simulation baseline on all 5 inference scenarios](img-7.jpeg)",
-        "metadata": {
-            "block_index": 228
-        }
-    },
-    {
-        "element_type": "paragraph",
-        "content": "**Figure F.1:** Performance of each variant of the simulation baseline on all 5 inference scenarios. These baselines are tested in-distribution, on the same environments seen in training. The vision-only baseline performs the worst. While language seems more useful than audio, the baseline with all 3 modalities consistently outperforms the others. This suggests that both audio and language provide useful, distinct information.",
-        "metadata": {
-            "block_index": 229
-        }
-    },
-    {
-        "element_type": "heading",
-        "content": "G Prompts for GPT-4",
-        "level": 2,
-        "metadata": {
-            "block_index": 230
-        }
-    },
-    {
-        "element_type": "paragraph",
-        "content": "We provide the prompt templates for GPT-4:",
-        "metadata": {
-            "block_index": 231
-        }
-    },
-    {
-        "element_type": "heading",
-        "content": "Prompt Illustration for generating completions",
-        "level": 3,
-        "metadata": {
-            "block_index": 232
-        }
-    },
-    {
-        "element_type": "paragraph",
-        "content": "**Instructions:** Take a deep breath. Your task is to analyze and determine which agent (target agent, other agent) is more likely to have performed specific actions leading to the final state of the environment.",
-        "metadata": {
-            "block_index": 233
-        }
-    },
-    {
-        "element_type": "paragraph",
-        "content": "Remember, the states you are analyzing are select snapshots from a larger sequence. If the agents have gone through e.g., 100 states, you might only be seeing a fraction of these (like every 10th state for each agent), which means critical movements and decisions may have occurred in the unseen states.",
-        "metadata": {
-            "block_index": 234
-        }
-    },
-    {
-        "element_type": "paragraph",
-        "content": "**Initial State of Target Agent:** [state here]  \n**Current State of Target Agent:** [state here]  \n**Initial State of Other Agent:** [state here]  \n**Current State of Other Agent:** [state here]  \n**Final State:** [state here]",
-        "metadata": {
-            "block_index": 235
-        },
-        "inline_citations": [
-            {
-                "id": "state here"
-            },
-            {
-                "id": "state here"
-            },
-            {
-                "id": "state here"
-            },
-            {
-                "id": "state here"
-            },
-            {
-                "id": "state here"
-            }
-        ]
-    },
-    {
-        "element_type": "paragraph",
-        "content": "Your analysis should consider how the changes and progression from the initial to the current state for each agent might indicate their likely actions in the final state. Reflect on the sequence of events and decisions made by each agent. Based on analyzing the changes between the initial and current states, and the final state, you must answer the following question about the final state:",
-        "metadata": {
-            "block_index": 236
-        }
-    },
-    {
-        "element_type": "paragraph",
-        "content": "**Question:** [inference question here] **Answer Options:** Provide an integer between 0-100 (where 0 = definitely target agent and 100 = definitely other agent)",
-        "metadata": {
-            "block_index": 237
-        },
-        "inline_citations": [
-            {
-                "id": "inference question here"
-            }
-        ]
-    },
-    {
-        "element_type": "paragraph",
-        "content": "**Strictly follow this response format:**\n**Reasoning:** [detailed 'Let's think step-by-step...' reasoning]  \n**Answer:** [answer as an integer between 0 and 100 here]",
-        "metadata": {
-            "block_index": 239
-        },
-        "inline_citations": [
-            {
-                "id": "detailed 'Let's think step-by-step...' reasoning"
-            },
-            {
-                "id": "answer as an integer between 0 and 100 here"
-            }
-        ]
-    },
-    {
-        "element_type": "paragraph",
-        "content": "**Figure G.1:** Prompt template (simplified) for generating completions with GPT-4.",
-        "metadata": {
-            "block_index": 240
-        }
-    },
-    {
-        "element_type": "heading",
-        "content": "H Additional Results of Open-Source LLMs",
-        "level": 2,
-        "metadata": {
-            "block_index": 241
-        }
-    },
-    {
-        "element_type": "paragraph",
-        "content": "We present additional results evaluating top state-of-the-art open-source LLMs (Llama-3.1-8B-Instruct and Qwen2-7B-Instruct) on our benchmark. We choose these models due to their large context length, as our prompt is over 11,000 tokens.",
-        "metadata": {
-            "block_index": 242
-        }
-    },
-    {
-        "element_type": "paragraph",
-        "content": "Both LLMs struggle to perform the inference task. Llama-3.1's performance is lower than but consistent with GPT-4's. For scenarios where GPT-4 does converge, Llama-3.1 does not necessarily converge, but it shows an increase in inference accuracy as the trajectory progresses, indicating some signal. For scenarios where GPT-4 does not converge (\"Who turned on the shower\" and \"Who turned on the laundry\"), Llama-3.1's inference accuracy does not improve with later evidence. We find that Llama-3.1 often reasons correctly about the state changes between timesteps, but it does not arrive at the correct conclusion. Meanwhile, Qwen2's inference accuracy does not increase as the trajectory progresses and struggles to reason accurately about the state changes.",
-        "metadata": {
-            "block_index": 243
-        }
-    },
-    {
-        "element_type": "figure_image",
-        "content": "![Performance of state-of-the-art open-source LLMs on all 5 inference scenarios](img-8.jpeg)",
-        "metadata": {
-            "block_index": 244
-        }
-    },
-    {
-        "element_type": "paragraph",
-        "content": "**Figure H.1:** Performance of state-of-the-art open-source LLMs on all 5 inference scenarios.",
-        "metadata": {
-            "block_index": 245
-        }
-    },
-    {
-        "element_type": "heading",
-        "content": "I Additional Results of GPT-4 with In-Context Learning",
-        "level": 2,
-        "metadata": {
-            "block_index": 246
-        }
-    },
-    {
-        "element_type": "paragraph",
-        "content": "We conduct additional experiments using GPT-4 with in-context learning (ICL). We evaluate on the two scenarios where GPT-4 failed to converge with zero-shot prompting: \"Who turned on the shower\" and \"Who turned on the laundry.\"",
-        "metadata": {
-            "block_index": 247
-        }
-    },
-    {
-        "element_type": "paragraph",
-        "content": "As shown in Figure I.1, GPT-4's performance improves with ICL — it fluctuates less and ends with a higher accuracy than the zero-shot baseline. However, it still fails to converge. In Appendix J, we provide examples of GPT-4 step-by-step reasoning to analyze this failure mode.",
-        "metadata": {
-            "block_index": 248
-        }
-    },
-    {
-        "element_type": "figure_image",
-        "content": "![Performance of GPT-4 baselines on two selected inference scenarios](img-9.jpeg)",
-        "metadata": {
-            "block_index": 249
-        }
-    },
-    {
-        "element_type": "paragraph",
-        "content": "**Figure I.1:** Performance of GPT-4 baselines on two selected inference scenarios with the largest gap between human and GPT-4 performance.",
-        "metadata": {
-            "block_index": 250
-        }
-    },
-    {
-        "element_type": "heading",
-        "content": "J Analysis of GPT-4 Reasoning",
-        "level": 2,
-        "metadata": {
-            "block_index": 251
-        }
-    },
-    {
-        "element_type": "paragraph",
-        "content": "We provide examples of GPT-4's incorrect reasoning in the \"Who turned on the laundry?\" scenario, where Agent A is performing do laundry and Agent B is performing change outfit. The correct answer is Agent A. In the input state for these examples, Agent A is stationary and turning on the laundry while Agent B is moving and carrying clothes. The key evidence is reflected in the change in environment state for Agent A: the laundry's ToggledOn state changes from False to True.",
-        "metadata": {
-            "block_index": 252
-        }
-    },
-    {
-        "element_type": "paragraph",
-        "content": "With both zero-shot prompting and in-context learning, we notice that GPT-4 tends to rely on agent state information and less on environment state information. This causes GPT-4 to make the wrong inference in this case.",
-        "metadata": {
-            "block_index": 253
-        }
-    },
-    {
-        "element_type": "heading",
-        "content": "Sample Reasoning from GPT-4 (zero-shot)",
-        "level": 3,
-        "metadata": {
-            "block_index": 254
-        }
-    },
-    {
-        "element_type": "paragraph",
-        "content": "Let's think step-by-step and analyze the changes between the initial and current states for each agent. For the Agent A, the initial and current states are identical. The agent's position, direction, and carried items have not changed. However, we can notice a change in the state of the laundry in the Bathroom. Initially, the laundry was not toggleable, but in the current state, it became toggleable. However, there is no evidence that the Agent A has moved or interacted with the environment.",
-        "metadata": {
-            "block_index": 255
-        }
-    },
-    {
-        "element_type": "paragraph",
-        "content": "On the other hand, the Agent B has shown some activity. Initially, the Agent B was carrying a piece of clothes, and the agent's position was [9, 5]. In the current state, the Agent B has moved one step north to [9, 6], but the agent is still carrying the same piece of clothes. There are no changes in the state of the laundry in the Bathroom for the Agent B.",
-        "metadata": {
-            "block_index": 256
-        },
-        "inline_citations": [
-            {
-                "id": "9"
-            },
-            {
-                "id": "5"
-            },
-            {
-                "id": "9"
-            },
-            {
-                "id": "6"
-            }
-        ]
-    },
-    {
-        "element_type": "paragraph",
-        "content": "In the final state, the laundry in the Bathroom is toggleable, which is the same as in the current state of the Agent A. However, there is no clear indication that the Agent A has moved or interacted with the laundry. On the other hand, the Agent B has shown activity by moving, but there is no direct evidence that the Agent B has interacted with the laundry.",
-        "metadata": {
-            "block_index": 257
-        }
-    },
-    {
-        "element_type": "paragraph",
-        "content": "Given these observations, it's difficult to definitively say which agent is more likely to have turned on the laundry. However, since the Agent A's environment shows a change in the state of the laundry and the Agent B has shown activity (despite no direct interaction with the laundry), we can lean towards the Agent B.",
-        "metadata": {
-            "block_index": 258
-        }
-    },
-    {
-        "element_type": "heading",
-        "content": "Sample Reasoning from GPT-4 (in-context learning)",
-        "level": 3,
-        "metadata": {
-            "block_index": 259
-        }
-    },
-    {
-        "element_type": "paragraph",
-        "content": "**Reasoning:** Agent A started at position [13, 5] and remained at the same position in the current state. The direction of Agent A was 3 in the initial state and remained 3 in the current state. This indicates that Agent A has not moved at all from the initial state to the current state.",
-        "metadata": {
-            "block_index": 260
-        },
-        "inline_citations": [
-            {
-                "id": "13"
-            },
-            {
-                "id": "5"
-            }
-        ]
-    },
-    {
-        "element_type": "paragraph",
-        "content": "Agent B started at position [15, 9] and moved to position [4, 12] in the current state. The direction of Agent B was 1 in the initial state and changed to 3 in the current state. This indicates that Agent B has moved a considerable distance and changed direction.",
-        "metadata": {
-            "block_index": 261
-        },
-        "inline_citations": [
-            {
-                "id": "15"
-            },
-            {
-                "id": "9"
-            },
-            {
-                "id": "4"
-            },
-            {
-                "id": "12"
-            }
-        ]
-    },
-    {
-        "element_type": "paragraph",
-        "content": "The final state shows an agent at position [13, 5] with direction 3. This is exactly the same position and direction as Agent A in both the initial and current states. The final state also shows that the laundry is now turned on. Given that Agent A has not moved at all, it is highly unlikely that Agent A could have turned on the laundry. On the other hand, Agent B has shown movement and change in direction, indicating that it is capable of performing actions.",
-        "metadata": {
-            "block_index": 262
-        },
-        "inline_citations": [
-            {
-                "id": "13"
-            },
-            {
-                "id": "5"
-            }
-        ]
-    },
-    {
-        "element_type": "paragraph",
-        "content": "Therefore, it is more likely that Agent B is the one who turned on the laundry. Given that Agent A hasn't moved at all and Agent B has shown the capability of interacting with objects (by picking up the 'clothes'), it's more likely that Agent B is the one who moved the 'clothes' to the 'laundry' and turned it on, despite the final position and direction matching with Agent A.",
-        "metadata": {
-            "block_index": 263
-        }
-    },
-    {
-        "element_type": "heading",
-        "content": "K Details on Human Experiments",
-        "level": 2,
-        "metadata": {
-            "block_index": 265
-        }
-    },
-    {
-        "element_type": "paragraph",
-        "content": "We conduct experiments with 2 human experts. Each participant was provided with a habituation phase, in which they were familiarized with MARPLE domain knowledge, the inference setup, and a few examples of the agent trajectories beforehand. Each human participated in 50 inference trials which took around 3 hours.",
-        "metadata": {
-            "block_index": 266
-        }
-    },
-    {
-        "element_type": "paragraph",
-        "content": "For each trial, we show participants two agent trajectories, shown side-by-side with labels \"Agent A\" and \"Agent B\". They start from the initial step and move to the next timestep at their own pace, until they reach the end. This allows them to incrementally build an understanding of the agent trajectories and compare agent behaviors within the scenario. A diagrammatic illustration of the human study is shown in Figure K.1.",
-        "metadata": {
-            "block_index": 267
-        }
-    },
-    {
-        "element_type": "paragraph",
-        "content": "As they view the trajectories, we ask them to answer the inference question, e.g. \"Which agent is more likely to have turned on the laundry?\", at 11 evenly spaced timesteps, consistent with the mental-simulation and LLM baselines. The participants indicate their prediction using a scale from 0 to 100, with 0 being \"definitely agent A\" and 100 being \"definitely agent B\".",
-        "metadata": {
-            "block_index": 268
-        }
-    },
-    {
-        "element_type": "figure_image",
-        "content": "![Diagrammatic illustration of the human study for MARPLE](img-10.jpeg)",
-        "metadata": {
-            "block_index": 269
-        }
-    },
-    {
-        "element_type": "paragraph",
-        "content": "**Figure K.1:** Diagrammatic illustration of the human study for MARPLE. Participants saw Gridworld versions of the scenes. They started with initial scene, clicked the arrow sign to move to the next step, and then responded to the inference question by dragging the slider.",
-        "metadata": {
-            "block_index": 270
-        }
-    },
-    {
-        "element_type": "paragraph",
-        "content": "**Which agent is more likely to have turned on the laundry?**",
-        "metadata": {
-            "block_index": 271
         }
     },
     {
