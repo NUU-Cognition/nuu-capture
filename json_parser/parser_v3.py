@@ -296,7 +296,7 @@ class DocumentStructureParser:
         # Priority 5: Author Section
         if self._is_author_section(block, index, total_blocks):
             return {
-                "element_type": "author_section",
+                "element_type": "author",
                 "content": block,
                 "metadata": {"block_index": index}
             }
@@ -312,7 +312,7 @@ class DocumentStructureParser:
         # Priority 7: Figure/Image
         if self._is_figure_image(block):
             return {
-                "element_type": "figure_image",
+                "element_type": "image",
                 "content": block,
                 "metadata": {"block_index": index}
             }
@@ -320,7 +320,7 @@ class DocumentStructureParser:
         # Priority 8: LaTeX Formula
         if self._is_latex_formula(block):
             return {
-                "element_type": "latex_formula",
+                "element_type": "latex",
                 "content": block,
                 "metadata": {"block_index": index}
             }
