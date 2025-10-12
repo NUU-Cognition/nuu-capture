@@ -1,0 +1,188 @@
+# Document Structure Parser v3 Configuration
+# Tunable thresholds and parameters for parser behavior
+
+parser:
+  # LaTeX and mathematical content detection
+  latex_math_ratio_threshold: 0.3  # Minimum ratio of math symbols to classify as LaTeX
+  math_symbols_pattern: '[=^_{}\\\\]'  # Characters considered mathematical symbols
+  min_math_symbols: 3  # Minimum number of math symbols required
+  latex_display_only: true  # Only detect display math ($$...$$), not inline math ($...$)
+
+  # Author section detection
+  author_name_pattern: '[A-Z][a-z]+\\s[A-Z][a-z]+'  # Pattern for "First Last" names
+  author_semicolon_min: 2  # Minimum semicolons required for author section
+  author_early_blocks_max: 5  # Maximum block index to consider for author section
+  author_parse_individual: true  # Parse individual authors into list instead of single object
+
+  # References section detection
+  references_late_threshold: 0.8  # Minimum position ratio (80% through document)
+  references_parse_entries: true  # Parse references into structured list of {id, content}
+
+  # Figure and table caption detection
+  caption_merge_enabled: true  # Merge captions into figure/table elements
+  caption_max_distance: 1  # Maximum blocks between figure/table and caption
+  caption_patterns: ['Figure\s+\d+:', 'Table\s+\d+:', 'Fig\.\s+\d+:']  # Caption prefix patterns
+
+  # Content processing
+  paragraph_merge_threshold: 100  # Merge paragraphs shorter than this many characters
+  
+  # Block segmentation
+  min_block_length: 5  # Minimum length for a valid block
+  max_consecutive_merges: 3  # Maximum consecutive small blocks to merge
+  
+  # Classification confidence thresholds
+  confidence_thresholds:
+    overlay_block: 0.95
+    code_block: 0.90
+    heading: 0.98
+    abstract: 0.90
+    author_section: 0.85
+    table: 0.80
+    figure_image: 0.85
+    latex_formula: 0.80
+    list: 0.85
+    references: 0.90
+    paragraph: 0.70  # Default fallback
+
+# Preprocessing settings
+preprocessing:
+  # OCR artifact cleanup
+  normalize_line_endings: true
+  fix_common_ocr_misreads: true
+  collapse_whitespace: true
+  
+  # LaTeX normalization
+  standardize_latex_delimiters: true
+  latex_replacements:
+    '\\\\[': '$$'
+    '\\\\]': '$$'
+    '\\\\(': '$'
+    '\\\\)': '$'
+    '\\\\$': '$'
+
+# Validation settings
+validation:
+  # Element validation rules
+  require_element_type: true
+  require_content: true
+  validate_json_schema: true
+  
+  # Content validation
+  min_content_length: 1
+  max_content_length: 10000
+  
+  # Structure validation
+  ensure_references_last: true
+  merge_small_paragraphs: true
+  
+# Output settings
+output:
+  # JSON formatting
+  indent: 4
+  ensure_ascii: false
+  sort_keys: false
+  
+  # Metadata inclusion
+  include_block_indices: true
+  include_confidence_scores: false
+  include_processing_time: false
+  
+  # File handling
+  create_backup: true
+  overwrite_existing: true
+
+# Debug and logging
+debug:
+  enable_debug_mode: false
+  log_classification_decisions: false
+  save_intermediate_results: false
+  
+  # Verbose output levels
+  verbosity: 1  # 0=silent, 1=normal, 2=verbose, 3=debug
+  
+# Performance settings
+performance:
+  # Memory management
+  process_in_chunks: false
+  chunk_size: 1000
+  
+  # Caching
+  enable_pattern_caching: true
+  cache_size: 1000
+  
+  # Parallel processing
+  enable_multiprocessing: false
+  max_workers: 4
+
+# Advanced features
+advanced:
+  # Machine learning integration (future)
+  enable_ml_disambiguation: false
+  ml_model_path: null
+  
+  # Custom pattern injection
+  custom_patterns: []
+  
+  # Plugin system
+  enable_plugins: false
+  plugin_directory: './plugins'
+
+# Element-specific settings
+elements:
+  heading:
+    max_level: 6
+    require_space_after_hash: true
+    normalize_whitespace: true
+    
+  code_block:
+    preserve_whitespace: true
+    detect_language: true
+    language_detection_confidence: 0.7
+    
+  table:
+    min_rows: 2
+    min_columns: 2
+    detect_header: true
+    normalize_whitespace: true
+    
+  latex_formula:
+    preserve_original_formatting: true
+    extract_reference_keys: true
+    separate_inline_display: true
+    
+  author_section:
+    parse_individual_authors: true  # Parse into list of individual author objects
+    extract_affiliations: true  # Extract institution/affiliation information
+    normalize_contact_info: true  # Normalize email and website formats
+    remove_content_field: true  # Remove content field, keep only author_fields list
+
+  figure_image:
+    merge_captions: true  # Merge caption paragraphs into figure elements
+    caption_field_name: 'caption'  # Field name for merged captions
+
+  table:
+    merge_captions: true  # Merge caption paragraphs into table elements
+    caption_field_name: 'caption'  # Field name for merged captions
+
+  references:
+    parse_to_list: true  # Parse into list of {id, content} objects
+    standardize_to_ieee: false
+    extract_doi: true
+    extract_arxiv: true
+    validate_citations: true
+    remove_content_field: true  # Remove content field, keep only references list
+
+# Error handling
+error_handling:
+  # Graceful degradation
+  continue_on_error: true
+  log_errors: true
+  max_errors: 10
+  
+  # Error recovery
+  attempt_repair: true
+  fallback_classification: 'paragraph'
+  
+  # Error reporting
+  detailed_error_messages: true
+  include_stack_traces: false
