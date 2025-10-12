@@ -1,0 +1,405 @@
+Excellent — below is a **production-ready, detailed engineering prompt** you can save as
+`cursor_instruction.txt` (or similar) and feed directly to your Cursor agent.
+
+It describes **what’s wrong**, **why**, and **exactly how to fix it** with the complete technical context and code snippets that the agent can use to patch your parser accurately.
+
+---
+
+# 🧠 **ENGINEERING PROMPT: Improve Element Classification Accuracy in Document Structure Parser (v3 Patch)**
+
+## 🎯 **Objective**
+
+Upgrade the current `Document Structure Parser` to significantly improve **classification accuracy** across all element types using refined heuristics, robust regex rules, and enhanced parsing logic.
+
+The agent must:
+
+1. Analyze the current implementation (especially the classification stage).
+2. Apply the specific fixes described below to resolve false positives, missed detections, and mis-segmentations.
+3. Ensure the output `test_output.json` correctly matches `test_document.md` by element type, order, and content.
+
+---
+
+## 📋 **Root Problems Detected**
+
+| Issue                                            | Symptom                                                                         | Root Cause                                                      |                                        |
+| ------------------------------------------------ | ------------------------------------------------------------------------------- | --------------------------------------------------------------- | -------------------------------------- |
+| **1. Author section misclassified as paragraph** | Bolded author names or newline-separated author lists classified as paragraphs. | Detection relied only on `;` separators.                        |                                        |
+| **2. List items collapsed**                      | Multiple list items (`1.` `2.` etc.) appear as one long string.                 | Parser didn’t split multi-line list blocks into discrete items. |                                        |
+| **3. Inline citations incorrectly grouped**      | `[14, 40]` → single `"14, 40"` string instead of multiple citations.            | Regex captured full bracket without splitting on commas.        |                                        |
+| **4. Table detection brittle**                   | Markdown tables missed or treated as paragraphs.                                | Current rule only checks for `                                  | ` presence, ignores header separators. |
+| **5. LaTeX false positives**                     | Dollar signs in normal text (`$100`) cause misclassification.                   | Simple `$...$` regex lacks math-token context.                  |                                        |
+
+---
+
+## 🏗️ **Target Outcome**
+
+After patch:
+
+* Author blocks correctly labeled as `author_section`
+* List blocks split into proper list items
+* Inline citations normalized to individual IDs
+* Tables correctly detected and structured
+* LaTeX detection only triggers for real math content
+
+---
+
+## ⚙️ **Detailed Implementation Tasks**
+
+### **1️⃣ Replace Author Detection with Context-Aware Function**
+
+#### Replace any `is_author` or equivalent heuristic with:
+
+```python
+import re
+
+NAME_PAIR_RE = re.compile(r'[A-Z][a-z]+(?:[-\']?[A-Z][a-z]+)?\s+[A-Z][a-z]+')
+EMAIL_RE = re.compile(r'[\w.+-]+@[\w-]+\.[a-zA-Z]{2,}')
+AFFIL_RE = re.compile(r'\b(University|Institute|Dept|College|Laboratory|Stanford|MIT|Harvard)\b', re.I)
+
+def is_author_block(block: str, index: int, total_blocks: int) -> bool:
+    # Limit to early document region
+    if index > 6 and index >= 0.12 * total_blocks:
+        return False
+
+    # Semicolon heuristic
+    if block.count(';') >= 1 and (NAME_PAIR_RE.search(block) or AFFIL_RE.search(block) or EMAIL_RE.search(block)):
+        return True
+
+    # Bolded names heuristic
+    bold_names = re.findall(r'\*\*([^*]{2,80}?)\*\*', block)
+    if len(bold_names) >= 2:
+        return True
+
+    # Multi-line name detection
+    lines = [l.strip() for l in block.splitlines() if l.strip()]
+    found_names = sum(1 for l in lines if NAME_PAIR_RE.search(l))
+    if found_names >= 2:
+        return True
+
+    # Affiliation keyword + name combination
+    if AFFIL_RE.search(block) and NAME_PAIR_RE.search(block):
+        return True
+
+    return False
+```
+
+**Action:**
+
+* Replace calls to `is_author(...)` with `is_author_block(block, index, total_blocks)`.
+* Update classification rule to use this improved logic.
+* Ensure detected block is labeled:
+
+  ```json
+  {"element_type":"author_section","content":"..."}
+  ```
+
+---
+
+### **2️⃣ Implement Proper List Splitting**
+
+When a block is identified as a `list`, split it into items.
+
+```python
+LIST_ITEM_RE = re.compile(r'^\s*(?:[-*+]|(\d+)\.)\s+(.*)$')
+
+def split_list_block(block: str):
+    items = []
+    for line in block.splitlines():
+        m = LIST_ITEM_RE.match(line)
+        if m:
+            items.append(m.group(2).strip())
+        elif items and line.strip():
+            items[-1] += ' ' + line.strip()
+    return items
+```
+
+**Action:**
+
+* Modify list classification stage:
+
+  ```python
+  if re.match(r'^(-|\d+\.)\s', block):
+      items = split_list_block(block)
+      return {"element_type": "list", "items": items, "content": block}
+  ```
+* Optionally output one element per list item:
+
+  ```python
+  for i in items:
+      final_json_list.append({"element_type":"list_item","content":i})
+  ```
+
+---
+
+### **3️⃣ Replace Inline Citation Extraction**
+
+Replace citation regex logic with:
+
+```python
+CITATION_RE = re.compile(r'\[([^\]]+?)\]')
+
+def extract_inline_citations(block: str):
+    raw = CITATION_RE.findall(block)
+    out = []
+    for r in raw:
+        r = r.strip().rstrip('.,;:')
+        for part in re.split(r'\s*,\s*', r):
+            if part:
+                out.append(part)
+    return out
+```
+
+Attach results to paragraphs:
+
+```python
+if element["element_type"] == "paragraph":
+    element["inline_citations"] = extract_inline_citations(element["content"])
+```
+
+---
+
+### **4️⃣ Strengthen Table Detection**
+
+Replace table detection logic with:
+
+```python
+def is_table_block(block: str):
+    lines = [l for l in block.splitlines() if l.strip()]
+    pipe_lines = [l for l in lines if '|' in l]
+    if len(pipe_lines) < 2:
+        return False
+    if any(re.search(r'^\s*\|?\s*:?-{2,}:?\s*(\||$)', l) for l in lines):
+        return True
+    counts = [l.count('|') for l in pipe_lines]
+    if len(set(counts)) == 1 and counts[0] >= 2:
+        return True
+    return False
+```
+
+**Action:**
+
+* Update your detection priority table so that `is_table_block` replaces the old `block.count('|') >= 2` condition.
+* For structured output:
+
+  ```python
+  {"element_type":"table","headers":[...],"rows":[[...],[...]]}
+  ```
+
+---
+
+### **5️⃣ Safer LaTeX Detection**
+
+Replace LaTeX detection with token-based heuristic:
+
+```python
+MATH_SYMBOLS_RE = re.compile(r'[=^_{}\\]|\\[a-zA-Z]+')
+
+def is_math_block(block: str):
+    if not re.search(r'(\$\$|\\\[|\\\(|\$)', block):
+        return False
+    dollar_regions = re.findall(r'\${1,2}(.+?)\${1,2}', block, flags=re.S)
+    for region in dollar_regions:
+        tokens = re.findall(r'\S+', region)
+        if not tokens:
+            continue
+        math_tokens = sum(1 for t in tokens if MATH_SYMBOLS_RE.search(t))
+        if math_tokens / len(tokens) > 0.25:
+            return True
+    if r'\begin{' in block and r'\end{' in block:
+        return True
+    return False
+```
+
+**Action:**
+
+* Replace previous LaTeX regex pattern logic with this function.
+* Only classify as `latex_formula` when this returns `True`.
+
+---
+
+### **6️⃣ Integrate with MarkdownIt Tokenization (Preferred)**
+
+If MarkdownIt is already used in Stage 2:
+
+* Retain custom classification for overlay/author/latex.
+* For lists and tables, use MarkdownIt tokens (`list_item_open`, `table_open`, etc.) instead of regex when available.
+* Only use regex fallback for blocks MarkdownIt fails to classify.
+
+---
+
+## 🧪 **Testing Checklist**
+
+Run the following after implementation:
+
+| Test                            | Expected Result              |   |                     |
+| ------------------------------- | ---------------------------- | - | ------------------- |
+| Bolded author lines             | `author_section` detected    |   |                     |
+| Semicolon-separated author line | `author_section` detected    |   |                     |
+| Non-author with semicolons      | **Not** classified as author |   |                     |
+| Numbered or bullet list         | Split into distinct items    |   |                     |
+| Inline `[14, 40]` citation      | `["14","40"]` extracted      |   |                     |
+| Proper markdown table with `    | ---                          | ` | Detected as `table` |
+| `$100`                          | Not LaTeX                    |   |                     |
+| `$$E = mc^2$$`                  | LaTeX detected               |   |                     |
+
+---
+
+## 📊 **Validation Metrics**
+
+After rerun on test documents:
+
+| Metric                      | Target |
+| --------------------------- | ------ |
+| Author detection precision  | ≥ 95 % |
+| LaTeX false positives       | ≤ 5 %  |
+| Paragraph boundary accuracy | ≥ 98 % |
+| Inline citation accuracy    | ≥ 95 % |
+| List item correctness       | ≥ 90 % |
+
+---
+
+## 🧩 **Deliverables**
+
+* Updated parser file (e.g. `parser_v3_patch.py`)
+* Unit test script (`tests/test_parser_patch.py`)
+* Verified `test_output.json` showing correct element classification for `test_document.md`
+
+---
+
+## 💡 **Implementation Notes**
+
+* Maintain existing function names if referenced elsewhere.
+* Add logging or debug printouts for misclassified blocks.
+* Keep thresholds configurable (e.g. math ratio) via a small `config.yaml`.
+* Preserve backward compatibility with Stage 2 MarkdownIt processing.
+
+---
+
+## ✅ **Final Instruction**
+
+> The agent must locate and modify the parser code according to all numbered steps above, integrate each fix into the existing classification pipeline, and ensure the final `test_output.json` reflects accurate, structured results consistent with `test_document.md` and the documented syntax.
+
+---
+
+You can now copy this text into a file named
+`cursor_instruction.txt` and load it as a reference for your Cursor agent.
+It fully specifies *why, what, and how* to implement the fixes for accurate element classification.
+
+
+
+Excellent — your parser v3 run results are strong, with LaTeX, figures, and citations now working perfectly.
+
+The only issue left (as you noticed) is **author detection false positives** — where tables or numbered lists with semicolons are incorrectly marked as `author_section`.
+
+To fix that, your Cursor agent should refine the **`is_author_block()`** logic with *negative heuristics* and stronger validation checks.
+
+Here’s the **engineering patch instruction** you can append to your Cursor prompt:
+
+---
+
+# 🧠 **Author Detection Refinement Prompt (v3.1 Patch)**
+
+## 🎯 Objective
+
+Eliminate **false positives** in author detection — especially misclassifications of **numbered lists, tables, or semicolon-heavy blocks** — without breaking true author recognition (bolded or semicolon-separated author lines near the top).
+
+---
+
+## ⚙️ Implementation Requirements
+
+### **1️⃣ Add Negative Rules**
+
+Reject `author_section` classification if any of the following are true:
+
+* Block contains **more than 2 numeric bullets** (e.g., “1.”, “2.”)
+* Block contains **pipe (`|`) characters** → likely a table
+* Block starts with `-`, `1.`, or `#` → list/heading
+* Block is longer than **300 characters** or has >5 lines → likely not author info
+
+---
+
+### **2️⃣ Update `is_author_block()`**
+
+Replace the function with this refined version:
+
+```python
+import re
+
+NAME_PAIR_RE = re.compile(r'[A-Z][a-z]+(?:[-\']?[A-Z][a-z]+)?\s+[A-Z][a-z]+')
+EMAIL_RE = re.compile(r'[\w.+-]+@[\w-]+\.[a-zA-Z]{2,}')
+AFFIL_RE = re.compile(r'\b(University|Institute|Dept|College|Laboratory|Stanford|MIT|Harvard|Research)\b', re.I)
+
+def is_author_block(block: str, index: int, total_blocks: int) -> bool:
+    lines = [l.strip() for l in block.splitlines() if l.strip()]
+    text = ' '.join(lines)
+
+    # 🚫 Negative rules
+    if '|' in text:
+        return False
+    if re.match(r'^(\d+\.)|^-|^#', text):
+        return False
+    if len(lines) > 5 or len(text) > 300:
+        return False
+    if sum(1 for l in lines if re.match(r'^\d+\.', l)) >= 2:
+        return False
+
+    # ✅ Positive signals
+    if index < 6 or index < 0.1 * total_blocks:
+        # Bolded names or semicolon fields
+        if re.findall(r'\*\*[A-Za-z ,.\'-]+\*\*', block):
+            return True
+        if block.count(';') >= 1 and (NAME_PAIR_RE.search(block) or AFFIL_RE.search(block)):
+            return True
+        if EMAIL_RE.search(block):
+            return True
+        # Multiple lines each with capitalized names
+        found_names = sum(1 for l in lines if NAME_PAIR_RE.search(l))
+        if found_names >= 2:
+            return True
+    return False
+```
+
+---
+
+### **3️⃣ Add a Fallback Validation Pass**
+
+After all elements are classified, run a validation sweep:
+
+* If `author_section` appears after block index 10 → downgrade to paragraph.
+* If block lacks any name pattern → downgrade to paragraph.
+
+Example:
+
+```python
+for el in parsed_elements:
+    if el["element_type"] == "author_section":
+        if not re.search(r'[A-Z][a-z]+\s+[A-Z][a-z]+', el["content"]):
+            el["element_type"] = "paragraph"
+```
+
+---
+
+## 🧪 Validation Checklist
+
+| Test                               | Expected Result |                |
+| ---------------------------------- | --------------- | -------------- |
+| **Bolded author lines**            | ✅ Detected      |                |
+| **Table with pipes (`              | `)**            | ❌ Not detected |
+| **Numbered list with semicolons**  | ❌ Not detected  |                |
+| **Long paragraph with semicolons** | ❌ Not detected  |                |
+| **Real author block (semicolons)** | ✅ Detected      |                |
+
+---
+
+## ✅ Expected Result
+
+After applying this patch and rerunning the parser:
+
+* **False positives eliminated**
+* **True author sections (3) preserved**
+* **Tables and lists no longer misclassified**
+* **Overall classification F1 > 95%**
+
+---
+
+Would you like me to generate the **ready-to-save Cursor instruction file (`author_detection_patch_v3.1.txt`)** with this content formatted for your agent (including context and goals header)?
