@@ -118,7 +118,7 @@ class DocumentStructureParser:
         validated_elements = self._validate_and_postprocess(structured_elements)
 
         # Additional validation pass for author sections
-        validated_elements = self._validate_author_sections(validated_elements)
+        validated_elements = self._validate_authors(validated_elements)
 
         return validated_elements
     
@@ -272,18 +272,27 @@ class DocumentStructureParser:
                     "metadata": {"block_index": index}
                 }
         
-        # Priority 3: Heading
+        # Priority 3: Heading (or Title for level 1)
         if self._is_heading(block):
             match = re.match(self.regex_patterns['heading'], block)
             if match:
                 level = len(match.group(1))
                 content = match.group(2)
-                return {
-                    "element_type": "heading",
-                    "content": content,
-                    "level": level,
-                    "metadata": {"block_index": index}
-                }
+
+                # Level 1 headings are treated as document titles
+                if level == 1:
+                    return {
+                        "element_type": "title",
+                        "content": content,
+                        "metadata": {"block_index": index}
+                    }
+                else:
+                    return {
+                        "element_type": "heading",
+                        "content": content,
+                        "level": level,
+                        "metadata": {"block_index": index}
+                    }
         
         # Priority 4: Abstract
         if self._is_abstract(block, index):
@@ -294,7 +303,7 @@ class DocumentStructureParser:
             }
         
         # Priority 5: Author Section
-        if self._is_author_section(block, index, total_blocks):
+        if self._is_author(block, index, total_blocks):
             return {
                 "element_type": "author",
                 "content": block,
@@ -367,7 +376,7 @@ class DocumentStructureParser:
         return (index < 10 and 
                 block.lower().strip().startswith('abstract'))
     
-    def _is_author_section(self, block: str, index: int, total_blocks: int) -> bool:
+    def _is_author(self, block: str, index: int, total_blocks: int) -> bool:
         """Check if block is an author section with refined heuristics and negative rules."""
         lines = [l.strip() for l in block.splitlines() if l.strip()]
         text = ' '.join(lines)
@@ -628,7 +637,7 @@ class DocumentStructureParser:
                     ]
 
             # Parse author fields from author sections into individual author list
-            elif element["element_type"] == "author_section":
+            elif element["element_type"] == "author":
                 authors = self._parse_individual_authors(element["content"])
                 enriched_element["author_fields"] = authors
                 # Remove content field as per requirements
@@ -649,7 +658,7 @@ class DocumentStructureParser:
                     del enriched_element["content"]
 
             # Extract LaTeX reference key if present
-            elif element["element_type"] == "latex_formula":
+            elif element["element_type"] == "latex":
                 # Check for reference key like [Eq.1] after formula
                 key_match = re.search(r'\[([^\]]+)\]$', element["content"])
                 if key_match:
@@ -766,7 +775,7 @@ class DocumentStructureParser:
             current = elements[i]
 
             # Check if current is a figure/table and next is a caption paragraph
-            if (current["element_type"] in ["figure_image", "table"] and
+            if (current["element_type"] in ["image", "table"] and
                 i + 1 < len(elements) and
                 elements[i + 1]["element_type"] == "paragraph"):
 
@@ -822,14 +831,14 @@ class DocumentStructureParser:
 
         return other_elements + references_elements
     
-    def _validate_author_sections(self, elements: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    def _validate_authors(self, elements: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         """
         Additional validation pass to eliminate author section false positives.
         """
         validated_elements = []
 
         for element in elements:
-            if element["element_type"] == "author_section":
+            if element["element_type"] == "author":
                 # Check if block appears too late in document
                 block_index = element["metadata"].get("block_index", 0)
                 if block_index > 10:
