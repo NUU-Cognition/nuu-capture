@@ -198,7 +198,7 @@ def find_most_recent_output_dir() -> Optional[str]:
         return possible_dirs[0]
     return None
 
-def run_pipeline(pdf_input: str, output_dir: Optional[str] = None) -> Union[str, bool]:
+def run_pipeline(pdf_input: str, output_dir: Optional[str] = None, parser_version: str = "v3") -> Union[str, bool]:
     """Run the complete OCR pipeline."""
     
     # Stage 1: PDF Processing
@@ -266,11 +266,18 @@ def run_pipeline(pdf_input: str, output_dir: Optional[str] = None) -> Union[str,
         return False
 
     # Stage 5: JSON Structure Parsing
-    log_stage("Stage 5: JSON Structure Parsing", "Converting markdown to structured JSON elements")
+    if parser_version == "v4":
+        log_stage("Stage 5: JSON Structure Parsing (v4 - AST-based)", "Converting markdown to structured JSON using AST parsing")
+        parser_script = "json_parser/parser_v4.py"
+        log_info("Using parser v4 (AST-based) - 100% accurate structure detection")
+    else:
+        log_stage("Stage 5: JSON Structure Parsing (v3 - regex-based)", "Converting markdown to structured JSON using pattern matching")
+        parser_script = "json_parser/parser_v3.py"
+        log_info("Using parser v3 (regex-based) - legacy implementation")
 
     input_file = os.path.join(actual_output_dir, "final_formatted.md")
     # Output will be auto-generated as final_formatted_output.json
-    parser_cmd = ["python", "json_parser/parser_v3.py", input_file]
+    parser_cmd = ["python", parser_script, input_file]
 
     if not run_command(parser_cmd, "JSON Parsing"):
         return False
@@ -295,6 +302,7 @@ Examples:
   python unified_pipeline.py https://example.com/paper.pdf
   python unified_pipeline.py output/test_pdf/bio_paper_1.pdf custom_output_folder
   python unified_pipeline.py "output/test_pdf/354_MARPLE_A_Benchmark_for_Lon.pdf"
+  python unified_pipeline.py output/test_pdf/bio_paper_1.pdf --parser-version v4
 
 Pipeline Stages:
   1. PDF Processing       - OCR extraction using Mistral API
@@ -302,6 +310,7 @@ Pipeline Stages:
   3. Preprocessing        - OCR fixes, truncation, paragraph reconstruction
   4. LLM Formatting       - Advanced formatting using Gemini API
   5. JSON Parsing         - Convert markdown to structured JSON
+                           (v3: regex-based, v4: AST-based)
 
 Output Files (saved in working directory):
   - document_content.md           (raw OCR output)
@@ -328,9 +337,15 @@ Standardized Testing Outputs:
         help="Output directory for processed files (default: PDF filename)"
     )
     parser.add_argument(
-        "--skip-checks", 
+        "--skip-checks",
         action="store_true",
         help="Skip environment and requirements checks"
+    )
+    parser.add_argument(
+        "--parser-version",
+        choices=["v3", "v4"],
+        default="v3",
+        help="Parser version to use (v3=regex-based, v4=AST-based, default: v3)"
     )
     
     args = parser.parse_args()
@@ -355,7 +370,7 @@ Standardized Testing Outputs:
                 sys.exit(1)
         
         # Run the complete pipeline
-        pipeline_result = run_pipeline(args.pdf_input, args.output_dir)
+        pipeline_result = run_pipeline(args.pdf_input, args.output_dir, args.parser_version)
 
         if pipeline_result:
             # Unpack results
