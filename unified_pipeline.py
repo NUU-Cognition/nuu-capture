@@ -21,10 +21,12 @@ import sys
 import subprocess
 import argparse
 import time
+import shutil
 from pathlib import Path
 from urllib.parse import urlparse
 from dotenv import load_dotenv
 from typing import Optional, List, Union, Tuple
+from datetime import datetime
 
 # Load environment variables
 load_dotenv()
@@ -128,7 +130,7 @@ def get_pdf_name(document_input: str) -> str:
             return all([result.scheme, result.netloc])
         except:
             return False
-    
+
     if is_url(document_input):
         # Extract filename from URL
         parsed_url = urlparse(document_input)
@@ -141,6 +143,51 @@ def get_pdf_name(document_input: str) -> str:
     else:
         # Local file path
         return Path(document_input).stem
+
+def copy_to_standardized_outputs(output_dir: str, pdf_name: str) -> Tuple[Optional[str], Optional[str]]:
+    """
+    Copy final outputs to standardized testing folders.
+
+    Args:
+        output_dir: The working output directory
+        pdf_name: Name of the PDF document
+
+    Returns:
+        Tuple of (json_copy_path, markdown_copy_path)
+    """
+    # Create timestamp for unique filenames
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+
+    # Ensure standardized output directories exist
+    json_output_dir = "output/json_output"
+    markdown_output_dir = "output/markdown_output"
+    os.makedirs(json_output_dir, exist_ok=True)
+    os.makedirs(markdown_output_dir, exist_ok=True)
+
+    json_copy_path = None
+    markdown_copy_path = None
+
+    # Copy JSON output
+    json_source = os.path.join(output_dir, "final_formatted_output.json")
+    if os.path.exists(json_source):
+        json_copy_filename = f"{pdf_name}_{timestamp}.json"
+        json_copy_path = os.path.join(json_output_dir, json_copy_filename)
+        shutil.copy2(json_source, json_copy_path)
+        log_success(f"JSON output copied to: {json_copy_path}")
+    else:
+        log_error(f"JSON source file not found: {json_source}")
+
+    # Copy final markdown output
+    markdown_source = os.path.join(output_dir, "final_formatted.md")
+    if os.path.exists(markdown_source):
+        markdown_copy_filename = f"{pdf_name}_{timestamp}.md"
+        markdown_copy_path = os.path.join(markdown_output_dir, markdown_copy_filename)
+        shutil.copy2(markdown_source, markdown_copy_path)
+        log_success(f"Markdown output copied to: {markdown_copy_path}")
+    else:
+        log_error(f"Markdown source file not found: {markdown_source}")
+
+    return json_copy_path, markdown_copy_path
 
 def find_most_recent_output_dir() -> Optional[str]:
     """Find the most recently created output directory."""
@@ -228,7 +275,13 @@ def run_pipeline(pdf_input: str, output_dir: Optional[str] = None) -> Union[str,
     if not run_command(parser_cmd, "JSON Parsing"):
         return False
 
-    return actual_output_dir
+    # Copy outputs to standardized testing folders
+    log_stage("Output Organization", "Copying final outputs to standardized folders for testing")
+    pdf_name = get_pdf_name(pdf_input)
+    json_copy_path, markdown_copy_path = copy_to_standardized_outputs(actual_output_dir, pdf_name)
+
+    # Return all paths for final summary
+    return (actual_output_dir, json_copy_path, markdown_copy_path)
 
 def main() -> None:
     """Main function to run the unified OCR pipeline."""
@@ -250,13 +303,17 @@ Pipeline Stages:
   4. LLM Formatting       - Advanced formatting using Gemini API
   5. JSON Parsing         - Convert markdown to structured JSON
 
-Output Files (saved in output directory):
+Output Files (saved in working directory):
   - document_content.md           (raw OCR output)
   - pre_stage_1.md                (after image link fixing)
   - stage_1_complete.md           (after preprocessing)
   - final_formatted.md            (final formatted markdown)
   - final_formatted_output.json   (structured JSON output)
   - img-X.jpeg                    (extracted images)
+
+Standardized Testing Outputs:
+  - output/markdown_output/<pdf>_<timestamp>.md    (final markdown copy)
+  - output/json_output/<pdf>_<timestamp>.json      (final JSON copy)
         """
     )
     
@@ -298,12 +355,15 @@ Output Files (saved in output directory):
                 sys.exit(1)
         
         # Run the complete pipeline
-        output_directory = run_pipeline(args.pdf_input, args.output_dir)
-        
-        if output_directory:
+        pipeline_result = run_pipeline(args.pdf_input, args.output_dir)
+
+        if pipeline_result:
+            # Unpack results
+            output_directory, json_copy_path, markdown_copy_path = pipeline_result
+
             end_time = time.time()
             duration = end_time - start_time
-            
+
             # Final success message
             print("\n" + "="*60)
             print("PIPELINE COMPLETED SUCCESSFULLY!")
@@ -312,7 +372,7 @@ Output Files (saved in output directory):
             print(f"Total Processing Time: {duration:.2f} seconds")
             print()
             print("Generated Files:")
-            
+
             # List all generated files
             files_to_check = [
                 ("document_content.md", "Raw OCR output"),
@@ -321,7 +381,7 @@ Output Files (saved in output directory):
                 ("final_formatted.md", "Final formatted markdown"),
                 ("final_formatted_output.json", "Structured JSON output")
             ]
-            
+
             for filename, description in files_to_check:
                 file_path = os.path.join(output_directory, filename)
                 if os.path.exists(file_path):
@@ -329,15 +389,26 @@ Output Files (saved in output directory):
                     print(f"   + {filename:20} - {description} ({file_size:,} bytes)")
                 else:
                     print(f"   - {filename:20} - Missing!")
-            
+
             # Count images
             image_files = [f for f in os.listdir(output_directory) if f.startswith('img-') and any(f.endswith(ext) for ext in ['.jpeg', '.jpg', '.png', '.gif'])]
             if image_files:
                 print(f"   + {len(image_files)} extracted images")
-            
-            print(f"\n[*] Final Outputs:")
+
+            print(f"\n[*] Working Directory Outputs:")
             print(f"    Markdown: {os.path.abspath(os.path.join(output_directory, 'final_formatted.md'))}")
             print(f"    JSON:     {os.path.abspath(os.path.join(output_directory, 'final_formatted_output.json'))}")
+
+            print(f"\n[*] Standardized Testing Outputs:")
+            if markdown_copy_path:
+                print(f"    Markdown: {os.path.abspath(markdown_copy_path)}")
+            else:
+                print(f"    Markdown: Failed to copy")
+
+            if json_copy_path:
+                print(f"    JSON:     {os.path.abspath(json_copy_path)}")
+            else:
+                print(f"    JSON:     Failed to copy")
             
         else:
             log_error("Pipeline failed. Please check the error messages above.")
