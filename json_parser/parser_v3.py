@@ -3,11 +3,11 @@
 Document Structure Parser v3 - High-Accuracy Classification Engine
 
 A robust, deterministic parser that converts unstructured markdown text into
-structured JSON document model according to TEMP_SYNTAX.MD specifications.
+structured JSON document model according to input-json-rule.md specifications.
 
 Architecture: Hybrid Rule-Based + Feature-Aware Pipeline
 - Stage 0: Preprocessing & Normalization
-- Stage 1: Intelligent Block Segmentation  
+- Stage 1: Intelligent Block Segmentation
 - Stage 2: Deterministic Hierarchical Classification
 - Stage 3: Fine-Grained Detection Logic
 - Stage 4: Sub-Element Extraction
@@ -305,7 +305,7 @@ class DocumentStructureParser:
         # Priority 5: Author Section
         if self._is_author(block, index, total_blocks):
             return {
-                "element_type": "author",
+                "element_type": "authors",
                 "content": block,
                 "metadata": {"block_index": index}
             }
@@ -637,7 +637,7 @@ class DocumentStructureParser:
                     ]
 
             # Parse author fields from author sections into individual author list
-            elif element["element_type"] == "author":
+            elif element["element_type"] == "authors":
                 authors = self._parse_individual_authors(element["content"])
                 enriched_element["author_fields"] = authors
                 # Remove content field as per requirements
@@ -838,7 +838,7 @@ class DocumentStructureParser:
         validated_elements = []
 
         for element in elements:
-            if element["element_type"] == "author":
+            if element["element_type"] == "authors":
                 # Check if block appears too late in document
                 block_index = element["metadata"].get("block_index", 0)
                 if block_index > 10:
@@ -869,49 +869,103 @@ class DocumentStructureParser:
 def main():
     """Main function to run the parser."""
     import argparse
-    
-    parser = argparse.ArgumentParser(description='Document Structure Parser v3')
-    parser.add_argument('input_file', help='Input markdown file')
-    parser.add_argument('-o', '--output', default='output_structure.json', 
-                       help='Output JSON file')
-    parser.add_argument('-c', '--config', help='Configuration YAML file')
-    
+
+    parser = argparse.ArgumentParser(
+        description='Document Structure Parser v3 - Converts markdown to structured JSON',
+        formatter_class=argparse.RawTextHelpFormatter,
+        epilog="""
+Examples:
+  python parser_v3.py document.md
+  python parser_v3.py academic_paper.md -o custom_output.json
+  python parser_v3.py final_formatted.md -c config.yaml
+
+Output Naming:
+  If no output file specified, automatically generates:
+    input.md -> input_output.json
+    academic_paper.md -> academic_paper_output.json
+    /path/to/document.md -> /path/to/document_output.json
+        """
+    )
+    parser.add_argument('input_file', help='Input markdown file path')
+    parser.add_argument('-o', '--output', default=None,
+                       help='Output JSON file path (default: auto-generated from input filename)')
+    parser.add_argument('-c', '--config', help='Configuration YAML file path')
+
     args = parser.parse_args()
-    
+
+    # Auto-generate output filename if not provided
+    if args.output is None:
+        input_path = Path(args.input_file)
+        # Generate output name: input_file.md -> input_file_output.json
+        output_name = f"{input_path.stem}_output.json"
+        # Keep in same directory as input
+        args.output = str(input_path.parent / output_name)
+
+    print(f"[*] Document Structure Parser v3")
+    print(f"[*] Input:  {args.input_file}")
+    print(f"[*] Output: {args.output}")
+    if args.config:
+        print(f"[*] Config: {args.config}")
+    print()
+
+    # Check if input file exists
+    if not Path(args.input_file).exists():
+        print(f"[!] Error: Input file not found: {args.input_file}")
+        return 1
+
     # Initialize parser
-    doc_parser = DocumentStructureParser(args.config)
-    
+    try:
+        doc_parser = DocumentStructureParser(args.config)
+    except Exception as e:
+        print(f"[!] Error initializing parser: {e}")
+        return 1
+
     # Read input file
-    with open(args.input_file, 'r', encoding='utf-8') as f:
-        input_text = f.read()
-    
+    try:
+        print(f"[*] Reading input file...")
+        with open(args.input_file, 'r', encoding='utf-8') as f:
+            input_text = f.read()
+        print(f"[+] Read {len(input_text):,} characters")
+    except Exception as e:
+        print(f"[!] Error reading input file: {e}")
+        return 1
+
     # Parse document
     try:
+        print(f"[*] Parsing document structure...")
         structured_elements = doc_parser.parse_document(input_text)
-        
+        print(f"[+] Successfully parsed {len(structured_elements)} elements")
+
+        # Create output directory if it doesn't exist
+        output_path = Path(args.output)
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+
         # Write output
+        print(f"[*] Writing output JSON...")
         with open(args.output, 'w', encoding='utf-8') as f:
             json.dump(structured_elements, f, indent=4, ensure_ascii=False)
-        
-        print(f"Successfully parsed document!")
-        print(f"Input: {args.input_file}")
-        print(f"Output: {args.output}")
-        print(f"Total elements: {len(structured_elements)}")
-        
+
+        file_size = output_path.stat().st_size
+        print(f"[+] Output written: {file_size:,} bytes")
+
         # Print element type distribution
         element_types = {}
         for element in structured_elements:
             element_type = element["element_type"]
             element_types[element_type] = element_types.get(element_type, 0) + 1
-        
-        print("\nElement type distribution:")
+
+        print(f"\n[*] Element type distribution:")
         for element_type, count in sorted(element_types.items()):
-            print(f"  {element_type}: {count}")
-            
+            print(f"    {element_type:15} : {count:3}")
+
+        print(f"\n[+] Parsing complete! JSON saved to: {args.output}")
+
     except Exception as e:
-        print(f"Error parsing document: {str(e)}")
+        print(f"[!] Error parsing document: {str(e)}")
+        import traceback
+        traceback.print_exc()
         return 1
-    
+
     return 0
 
 

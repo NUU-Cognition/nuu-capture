@@ -3,10 +3,11 @@
 Unified OCR Pipeline Script
 
 This script runs the complete OCR pipeline in a single command:
-1. PDF Processing (process_pdf.py) - OCR extraction using Mistral API
-2. Image Link Fixing (fix_markdown.py) - Fix image references 
-3. Stage 1 Processing (stage1.py) - OCR fixes and truncation
-4. Stage 2 Processing (stage2.py) - LLM-based formatting with Gemini API
+Stage 1: PDF Processing (process_pdf.py) - OCR extraction using Mistral API
+Stage 2: Image Link Fixing (fix_markdown.py) - Fix image references
+Stage 3: Preprocessing (stage1.py) - OCR fixes and truncation
+Stage 4: LLM Formatting (stage2.py) - Advanced formatting with Gemini API
+Stage 5: JSON Parsing (parser_v3.py) - Convert markdown to structured JSON
 
 Usage:
     python unified_pipeline.py <pdf_input> [output_dir]
@@ -95,18 +96,19 @@ def check_requirements() -> bool:
         return False
     
     # Check if required directories exist
-    required_dirs = ["stages/01_extract", "stages/02_preprocess", "stages/03_format", "config"]
+    required_dirs = ["stages/01_extract", "stages/02_preprocess", "stages/03_format", "json_parser", "config"]
     for dir_name in required_dirs:
         if not os.path.exists(dir_name):
             log_error(f"Required directory '{dir_name}' not found")
             return False
-    
+
     # Check if required files exist
     required_files = [
         "stages/01_extract/process_pdf.py",
-        "stages/01_extract/fix_markdown.py", 
+        "stages/01_extract/fix_markdown.py",
         "stages/02_preprocess/stage1.py",
         "stages/03_format/stage2.py",
+        "json_parser/parser_v3.py",
         "config/universal_research_prompt.md"
     ]
     
@@ -206,16 +208,26 @@ def run_pipeline(pdf_input: str, output_dir: Optional[str] = None) -> Union[str,
         return False
     
     # Stage 4: Stage 2 LLM Formatting
-    log_stage("Stage 4: Stage 2 LLM Formatting", "Applying advanced formatting using Gemini AI")
-    
+    log_stage("Stage 4: LLM Formatting", "Applying advanced formatting using Gemini AI")
+
     input_file = os.path.join(actual_output_dir, "stage_1_complete.md")
     output_file = os.path.join(actual_output_dir, "final_formatted.md")
     prompt_file = "config/universal_research_prompt.md"
     stage2_cmd = ["python", "stages/03_format/stage2.py", input_file, output_file, prompt_file]
-    
-    if not run_command(stage2_cmd, "Stage 2 LLM Formatting"):
+
+    if not run_command(stage2_cmd, "LLM Formatting"):
         return False
-    
+
+    # Stage 5: JSON Structure Parsing
+    log_stage("Stage 5: JSON Structure Parsing", "Converting markdown to structured JSON elements")
+
+    input_file = os.path.join(actual_output_dir, "final_formatted.md")
+    # Output will be auto-generated as final_formatted_output.json
+    parser_cmd = ["python", "json_parser/parser_v3.py", input_file]
+
+    if not run_command(parser_cmd, "JSON Parsing"):
+        return False
+
     return actual_output_dir
 
 def main() -> None:
@@ -232,17 +244,19 @@ Examples:
   python unified_pipeline.py "output/test_pdf/354_MARPLE_A_Benchmark_for_Lon.pdf"
 
 Pipeline Stages:
-  1. PDF Processing    - OCR extraction using Mistral API
-  2. Image Link Fixing - Fix image references in markdown
-  3. Stage 1 Processing - OCR fixes, truncation, paragraph reconstruction
-  4. Stage 2 Processing - LLM-based formatting using Gemini API
+  1. PDF Processing       - OCR extraction using Mistral API
+  2. Image Link Fixing    - Fix image references in markdown
+  3. Preprocessing        - OCR fixes, truncation, paragraph reconstruction
+  4. LLM Formatting       - Advanced formatting using Gemini API
+  5. JSON Parsing         - Convert markdown to structured JSON
 
 Output Files (saved in output directory):
-  - document_content.md   (raw OCR output)
-  - pre_stage_1.md        (after image link fixing)
-  - stage_1_complete.md   (after preprocessing)
-  - final_formatted.md    (final formatted output)
-  - page_X_image_Y.ext    (extracted images)
+  - document_content.md           (raw OCR output)
+  - pre_stage_1.md                (after image link fixing)
+  - stage_1_complete.md           (after preprocessing)
+  - final_formatted.md            (final formatted markdown)
+  - final_formatted_output.json   (structured JSON output)
+  - img-X.jpeg                    (extracted images)
         """
     )
     
@@ -303,8 +317,9 @@ Output Files (saved in output directory):
             files_to_check = [
                 ("document_content.md", "Raw OCR output"),
                 ("pre_stage_1.md", "After image link fixing"),
-                ("stage_1_complete.md", "After preprocessing"), 
-                ("final_formatted.md", "Final formatted output")
+                ("stage_1_complete.md", "After preprocessing"),
+                ("final_formatted.md", "Final formatted markdown"),
+                ("final_formatted_output.json", "Structured JSON output")
             ]
             
             for filename, description in files_to_check:
@@ -320,7 +335,9 @@ Output Files (saved in output directory):
             if image_files:
                 print(f"   + {len(image_files)} extracted images")
             
-            print(f"\nYour formatted document is ready: {os.path.abspath(os.path.join(output_directory, 'final_formatted.md'))}")
+            print(f"\n[*] Final Outputs:")
+            print(f"    Markdown: {os.path.abspath(os.path.join(output_directory, 'final_formatted.md'))}")
+            print(f"    JSON:     {os.path.abspath(os.path.join(output_directory, 'final_formatted_output.json'))}")
             
         else:
             log_error("Pipeline failed. Please check the error messages above.")
